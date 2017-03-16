@@ -1,7 +1,7 @@
 \documentclass{llncs}
 \usepackage{amsmath,amssymb,amsfonts,stmaryrd}
 \usepackage{graphicx}
-\usepackage{color}
+\usepackage[usenames,dvipsnames]{color}
 \usepackage{listings}
 \lstset{
    basicstyle=\scriptsize\ttfamily,
@@ -14,6 +14,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage[T1]{fontenc}
+\usepackage{verbatim}
 
 %%%%%
 \newcommand{\sylvain}[1]{\textcolor{red}{#1}}
@@ -29,6 +30,10 @@
 \newcommand{\lra}{\longrightarrow}
 
 \DeclareMathOperator{\Set}{Set}
+
+\newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
+
+\newcommand{\defleq}{\sqsubseteq_{\text{def}}}
 
 \begin{document}
 \bibliographystyle{splncs03}
@@ -54,13 +59,13 @@
 \section{Introduction}
 
 
-Biological modelling is still an art which is currently limited in its applications by the number of available modellers.
+Biological modeling is still an art which is currently limited in its applications by the number of available modelers
 Automating the process of model building is thus a very desirable goal
 to attack new applications, develop patient-tailored therapeutics,
 and also design experiments that can now be largely automated
 with a gain in both the quantification and the reliability of the observations, at both the single cell and cell population levels.
 
-Machine learning is revolutionarizing the statistical methods in biological data analytics,
+Machine learning is revolutionizing the statistical methods in biological data analytics,
 data classification and clustering, and for making predictions from static measurements.
 However, learning dynamical models from temporal data is more challenging.
 There has been early work on the use of machine learning techniques, such as inductive
@@ -96,11 +101,13 @@ where the symbol $*$ denotes the undetermined.
 A vector is total if it contains no undetermined value.
 A Boolean function $F:\{0,1\}^s \rightarrow\{0,1\}$
 assigns a Boolean value to each total vector.
-A Boolean concept $C:\{0,1,*\}^s \rightarrow\{0,1\}$
-assigns similarly a Boolean value to non total vectors,
+
+We denote by $\defleq$ the definedness order, that is, for any positive integer $n$, and any vectors $v$ and $w$ in $\{0,1,*\}^n$, we have $v \defleq w$ if and only if for all $i$, $1 \leq i \leq s$, we have $v_i = *$ or $v_i = w_i$.
+
+Then, we define a boolean concept $C:\{0,1,*\}^s \rightarrow\{0,1,*\}$ as a function that
+assigns a Boolean value to non total vectors,
 with the following independence constraint:
-for any vector $v$ and any total extension $w$ of $v$ (i.e.~where the undetermined values in $v$ are replaced by $0$ or $1$)
-we have $C(v)=C(w)$.
+for any vector $v$ and $w$, if $v \defleq w$ then $C(v) \defleq C(w)$.
 
 The PAC learning protocol considers a hidden Boolean function $F$,
 a class $\cal M$ of models to learn, $f(x_1,...,x_s) \in \{0,1,*\}$,
@@ -108,6 +115,7 @@ a set of positive examples, i.e.~a set of vectors $v$ for which $F(v)=1$,
 and an arbitrary probability distribution $D$ over this set
 for representing the relative frequency of the positive examples.
 The restriction to positive examples is for the sake of simplicity.
+\wip{(How could we add them ? What would be the pros and cons ?)}
 The PAC learning protocol then allows for
 \begin{itemize}
   \item
@@ -125,12 +133,12 @@ $\cal A$ runs in polynomial time in $s$ and $h$, the size of the models to learn
   \item
 For all models $f$ in $\cal M$,
 all vector distributions $D$ on which $f$ outputs $1$,
-$\cal A$ deduces with probability $\ge 1-h-1$ a model $g$ in $\cal M$ such that
+$\cal A$ deduces with probability $\ge 1-h^{-1}$ a model $g$ in $\cal M$ such that
 \begin{itemize}
   \item
 $g(v)=1$ implies $f(v)=1$
 \item
-$\sum_{v\ s.t.~f(v)=1\ g(v)\neg=1} D(v) < h-1$
+$\sum_{v\ s.t.~f(v)=1\ g(v)\neg=1} D(v) < h^{-1}$
 \end{itemize}
 \end{itemize}
 %\end{definition}
@@ -141,7 +149,7 @@ in particular for Boolean formulae in conjunctive normal forms with at most $k$ 
 and for monotone (i.e.~negation free) Boolean formulae in disjunctive normal form (DNF).
 The computational complexity of the PAC learning algorithms for these classes of functions is expressed in terms of the function
 $L(h,S)$ defined as the smallest integer $i$ such that
-in $i$ independent Bernoulli trials, each with probability at least $h-1$ of success, the probability of having fewer than $S$ successes is less than $h-1$.
+in $i$ independent Bernoulli trials, each with probability at least $h^{-1}$ of success, the probability of having fewer than $S$ successes is less than $h^{-1}$.
 Interestingly, this function is quasi-linear in $h$ and $S$, i.e.~for all integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+log_eh)$.
 
 %\begin{theorem}[
@@ -250,9 +258,68 @@ These approaches are directly relevant to biological experiment design and model
 They should gain importance in the forthcoming years with the increasing automation of biological experiments.
 
 
+
+
+\section{Our implementation}
+As of now, we have only implemented PAC for the $k$-CNF. Our implementation represents the lattice of $k$-clauses ordered by implication. Our data structure allows:
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause
+	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
+\end{itemize}
+
+The algorithm is given in \cite{valiant} and further explanations can be given during the oral presentation.
+
+To create samples, run \texttt{simulator.py~<file.reac>~<h>~<k>} and redirect its output to a file.
+
+To run PAC on samples, run \texttt{pac.py~<samples.file>~<k>}
+
+Examples reactions are provided.
+\section{Results and comments}
+Because we don't have access to a wet lab, we simulated experiment races using the Gillespie algorithm.
+
+We ran three example reactions, given in figures \ref{test}\ref{preypred} and \ref{lympho}.
+\begin{figure}[htbp]
+	\verbatiminput{../test.reac}
+	\vspace{-1em}
+	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C.\label{test}}
+\end{figure}
+\begin{figure}[htbp]
+	\verbatiminput{../Lokta.reac}
+	\vspace{-1em}
+	\caption{A Prey-Predator model. Only predators die of old age.\label{preypred}}
+\end{figure}
+\begin{figure}[htbp]
+	\verbatiminput{../lymphocyte.reac}
+	\vspace{-1em}
+	\caption{The Th lymphocyte differentiation model.\label{lympho}}
+\end{figure}
+
+The first example gave perfect results, as indicated on figure \ref{test_res}.
+
+Output is to be read as follow:\\
+\texttt{Foo+:~[['A','Z'],~['not~E'],~['not~Foo']]} means that the activation (\texttt{+}) function of B is $(A \vee Z)\wedge\neg E$. Remark that to be activated, Foo obviously needed to be deactivated first.
+
+The second one (figure \ref{preypred_res}) displays two typical error: because there more than 1 prey, in the Gillespie algorithm, the eating of a prey is way more likely than the death of old age of a predator, hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the Gillespie algorithm to believe that the absence of prey is needed for extinction.
+
+Finally the third one (figure \ref{lympho_res}) gives very rough results and honesty forces us to admit that empiric tweaking of the model has been done to get results that were not too bad.
+
+\begin{figure}
+	\verbatiminput{../test.result}
+	\caption{Results for the test example \label{test_res}}
+\end{figure}
+\begin{figure}
+	\verbatiminput{../lokta.result}
+	\caption{Results for the Prey-Predator model\label{preypred_res}}
+\end{figure}
+\begin{figure}
+	\verbatiminput{../lympho_edited.result}
+	\caption{Results for lymphocite model, edited. Lines with MISS are one on which the algorithm is too far. The tautological negation (\texttt{!A} for \texttt{A+}) have also been deleted.\label{lympho_res}}
+\end{figure}
+
 \section{Conclusion}
+\wip{}
 
-
-\bibliography{contraintes}
+\bibliographystyle{siam}
+\bibliography{biblio}
 
 \end{document}
