@@ -1,0 +1,258 @@
+\documentclass{llncs}
+\usepackage{amsmath,amssymb,amsfonts,stmaryrd}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\lstset{
+   basicstyle=\scriptsize\ttfamily,
+%   frame=single,
+%   breaklines=true,
+}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[T1]{fontenc}
+
+%%%%%
+\newcommand{\sylvain}[1]{\textcolor{red}{#1}}
+\newcommand{\francois}[1]{\textcolor{blue}{#1}}
+\newcommand{\david}[1]{\textcolor{green}{#1}}
+
+\newcommand\for{\mathbin{\text{\it for}}}
+\newcommand\inhibits{\mathbin{-\!\Yleft}}
+\newcommand\activates{\rightarrow}
+\newcommand{\I}[1]{\mathit{#1}}
+
+\newcommand{\ra}{\rightarrow}
+\newcommand{\lra}{\longrightarrow}
+
+\DeclareMathOperator{\Set}{Set}
+
+\begin{document}
+\bibliographystyle{splncs03}
+
+
+\title{Probably Approximately Correct Learning of Regulatory Networks from Boolean Traces}
+
+\author{Arthur Carcano\inst{1} \and Fran\c{c}ois Fages\inst{2}}
+
+\institute{Ecole Normale Sup\'erieure, Paris, France\\
+  \email{arthur.carcano@ens.fr}
+\and Inria, University Paris-Saclay, Lifeware group, France\\
+   \email{Francois.Fages@inria.fr} 
+}
+\maketitle
+
+
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Introduction}
+
+
+Biological modelling is still an art which is currently limited in its applications by the number of available modellers.
+Automating the process of model building is thus a very desirable goal
+to attack new applications, develop patient-tailored therapeutics,
+and also design experiments that can now be largely automated
+with a gain in both the quantification and the reliability of the observations, at both the single cell and cell population levels.
+
+Machine learning is revolutionarizing the statistical methods in biological data analytics,
+data classification and clustering, and for making predictions from static measurements.
+However, learning dynamical models from temporal data is more challenging.
+There has been early work on the use of machine learning techniques, such as inductive
+ logic programming \cite{Muggleton95ngc} combined with active learning in the vision of the ``robot scientist'',
+to infer gene functions \cite{BMOKRK01etai},
+metabolic pathway descriptions \cite{AM02etai,AM02slps}
+or gene influence systems \cite{BCRG04jtb},
+or to revise a reaction model with respect to CTL properties \cite{CCFS06tcsb}.
+Since a few years, progress in this field can be measured on public benchmarks
+of the ``Dream Challenge'' competition \cite{Meyer14bmc}.
+In this fastly moving field, we focus here on the general purpose learning framework of Leslie Valliant for learning the structure of a mechanistic model.
+
+We show...
+
+\section{Preliminaries on PAC Learning}\label{pac}
+
+In his seminal paper on a theory of the learnable \cite{Valiant84cacm},
+Valiant questioned what can be learned from a computational viewpoint,
+and introduced the concept of probably approximate correct (PAC) learning,
+together with a general-purpose polynomial-time learning protocol.
+Beyond the learning algorithms that one can derive with this methodology,
+Valiant's theory of the learnable has profound implications
+on the nature of biological and cognitive processes,
+of collective and individual behaviors,
+and on the study of their evolution \cite{Valiant13book}.
+In this section, we simply recall the general theory of PAC learning,
+and illustrate it with the learning of Boolean gene networks from gene expression data.
+
+The learning protocol for Boolean functions considers
+a finite set of Boolean variables $x_1,\ldots,x_s$.
+A vector is an assignment of the $s$ variables to $\{0,1,*\}$
+where the symbol $*$ denotes the undetermined.
+A vector is total if it contains no undetermined value.
+A Boolean function $F:\{0,1\}^s \rightarrow\{0,1\}$
+assigns a Boolean value to each total vector.
+A Boolean concept $C:\{0,1,*\}^s \rightarrow\{0,1\}$
+assigns similarly a Boolean value to non total vectors,
+with the following independence constraint:
+for any vector $v$ and any total extension $w$ of $v$ (i.e.~where the undetermined values in $v$ are replaced by $0$ or $1$)
+we have $C(v)=C(w)$.
+
+The PAC learning protocol considers a hidden Boolean function $F$,
+a class $\cal M$ of models to learn, $f(x_1,...,x_s) \in \{0,1,*\}$,
+a set of positive examples, i.e.~a set of vectors $v$ for which $F(v)=1$,
+and an arbitrary probability distribution $D$ over this set
+for representing the relative frequency of the positive examples.
+The restriction to positive examples is for the sake of simplicity.
+The PAC learning protocol then allows for
+\begin{itemize}
+  \item
+calls for positive examples, i.e.~vectors $v$ such that $F(v)=1$ given with probability $D(v)$,
+  \item
+calls for oracle on some input $v$ to know the value of $F(v)$
+\end{itemize}
+
+
+%\begin{definition}[\cite{Valiant84cacm}]
+A class $\cal M$ of models is learnable in a given learning protocol, if there exists an algorithm $\cal A$ such that:
+\begin{itemize}
+  \item
+$\cal A$ runs in polynomial time in $s$ and $h$, the size of the models to learn,
+  \item
+For all models $f$ in $\cal M$,
+all vector distributions $D$ on which $f$ outputs $1$,
+$\cal A$ deduces with probability $\ge 1-h-1$ a model $g$ in $\cal M$ such that
+\begin{itemize}
+  \item
+$g(v)=1$ implies $f(v)=1$
+\item
+$\sum_{v\ s.t.~f(v)=1\ g(v)\neg=1} D(v) < h-1$
+\end{itemize}
+\end{itemize}
+%\end{definition}
+
+
+Interestingly, Valiant showed the learnability of some important classes of functions in this framework,
+in particular for Boolean formulae in conjunctive normal forms with at most $k$ literals (k-CNF)
+and for monotone (i.e.~negation free) Boolean formulae in disjunctive normal form (DNF).
+The computational complexity of the PAC learning algorithms for these classes of functions is expressed in terms of the function
+$L(h,S)$ defined as the smallest integer $i$ such that
+in $i$ independent Bernoulli trials, each with probability at least $h-1$ of success, the probability of having fewer than $S$ successes is less than $h-1$.
+Interestingly, this function is quasi-linear in $h$ and $S$, i.e.~for all integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+log_eh)$.
+
+%\begin{theorem}[
+First, for any $k$, the class of k-CNF formulae is learnable with an
+algorithm that uses $L(h,(2s)^{k+1})$ examples and no oracle \cite{Valiant84cacm}.
+%\end{theorem}
+The algorithm used in the proof proceeds as follows
+\begin{enumerate}
+  \item Initialize $g$ to the conjunction of all possible $(2s)^{k+1}$ disjunctions of at most $k$ literals,
+\item Call $L(h,(2t)k+1)$ positive examples $v$,
+\item Delete all the disjunctions in $g$ that do not contain a literal true in $v$.
+\end{enumerate}
+
+
+%\begin{theorem}[\cite{Valiant84cacm}]
+    Second, the class of monotone DNF formulae is also learnable with an algorithm that uses $L(h,d)$ examples and $ds$ calls to the oracle,
+    where $d$ is the largest number of prime implicants in an equivalent prime DNF formula \cite{Valiant84cacm}.
+%\end{theorem}
+The algorithm is the following:
+\begin{enumerate}
+\item Initialize $g$ with constant zero,
+\item
+Do $L(h,d)$ calls to positive examples $v$,
+\item
+If $g$ is not implied by $v$, add the conjunction of determined literals that are essential to $f$ which is determined by $ds$ calls to the oracle.
+\end{enumerate}
+
+\section{PAC Learning Thomas's Gene regulatory Networks}
+
+\subsection{$k$-CNF Models of Thomas's Networks}
+
+
+
+stochastic semantics...
+
+  This Boolean framework perfectly fits the Boolean semantics of Thomas's gene regulatory networks.
+  Indeed in that formalism, each gene $x_1,\ldots,x_s$ is given with a Boolean function  $F_{x_i}:\{0,1\}^s \rightarrow\{0,1\}$
+  which defines the activation update function of that gene
+  according to the expression vector of the other genes in the different possible states.
+  These Boolean functions are best represented by Boolean concepts in PAC terminology
+  in order to make explicit the independent genes.
+  Then, the problem of building such a Boolean model \emph{\`a la} Thomas of gene activation is to give for each gene
+  a Boolean transition function that is compatible with the observed temporal data of gene activation.
+It is worth noticing that the PAC learning protocol makes it possible to learn such Boolean models of gene regulation
+not only from a given finite set of positive gene activation observations,
+but also from new biological experiments designed by the PAC learning algorithm itself.
+
+\subsection{PAC-Learning from Positive Examples}
+
+$k$-CNF formulae can be used to represent Thomas's gene regulatory network functions with some reasonable restrictions on their connectivity.
+In this case, the algorithm is repeated $s$ times for learning each gene activation function.
+The initialization of the learned function $g$ to the most constrained conjunction of all possible disjunctions
+leads to the learning of a minimal generalization of the positive examples in this representation.
+
+Evaluation
+
+\section{Active Learning of Positive Influence Systems}
+
+The (positive) Boolean semantics of biochemical influence systems described in Section \ref{semI}
+can be directly represented by the disjunction of the (positive) enabling conditions of each, either positive or negative, influence on a given target,
+i.e.~by a monotone DNF formula for each activation or inhibition of each target.
+In the Lotka-Volterra influence system of Example \ref{LVi}, the algorithm above is thus expected to learn the structure of the influence system
+(without the stochiometry of course),
+from the observation that the prey can disappear only in presence of the predator
+while the predator can always disappear in presence or absence of the prey.
+
+  Learning reaction models from observed transitions is much more tricky,
+  since some reactions may change the Boolean value of several reactants or products in one single transition.
+%  Let us first remark that the transition relation $r(x_1,\ldots,x_s,x'_1,\ldots,x'_s)$
+%  is naturally represented in DNF by the disjunction of the conjunctions associated to each reaction
+%  (remember that there can be several Boolean transitions associated to one reaction for taking
+%into account the possibly partial or total consumption of the reactants).
+%  is monotonic in the predecessor variables $x_i$'s in the postive Boolean semantics of reactions.
+%  Furthermore it is also monotonic in the successor variables $x'_j$ since we consider
+%  all partial or total consumptions of reactants.
+  Therefore, it is not only the activation and inhibition functions of each species which are to be learnt,
+  but the update functions of pairs and triples of species if we restrict to elementary reactions with at most two reactants or products.
+  In this case, the update functions can be represented by monotonic DNF formulae, since the (positive) Boolean semantics of a reaction system does not test the absence. 
+Furthermore,   one cannot expect to learn the structure of such a reaction network
+from the observation of the state transitions from one single initial state.
+The learning algorithms assumes that the positive examples of the state transition relation be distributed
+among the whole vector space.
+For instance, in the MAPK example \ref{MAPK}, in addition to the initial state of the wild type organism where all the kinases and phosphatases are present,
+it is necessary to consider some mutated organisms, in which some kinases or phosphatases are absent,
+in order to gain information on the precise conditions of activation and deactivation of the different forms of the kinases.
+This strategy is essentially similar to what the biologists do to elucidate the structure of biological processes
+in a qualitative manner.
+
+
+\section{Related Work}
+
+Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide particularly efficient tools such as CLASP \cite{GKNS07lpnmr} to develop learning algorithms for Boolean models.
+They were applied in \cite{GSTUV08iclp} to detect inconsistencies in large biological networks,
+and have been subsequentially applied to the inference of gene networks from gene expression data.
+
+Interestingly, ASP has also been combined with CTL model-checking in \cite{OPSSG16biosystems} to learn mammalian signalling networks from time series data, 
+and identify erroneous time-points in the data, a possibility not considered in the previous presentation of PAC learning.
+
+
+Budgeted learning extends active learning with a notion of cost for the calls to the oracle.
+The original motivation for the budgeted learning protocol came from medical applications in which the outcome of a treatment,
+drug trial, or control group is known, and the results of running medical tests are each available for a price \cite{DZBSM13ml}.
+In this context, multi-armed bandit methods \cite{DBSSZ07icdm} provide the best strategies.
+In \cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for experiment design in dynamical system identification.
+These approaches are directly relevant to biological experiment design and modelling. %and are now part of the DREAM challenge  \cite{Meyer14bmc}.
+They should gain importance in the forthcoming years with the increasing automation of biological experiments.
+
+
+\section{Conclusion}
+
+
+\bibliography{contraintes}
+
+\end{document}

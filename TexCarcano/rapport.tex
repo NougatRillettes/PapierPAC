@@ -1,0 +1,185 @@
+\documentclass[fontsize=9pt,enabledeprecatedfontcommands]{scrartcl}
+\usepackage[a4paper,textwidth=0.85\paperwidth,textheight=0.80\paperheight]{geometry}
+%\usepackage[a4paper]{geometry}
+\setlength{\columnsep}{0.03\paperwidth}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epigraph}
+\usepackage{paralist}
+\usepackage{mathtools}%for smash operator
+
+\usepackage{indentfirst} %adds indentation after sectioning
+
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{stmaryrd}  %pour Mapsto
+
+\usepackage[bf,format=plain]{caption}
+\usepackage{subcaption}
+\usepackage{dblfloatfix}
+
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{csquotes}
+
+\usepackage[usenames,dvipsnames]{color}
+
+\usepackage{verbatim}
+
+\renewcommand\thesubfigure{\arabic{figure}} %subfigure have same counter as figures
+
+\newcommand{\HRule}{\rule{0.9\linewidth}{0.05em}}
+
+\addtokomafont{sectioning}{\rmfamily}
+%\addtokomafont{part}{\huge}
+
+\def\labelitemi{\textbf{--}}
+\newenvironment{itemize'}
+{ %\vspace{-0.75\topsep}
+  \begin{itemize}
+    \vspace{-\topsep}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}     }
+{ \end{itemize} \vspace{-0.75\topsep}                 } 
+
+
+\begin{document}
+%\newgeometry{textheight=0.80\paperheight,textwidth=0.7\paperwidth}
+%\begin{figure*}[h!]
+\twocolumn[
+
+{
+\noindent
+\sffamily
+\begin{center}
+{\Large { ENS $\cdot$ Université Paris Diderot |  M2 MPRI}}
+\HRule
+\vspace{1em}
+{\Huge Computational methods for biology}\\[0.7em]
+{\Huge Probably Approximate Correct learning for Gene Control Networks
+}
+\HRule
+\\[2em]
+\LARGE
+\begin{tabular}{c}
+	Arthur Carcano\\
+\end{tabular}
+\vspace{1em}
+\end{center}}]
+
+
+
+\newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
+
+\begin{abstract}
+	In this report we present the use of Probably Approximate Correct (PAC) learning as introduced by Leslie G; \textsc{Valiant} in his seminal paper, \textit{A Theory of the learnable}\cite{valiant} to discover gene control network from biology experiment traces.
+\end{abstract}
+
+\section{Probably Approximate Correct learning}
+\subsection{Some definitions}
+In his paper, Valiant discusses learning in teh following setting.
+
+We want to learn a function of $F : \mathbb{B}^s \longrightarrow \mathbb{B}$ where $\mathbb{B} = \{0,1\}$. To this end we have available:
+
+\begin{itemize}
+	\item A set $\mathcal{V}$ so that for every $v$ in  $\mathcal{V}$, $F(v) = 1$. Such an $v$ is called a positive example.
+	\item An oracle able to compute $F$ for any $v$.
+\end{itemize}
+
+Conceptually, the goal is to give bounds on the number of positive examples and oracle calls needed to figure out $F$. Oracle calls are often way more expensive than probing from $\mathcal{V}$, so the bounds on oracle calls is often smaller.
+
+Unfortunately, maybe because life often gives lemons when researchers would expect a full free lunch, we cannot hope to find a good bound without constraining $F$. The two sub-classes of functions that are further discussed and on which we will know focus from now on are the following:
+\begin{itemize}
+	\item \textbf{$\bf k$-CNF} is the class of functions that can be written as a conjunction of $k$-clauses, a $k$-clause being a disjunction of at most $k$ literals. 
+	\item \textbf{Monotone DNF} is the class of functions that can be written as as disjunction of conjunctions and that are monotone. This is equal to the class of functions which can be written in DNF without negative literals.
+\end{itemize}
+\subsection{Applications to biology}
+Although it might not be obvious at first sight, this setting allows us to reason on gene control network. We can consider a set of genes, and their boolean state (on or off). The activation (resp. deactivation) of a given gene is then a boolean function of the state vector. If we have $s$ genes, we have to find $2s$ functions of $ \mathbb{B}^s \rightarrow \mathbb{B}$.
+
+Obtaining a set of positive examples can be done by monitoring an experimentation: each time a gene is activated (resp. deactivated) we record the state just before as a positive example for the activation (resp deactivation) function. This may not be trivial in some settings as this implies that we are able to monitor the status of each of the genes or compounds taking parts in the network in real time and with an arbitrarily small time resolution. This often at least hard, as gene activation relies on proteins to be tracked, which introduces some lag.
+
+Yet, obtaining the set of positive examples is way easier than creating a non probabilistic oracle in vivo. Indeed, activation of a given gene from a given state is probabilistic. Let's consider a state $s$ and a gene $g$, not activated in $s$, that may be activated from $s$ with probability $p$. Even if we were able to set the state of the system to $s$, the next transition will activate $g$ only with probability $p$, and our oracle will give a false negative with probability $1-p$. (Remark that only false negative are possible, not false positive).
+
+Finally, our different classes also have a biological interpretation. $k$-CNF imposes that there is no more than $k$ different combination of our system's compounds that can lead to the (de)activation of a gene. Monotone DNF imposes that there is no inhibition relation inside our system.
+
+\subsection{The bounds}
+
+Both our bound relies on the following function $L$. For every $h > 1$ $S \geq 1$, $L(h,S)$ is defined as the smallest integer $i$ so that for $i$ independent Bernoulli trials with probability of success greater or equal to $h^{-1}$, the probability of having less than $S$ success is less than $h^{-1}$.
+
+We have the following bound:
+\[
+L(h,S) \leq 2h\left(S+\ln(h)\right)
+\]
+
+For $k$-CNF, with $s$ species we can retrieve the correct function with approximation $h^{-1}$ with no calls to the oracle and $L(h,(2s)^{k+1})$ examples.
+
+For a prime monotone DNF with at most $d$ prime implicants and $s$ species we can retrieve the correct function with approximation $h^{-1}$ with $ds$ calls to the oracle and $L(h,d)$ examples.
+
+As a note on what we mean by "correct": positive examples for a given function have a frequency and hence a probability. For example if we consider the activation of a given gene $g$, and name $s_1$ to $s_n$ the states from which $g$ has been activated, then during the experiment we can say that we have seen for every $k$, $d_k$ activation of $g$ from state $s_k$. We then define $$D(s_k) = \frac{d_k}{\sum_{i=1}^{n}d_i}$$ which is a probability measure. Hence an function $F$ is with approximation $h^{-1}$ of a actual function $G$ if the total measure of $\{v | F(v) = 0 \text{ but } G(v)=1\}$ is less or equal to $ h^{-1}$.
+
+\section{Our implementation}
+As of now, we have only implemented PAC for the $k$-CNF. Our implementation represents the lattice of $k$-clauses ordered by implication. Our data structure allows:
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause
+	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
+\end{itemize}
+
+The algorithm is given in \cite{valiant} and further explanations can be given during the oral presentation.
+
+To create samples, run \texttt{simulator.py~<file.reac>~<h>~<k>} and redirect its output to a file.
+
+To run PAC on samples, run \texttt{pac.py~<samples.file>~<k>}
+
+Examples reactions are provided.
+\section{Results and comments}
+Because we don't have access to a wet lab, we simulated experiment races using the Gillespie algorithm.
+
+We ran three example reactions, given in figures \ref{test}\ref{preypred} and \ref{lympho}.
+\begin{figure}[htbp]
+	\verbatiminput{../test.reac}
+	\vspace{-1em}
+	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C.\label{test}}
+\end{figure}
+\begin{figure}[htbp]
+	\verbatiminput{../Lokta.reac}
+	\vspace{-1em}
+	\caption{A Prey-Predator model. Only predators die of old age.\label{preypred}}
+\end{figure}
+\begin{figure}[htbp]
+	\verbatiminput{../lymphocyte.reac}
+	\vspace{-1em}
+	\caption{The Th lymphocyte differentiation model.\label{lympho}}
+\end{figure}
+
+The first example gave perfect results, as indicated on figure \ref{test_res}.
+
+Output is to be read as follow:\\
+\texttt{Foo+:~[['A','Z'],~['not~E'],~['not~Foo']]} means that the activation (\texttt{+}) function of B is $(A \vee Z)\wedge\neg E$. Remark that to be activated, Foo obviously needed to be deactivated first.
+
+The second one (figure \ref{preypred_res}) displays two typical error: because there more than 1 prey, in the Gillespie algorithm, the eating of a prey is way more likely than the death of old age of a predator, hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the Gillespie algorithm to believe that the absence of prey is needed for extinction.
+
+Finally the third one (figure \ref{lympho_res}) gives very rough results and honesty forces us to admit that empiric tweaking of the model has been done to get results that were not too bad.
+
+\begin{figure}
+	\verbatiminput{../test.result}
+	\caption{Results for the test example \label{test_res}}
+\end{figure}
+\begin{figure}
+	\verbatiminput{../lokta.result}
+	\caption{Results for the Prey-Predator model\label{preypred_res}}
+\end{figure}
+\begin{figure}
+	\verbatiminput{../lympho_edited.result}
+	\caption{Results for lymphocite model, edited. Lines with MISS are one on which the algorithm is too far. The tautological negation (\texttt{!A} for \texttt{A+}) have also been deleted.\label{lympho_res}}
+\end{figure}
+
+
+\bibliographystyle{siam}
+\bibliography{biblio}
+\end{document}
