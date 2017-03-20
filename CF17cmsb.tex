@@ -17,9 +17,9 @@
 \usepackage{verbatim}
 
 %%%%%
-\newcommand{\sylvain}[1]{\textcolor{red}{#1}}
+\newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 \newcommand{\francois}[1]{\textcolor{blue}{#1}}
-\newcommand{\david}[1]{\textcolor{green}{#1}}
+
 
 \newcommand\for{\mathbin{\text{\it for}}}
 \newcommand\inhibits{\mathbin{-\!\Yleft}}
@@ -31,7 +31,6 @@
 
 \DeclareMathOperator{\Set}{Set}
 
-\newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
 
@@ -105,17 +104,20 @@ assigns a Boolean value to each total vector.
 We denote by $\defleq$ the definedness order, that is, for any positive integer $n$, and any vectors $v$ and $w$ in $\{0,1,*\}^n$, we have $v \defleq w$ if and only if for all $i$, $1 \leq i \leq n$, we have $v_i = *$ or $v_i = w_i$.
 
 Then, we define a boolean concept $C:\{0,1,*\}^s \rightarrow\{0,1,*\}$ as a function that
+\francois{Attention chez Valiant je lis qu'un concept est une fonction dans $\{0,1\}$ pas $\{0,1,*\}$, voir article de 1984 section 2 ajoute au git. Cependant en section 3 les ''programmes'' a apprendre peuvent rendre indetermine en resultat.}
 assigns a Boolean value to non total vectors,
 with the following independence constraint:
 for any vector $v$ and $w$, if $v \defleq w$ then $C(v) \defleq C(w)$.
 
 The PAC learning protocol considers a hidden Boolean function $F$,
 a class $\cal M$ of models to learn, $f(x_1,...,x_s) \in \{0,1,*\}$,\wip{(weird formulation I don't get what it is introducing)}
+\francois{Heu j'avoue ne pas arriver a me relire. A reprendre}
 a set of positive examples, i.e.~a set of vectors $v$ for which $F(v)=1$,
 and an arbitrary probability distribution $D$ over this set
 for representing the relative frequency of the positive examples.
 The restriction to positive examples is for the sake of simplicity.
 \wip{(How could we add them ? What would be the pros and cons ?)}
+\francois{Valiant l'evoque dans la section 3 en haut de la page 1137. On s'interdit de ne pas reproduire les positifs mais on pourrait aussi s'interdire de ne pas produire des negatifs ce que l'on ne fait pas par simplicite. Sinon il faut doubler la representation. Mais c'est peut etre ce que tu fais avec la fonction qui apprend 1 et celle qui apprend 0 ?}
 The PAC learning protocol then allows for
 \begin{itemize}
   \item
@@ -196,8 +198,9 @@ but also from new biological experiments designed by the PAC learning algorithm 
 
 $k$-CNF formulae can be used to represent Thomas's gene regulatory network functions with some reasonable restrictions on their connectivity.
 In this case, the algorithm is repeated $2s$ times for learning each gene (de-)activation function.
-The initialization of the learned function $g$ to the most constrained conjunction of all possible disjunctions
-leads to the learning of a minimal generalization of the positive examples in this representation.\wip{I don't really get this part}
+In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
+leads to the learning of a minimal generalization of the positive examples.\wip{I don't really get this part}
+\francois{Is it better ?}
 
 \section{Our implementation}
 Our implementation represents the lattice of $k$-clauses ordered by implication. Our data structure allows:
@@ -206,9 +209,12 @@ Our implementation represents the lattice of $k$-clauses ordered by implication.
 	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
 \end{itemize}
 
-Because we don't have access to a wet lab, we simulated experiment races using the Gillespie algorithm. This stochastic semantics gave us traces in $\mathbb{N}^s$ that we abstract as traces in $\{0,1\}^s$.
+For the sake of evaluating the learning algorithm, 
+we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation. 
+This stochastic semantics gave us traces in $\mathbb{N}^s$ that we abstract as traces in $\{0,1\}^s$.
+\francois{Ce sera un point sur lequel revenir en discussion, a priori ca serait mieux d'apprendre la discretisation}
 
-Ou simulator uses a custom language to specify experiments and allows to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
+Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
 
 
 \section{Results and comments}
@@ -308,10 +314,10 @@ They should gain importance in the forthcoming years with the increasing automat
 
 
 
-\section{Conclusion}
+\section{Conclusion and perspectives}
 \wip{}
 
 \bibliographystyle{siam}
-\bibliography{biblio}
+\bibliography{biblio,contraintes}
 
 \end{document}
