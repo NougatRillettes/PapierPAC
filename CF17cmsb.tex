@@ -53,9 +53,8 @@ or gene influence systems~\cite{BCRG04jtb},
 or to revise a reaction model with respect to CTL properties~\cite{CCFS06tcsb}.
 Since a few years, progress in this field can be measured on public benchmarks
 of the ``Dream Challenge'' competition~\cite{Meyer14bmc}.
-In this fastly moving field, we focus here on the general purpose learning framework of Leslie Valliant for learning the structure of a mechanistic model.
 
-We show\ldots
+In this paper, we present the Probably Approximately Correct Learning framework introduced by Leslie Valiant\cite{Valiant84cacm} in 1984, and introduce its usage as a method for the automated discovery of boolean models of bio-chemicals systems. \wip{To our knowledge, no prior assessment of the application of PAC learning to biology exists}, despite the quality of the results that it seems to give.
 
 \section{Preliminaries on PAC Learning}\label{pac}
 
@@ -71,61 +70,43 @@ and on the study of their evolution~\cite{Valiant13book}.
 In this section, we simply recall the general theory of PAC learning,
 and illustrate it with the learning of Boolean gene networks from gene expression data.
 
-The learning protocol for Boolean functions considers
-a finite set of Boolean variables $x_1,\ldots,x_s$.
-A vector is an assignment of the $s$ variables to $\{0,1,*\}$
-where the symbol $*$ denotes the undetermined.
-A vector is total if it contains no undetermined value.
-A Boolean function $F:{\{0,1\}}^s \rightarrow\{0,1\}$
-assigns a Boolean value to each total vector.
+\subsection{Formal formulation}
 
-We denote by $\defleq$ the definedness order, that is, for any positive integer $n$, and any vectors $v$ and $w$ in ${\{0,1,*\}}^n$, we have $v \defleq w$ if and only if for all $i$, $1 \leq i \leq n$, we have $v_i = *$ or $v_i = w_i$.
+We first introduce some definitions~: if we consider
+a finite set of Boolean variables $x_1,\ldots,x_s$, we say that:
+\begin{itemize}
+	\item A vector is an assignment of the $s$ variables to $\mathbb{B} = \{0,1\}$
+	\item A Boolean function $F:{\mathbb{B}}^s \rightarrow \mathbb{B}$
+	assigns a Boolean value to each vector.
+\end{itemize}
 
-Then, we define a boolean concept $C:{\{0,1,*\}}^s \rightarrow\{0,1,*\}$ as a function that
-\francois{Attention chez Valiant je lis qu'un concept est une fonction dans $\{0,1\}$ pas $\{0,1,*\}$, voir article de 1984 section 2 ajoute au git. Cependant en section 3 les ``programmes'' a apprendre peuvent rendre indetermine en resultat.}
-assigns a Boolean value to non total vectors,
-with the following independence constraint:
-for any vector $v$ and $w$, if $v \defleq w$ then $C(v) \defleq C(w)$.
-
-\sylvain{Do we need to introduce the concept of Concept?}
-
-The PAC learning protocol considers a hidden Boolean function $F$,
-a class $\cal M$ of models to learn, $f(x_1,\dots,x_s) \in \{0,1,*\}$,\wip{(weird formulation I don't get what it is introducing)}
-\francois{Heu j'avoue ne pas arriver a me relire. A reprendre}
-a set of positive examples, i.e.~a set of vectors $v$ for which $F(v)=1$,
-and an arbitrary probability distribution $D$ over this set
-for representing the relative frequency of the positive examples.
-The restriction to positive examples is for the sake of simplicity.
-\wip{(How could we add them? What would be the pros and cons?)}
-\francois{Valiant l'evoque dans la section 3 en haut de la page 1137. On s'interdit de ne pas reproduire les positifs mais on pourrait aussi s'interdire de ne pas produire des negatifs ce que l'on ne fait pas par simplicite. Sinon il faut doubler la representation. Mais c'est peut etre ce que tu fais avec la fonction qui apprend 1 et celle qui apprend 0?}
-The PAC learning protocol then allows for
+The idea behind PAC learning protocol is to discover a hidden boolean function $F$ while restricting itself to the two following operations~:
 \begin{itemize}
   \item
-calls for positive examples, i.e.~vectors $v$ such that $F(v)=1$ given with probability $D(v)$,
+\textsc{Sample}$()$~: that calls for positive examples, i.e.~vectors $v$ such that $F(v)=1$ given with probability $D(v)$,
   \item
-calls for oracle on some input $v$ to know the value of $F(v)$
+\textsc{Oracle}$(x)$~: that calls an oracle on some input $v$ to compute the value of $F(v)$
 \end{itemize}
 
 
 %\begin{definition}[\cite{Valiant84cacm}]
-A class $\cal M$ of models is learnable in a given learning protocol, if there exists an algorithm $\cal A$ such that:
+A class $\cal M$ of boolean functions of arity $s$ (that is, $\forall f \in \mathcal{M}, f: {\mathbb{B}}^s \rightarrow \mathbb{B}$) is said to be learnable if there exists an algorithm $\cal A$ such that:
 \begin{itemize}
   \item
 $\cal A$ runs in polynomial time in $s$ -- the size of the models to learn -- and $h$ the precision parameter.
   \item
-For all models $f$ in $\cal M$,
-all vector distributions $D$ on which $f$ outputs $1$,
-$\cal A$ deduces with probability $\ge 1-h^{-1}$ a model $g$ in $\cal M$ such that
+For all functions $F$ in $\cal M$, and
+all distributions $D$ of positive examples,
+$\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation, or model $G$ of $F$ in $\cal M$ such that
 \begin{itemize}
   \item
-$g(v)=1$ implies $f(v)=1$
+$g(v)=1$ implies $F(v)=1$ (no false positives)
 \item
-$\sum_{v\ s.t.~f(v)=1\ g(v)\neg=1} D(v) < h^{-1}$
+$\sum_{v\ s.t.~F(v)=1\ G(v)=0} D(v) < h^{-1}$ (false negative have a low probability to be sampled)
 \end{itemize}
 \end{itemize}
 %\end{definition}
 
-\sylvain{This definition does not use $F$, which is quite puzzling.}
 
 
 Interestingly, Valiant showed the learnability of some important classes of functions in this framework,
