@@ -2,40 +2,18 @@
 \usepackage{amsmath,amssymb,amsfonts,stmaryrd}
 \usepackage{graphicx}
 \usepackage[usenames,dvipsnames]{color}
-\usepackage{listings}
-\lstset{
-   basicstyle=\scriptsize\ttfamily,
-%   frame=single,
-%   breaklines=true,
-}
 \usepackage{hyperref}
-\usepackage{tikz}
-\usetikzlibrary{arrows}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
 \usepackage[T1]{fontenc}
 \usepackage{verbatim}
 
 %%%%%
 \newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 \newcommand{\francois}[1]{\textcolor{blue}{#1}}
-
-
-\newcommand\for{\mathbin{\text{\it for}}}
-\newcommand\inhibits{\mathbin{-\!\Yleft}}
-\newcommand\activates{\rightarrow}
-\newcommand{\I}[1]{\mathit{#1}}
-
-\newcommand{\ra}{\rightarrow}
-\newcommand{\lra}{\longrightarrow}
-
-\DeclareMathOperator{\Set}{Set}
-
+\newcommand{\sylvain}[1]{\textcolor{green}{#1}}
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
 
 \begin{document}
-\bibliographystyle{splncs03}
 
 
 \title{Probably Approximately Correct Learning of Regulatory Networks from Boolean Traces}
@@ -45,7 +23,7 @@
 \institute{Ecole Normale Sup\'erieure, Paris, France\\
   \email{arthur.carcano@ens.fr}
 \and Inria, University Paris-Saclay, Lifeware group, France\\
-   \email{Francois.Fages@inria.fr} 
+   \email{Francois.Fages@inria.fr}
 }
 \maketitle
 
@@ -68,20 +46,20 @@ Machine learning is revolutionizing the statistical methods in biological data a
 data classification and clustering, and for making predictions from static measurements.
 However, learning dynamical models from temporal data is more challenging.
 There has been early work on the use of machine learning techniques, such as inductive
- logic programming \cite{Muggleton95ngc} combined with active learning in the vision of the ``robot scientist'',
-to infer gene functions \cite{BMOKRK01etai},
-metabolic pathway descriptions \cite{AM02etai,AM02slps}
-or gene influence systems \cite{BCRG04jtb},
-or to revise a reaction model with respect to CTL properties \cite{CCFS06tcsb}.
+ logic programming~\cite{Muggleton95ngc} combined with active learning in the vision of the ``robot scientist'',
+to infer gene functions~\cite{BMOKRK01etai},
+metabolic pathway descriptions~\cite{AM02etai,AM02slps}
+or gene influence systems~\cite{BCRG04jtb},
+or to revise a reaction model with respect to CTL properties~\cite{CCFS06tcsb}.
 Since a few years, progress in this field can be measured on public benchmarks
-of the ``Dream Challenge'' competition \cite{Meyer14bmc}.
+of the ``Dream Challenge'' competition~\cite{Meyer14bmc}.
 In this fastly moving field, we focus here on the general purpose learning framework of Leslie Valliant for learning the structure of a mechanistic model.
 
-We show...
+We show\ldots
 
 \section{Preliminaries on PAC Learning}\label{pac}
 
-In his seminal paper on a theory of the learnable \cite{Valiant84cacm},
+In his seminal paper on a theory of the learnable~\cite{Valiant84cacm},
 Valiant questioned what can be learned from a computational viewpoint,
 and introduced the concept of probably approximate correct (PAC) learning,
 together with a general-purpose polynomial-time learning protocol.
@@ -89,7 +67,7 @@ Beyond the learning algorithms that one can derive with this methodology,
 Valiant's theory of the learnable has profound implications
 on the nature of biological and cognitive processes,
 of collective and individual behaviors,
-and on the study of their evolution \cite{Valiant13book}.
+and on the study of their evolution~\cite{Valiant13book}.
 In this section, we simply recall the general theory of PAC learning,
 and illustrate it with the learning of Boolean gene networks from gene expression data.
 
@@ -98,26 +76,28 @@ a finite set of Boolean variables $x_1,\ldots,x_s$.
 A vector is an assignment of the $s$ variables to $\{0,1,*\}$
 where the symbol $*$ denotes the undetermined.
 A vector is total if it contains no undetermined value.
-A Boolean function $F:\{0,1\}^s \rightarrow\{0,1\}$
+A Boolean function $F:{\{0,1\}}^s \rightarrow\{0,1\}$
 assigns a Boolean value to each total vector.
 
-We denote by $\defleq$ the definedness order, that is, for any positive integer $n$, and any vectors $v$ and $w$ in $\{0,1,*\}^n$, we have $v \defleq w$ if and only if for all $i$, $1 \leq i \leq n$, we have $v_i = *$ or $v_i = w_i$.
+We denote by $\defleq$ the definedness order, that is, for any positive integer $n$, and any vectors $v$ and $w$ in ${\{0,1,*\}}^n$, we have $v \defleq w$ if and only if for all $i$, $1 \leq i \leq n$, we have $v_i = *$ or $v_i = w_i$.
 
-Then, we define a boolean concept $C:\{0,1,*\}^s \rightarrow\{0,1,*\}$ as a function that
-\francois{Attention chez Valiant je lis qu'un concept est une fonction dans $\{0,1\}$ pas $\{0,1,*\}$, voir article de 1984 section 2 ajoute au git. Cependant en section 3 les ''programmes'' a apprendre peuvent rendre indetermine en resultat.}
+Then, we define a boolean concept $C:{\{0,1,*\}}^s \rightarrow\{0,1,*\}$ as a function that
+\francois{Attention chez Valiant je lis qu'un concept est une fonction dans $\{0,1\}$ pas $\{0,1,*\}$, voir article de 1984 section 2 ajoute au git. Cependant en section 3 les ``programmes'' a apprendre peuvent rendre indetermine en resultat.}
 assigns a Boolean value to non total vectors,
 with the following independence constraint:
 for any vector $v$ and $w$, if $v \defleq w$ then $C(v) \defleq C(w)$.
 
+\sylvain{Do we need to introduce the concept of Concept?}
+
 The PAC learning protocol considers a hidden Boolean function $F$,
-a class $\cal M$ of models to learn, $f(x_1,...,x_s) \in \{0,1,*\}$,\wip{(weird formulation I don't get what it is introducing)}
+a class $\cal M$ of models to learn, $f(x_1,\dots,x_s) \in \{0,1,*\}$,\wip{(weird formulation I don't get what it is introducing)}
 \francois{Heu j'avoue ne pas arriver a me relire. A reprendre}
 a set of positive examples, i.e.~a set of vectors $v$ for which $F(v)=1$,
 and an arbitrary probability distribution $D$ over this set
 for representing the relative frequency of the positive examples.
 The restriction to positive examples is for the sake of simplicity.
-\wip{(How could we add them ? What would be the pros and cons ?)}
-\francois{Valiant l'evoque dans la section 3 en haut de la page 1137. On s'interdit de ne pas reproduire les positifs mais on pourrait aussi s'interdire de ne pas produire des negatifs ce que l'on ne fait pas par simplicite. Sinon il faut doubler la representation. Mais c'est peut etre ce que tu fais avec la fonction qui apprend 1 et celle qui apprend 0 ?}
+\wip{(How could we add them? What would be the pros and cons?)}
+\francois{Valiant l'evoque dans la section 3 en haut de la page 1137. On s'interdit de ne pas reproduire les positifs mais on pourrait aussi s'interdire de ne pas produire des negatifs ce que l'on ne fait pas par simplicite. Sinon il faut doubler la representation. Mais c'est peut etre ce que tu fais avec la fonction qui apprend 1 et celle qui apprend 0?}
 The PAC learning protocol then allows for
 \begin{itemize}
   \item
@@ -145,6 +125,8 @@ $\sum_{v\ s.t.~f(v)=1\ g(v)\neg=1} D(v) < h^{-1}$
 \end{itemize}
 %\end{definition}
 
+\sylvain{This definition does not use $F$, which is quite puzzling.}
+
 
 Interestingly, Valiant showed the learnability of some important classes of functions in this framework,
 in particular for Boolean formulae in conjunctive normal forms with at most $k$ literals (k-CNF)
@@ -152,12 +134,14 @@ and for monotone (i.e.~negation free) Boolean formulae in disjunctive normal for
 The computational complexity of the PAC learning algorithms for these classes of functions is expressed in terms of the function
 $L(h,S)$ defined as the smallest integer $i$ such that
 in $i$ independent Bernoulli trials, each with probability at least $h^{-1}$ of success, the probability of having fewer than $S$ successes is less than $h^{-1}$.
-Interestingly, this function is quasi-linear in $h$ and $S$, i.e.~for all integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+log_eh)$.
+Interestingly, this function is quasi-linear in $h$ and $S$, i.e.~for all
+integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+\log_e h)$.
 
-%\begin{theorem}[
+\begin{theorem}\label{thm:kcnf}
 First, for any $k$, the class of k-CNF formulae is learnable with an
-algorithm that uses $L(h,(2s)^{k+1})$ examples and no oracle \cite{Valiant84cacm}.
-%\end{theorem}
+algorithm that uses $L(h,(2s)^{k+1})$ examples and no oracle~\cite{Valiant84cacm}.
+\end{theorem}
+
 The algorithm used in the proof proceeds as follows
 \begin{enumerate}
   \item Initialize $g$ to the conjunction of all possible $(2s)^{k+1}$ disjunctions of at most $k$ literals,
@@ -168,7 +152,7 @@ The algorithm used in the proof proceeds as follows
 
 %\begin{theorem}[\cite{Valiant84cacm}]
     Second, the class of monotone DNF formulae is also learnable with an algorithm that uses $L(h,d)$ examples and $ds$ calls to the oracle,
-    where $d$ is the largest number of prime implicants in an equivalent prime DNF formula \cite{Valiant84cacm}.
+    where $d$ is the largest number of prime implicants in an equivalent prime DNF formula~\cite{Valiant84cacm}.
 %\end{theorem}
 The algorithm is the following:
 \begin{enumerate}
@@ -179,13 +163,43 @@ Do $L(h,d)$ calls to positive examples $v$,
 If $g$ is not implied by $v$, add the conjunction of determined literals that are essential to $f$ which is determined by $ds$ calls to the oracle.
 \end{enumerate}
 
-\section{PAC Learning Thomas's Gene regulatory Networks}
+\section{PAC Learning Gene regulatory Networks}
 
 \subsection{$k$-CNF Models of Thomas's Networks}
 
-  This Boolean framework perfectly fits the Boolean semantics of Thomas's gene regulatory networks.
+This Boolean framework perfectly fits the Boolean semantics of Thomas's gene
+regulatory networks~\cite{GK73jtb,Thomas73jtb,TA90book}.
+
+
+\begin{definition}
+   A \emph{Thomas} network is defined by a set of genes $\{x_1,\dots,x_s\}$
+   and $s$ boolean functions $\{f_1,\dots,f_s\}$\dots
+\end{definition}
+
+Without loss of generality we will assume that the fuctions $f_i$ are given in
+CNF.
+
+Now we can apply directly Thm.~\ref{thm:kcnf} and the corresponding
+algorithm to learn a gene regulation network \emph{\`a la} Thomas.
+
+\begin{example}
+   Running example?
+\end{example}
+
+Our implementation represents the lattice of $k$-clauses ordered by implication. Our data structure allows:
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause
+	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
+\end{itemize}
+
+\subsection{DNF Models of Influence}
+
+\sylvain{%
+   Definition and more from~\cite{FMRS16cmsb}\dots
+}
+
   Indeed in that formalism, given a network of $s$ genes $x_1,\ldots,x_s$, and an integer $1 \leq k \leq s$ we can define ${x_k}_+$ (resp. ${x_k}_-$): $\{0,1\}^s \rightarrow\{0,1\}$ the activation (resp. deactivation) function of $x_k$.
-  
+
   These Boolean functions are best represented by Boolean concepts in PAC terminology
   in order to make explicit the independent genes.
   Then, the problem of building such a Boolean model \emph{\`a la} Thomas of gene activation is to give for each gene
@@ -194,32 +208,48 @@ It is worth noticing that the PAC learning protocol makes it possible to learn s
 not only from a given finite set of positive gene activation observations,
 but also from new biological experiments designed by the PAC learning algorithm itself.
 
-\subsection{PAC-Learning from Positive Examples}
-
 $k$-CNF formulae can be used to represent Thomas's gene regulatory network functions with some reasonable restrictions on their connectivity.
 In this case, the algorithm is repeated $2s$ times for learning each gene (de-)activation function.
 In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
 leads to the learning of a minimal generalization of the positive examples.\wip{I don't really get this part}
 \francois{Is it better ?}
 
-\section{Our implementation}
-Our implementation represents the lattice of $k$-clauses ordered by implication. Our data structure allows:
-\begin{itemize}
-	\item $O(1)$ access to any $k$-clause
-	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
-\end{itemize}
+\section{PAC Learning from traces}
 
-For the sake of evaluating the learning algorithm, 
-we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation. 
+In order to make use of this learning algorithm on real data, a first step is
+to assume that we do not have full access to the hidden boolean function for
+examples and oracles, but to restrict ourselves to time-series, in other words
+trace-based observations.
+
+This has two major consequences: the first one is that we lose oracles
+completely. We will discuss in Section~\ref{sec:oracles} how to recover them
+by some kind of experiment design, but in the current section we will assume
+that no oracle is available.
+
+The other consequence is that instead of a pure sampling of the state-space to
+obtain examples, we will restrict ourselves to samples obtained by traces.
+Notably, in the traces we will focus on changes between successive states as
+witnesses (i.e., positive examples) of a positive or negative influence.
+
+\subsection{Example}
+
+\sylvain{Running example again}
+
+\subsection{Comparison with previous section}
+
+\section{PAC Learning from Complex Traces}
+
+For the sake of evaluating the learning algorithm,
+we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation.
 This stochastic semantics gave us traces in $\mathbb{N}^s$ that we abstract as traces in $\{0,1\}^s$.
 \francois{Ce sera un point sur lequel revenir en discussion, a priori ca serait mieux d'apprendre la discretisation}
 
 Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
 
 
-\section{Results and comments}
+\subsection{Results and comments}
 
-We ran three example reactions, given in figures \ref{test}, \ref{preypred}, and \ref{lympho}.
+We ran three example reactions, given in figures~\ref{test},~\ref{preypred}, and~\ref{lympho}.
 \begin{figure}[htbp]
 	\verbatiminput{examples/test.reac}
 	\vspace{-1em}
@@ -236,14 +266,14 @@ We ran three example reactions, given in figures \ref{test}, \ref{preypred}, and
 	\caption{The Th lymphocyte differentiation model.\label{lympho}}
 \end{figure}
 
-The first example gave perfect results, as indicated on figure \ref{test_res}.
+The first example gave perfect results, as indicated on figure~\ref{test_res}.
 
 Output is to be read as follow:\\
 \texttt{Foo+:~[['A','Z'],~['!E'],~['!Foo']]} means that the activation (\texttt{+}) function of B is $(A \vee Z)\wedge\neg E$. Remark that to be activated, Foo obviously needed to be deactivated first.
 
-The second one (figure \ref{preypred_res}) displays two typical error: because there more than 1 prey, in the Gillespie algorithm, the eating of a prey is way more likely than the death of old age of a predator, hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the Gillespie algorithm to believe that the absence of prey is needed for extinction.
+The second one (figure~\ref{preypred_res}) displays two typical error: because there more than 1 prey, in the Gillespie algorithm, the eating of a prey is way more likely than the death of old age of a predator, hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the Gillespie algorithm to believe that the absence of prey is needed for extinction.
 
-Finally the third one (figure \ref{lympho_res}) gives very rough results and honesty forces us to admit that empiric tweaking of the model has been done to get results that were not too bad.
+Finally the third one (figure~\ref{lympho_res}) gives very rough results and honesty forces us to admit that empiric tweaking of the model has been done to get results that were not too bad.
 
 \begin{figure}
 	\verbatiminput{examples/test.result}
@@ -260,11 +290,15 @@ Finally the third one (figure \ref{lympho_res}) gives very rough results and hon
 
 
 \section{Active Learning of Positive Influence Systems}
+\label{sec:oracles}
 
-The (positive) Boolean semantics of biochemical influence systems described in Section \ref{semI}
+\sylvain{I guess this is where the oracle as experiment-design discussion will
+take place\dots}
+
+The (positive) Boolean semantics of biochemical influence systems
 can be directly represented by the disjunction of the (positive) enabling conditions of each, either positive or negative, influence on a given target,
 i.e.~by a monotone DNF formula for each activation or inhibition of each target.
-In the Lotka-Volterra influence system of Example \ref{LVi}, the algorithm above is thus expected to learn the structure of the influence system
+In the Lotka-Volterra influence system, the algorithm above is thus expected to learn the structure of the influence system
 (without the stochiometry of course),
 from the observation that the prey can disappear only in presence of the predator
 while the predator can always disappear in presence or absence of the prey.
@@ -280,12 +314,12 @@ while the predator can always disappear in presence or absence of the prey.
 %  all partial or total consumptions of reactants.
   Therefore, it is not only the activation and inhibition functions of each species which are to be learnt,
   but the update functions of pairs and triples of species if we restrict to elementary reactions with at most two reactants or products.
-  In this case, the update functions can be represented by monotonic DNF formulae, since the (positive) Boolean semantics of a reaction system does not test the absence. 
+  In this case, the update functions can be represented by monotonic DNF formulae, since the (positive) Boolean semantics of a reaction system does not test the absence.
 Furthermore,   one cannot expect to learn the structure of such a reaction network
 from the observation of the state transitions from one single initial state.
 The learning algorithms assumes that the positive examples of the state transition relation be distributed
 among the whole vector space.
-For instance, in the MAPK example \ref{MAPK}, in addition to the initial state of the wild type organism where all the kinases and phosphatases are present,
+For instance, in the MAPK example, in addition to the initial state of the wild type organism where all the kinases and phosphatases are present,
 it is necessary to consider some mutated organisms, in which some kinases or phosphatases are absent,
 in order to gain information on the precise conditions of activation and deactivation of the different forms of the kinases.
 This strategy is essentially similar to what the biologists do to elucidate the structure of biological processes
@@ -294,20 +328,20 @@ in a qualitative manner.
 
 \section{Related Work}
 
-Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide particularly efficient tools such as CLASP \cite{GKNS07lpnmr} to develop learning algorithms for Boolean models.
-They were applied in \cite{GSTUV08iclp} to detect inconsistencies in large biological networks,
+Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide particularly efficient tools such as CLASP~\cite{GKNS07lpnmr} to develop learning algorithms for Boolean models.
+They were applied in~\cite{GSTUV08iclp} to detect inconsistencies in large biological networks,
 and have been subsequentially applied to the inference of gene networks from gene expression data.
 
-Interestingly, ASP has also been combined with CTL model-checking in \cite{OPSSG16biosystems} to learn mammalian signalling networks from time series data, 
+Interestingly, ASP has also been combined with CTL model-checking in~\cite{OPSSG16biosystems} to learn mammalian signalling networks from time series data,
 and identify erroneous time-points in the data, a possibility not considered in the previous presentation of PAC learning.
 
 
 Budgeted learning extends active learning with a notion of cost for the calls to the oracle.
 The original motivation for the budgeted learning protocol came from medical applications in which the outcome of a treatment,
-drug trial, or control group is known, and the results of running medical tests are each available for a price \cite{DZBSM13ml}.
-In this context, multi-armed bandit methods \cite{DBSSZ07icdm} provide the best strategies.
-In \cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for experiment design in dynamical system identification.
-These approaches are directly relevant to biological experiment design and modelling. %and are now part of the DREAM challenge  \cite{Meyer14bmc}.
+drug trial, or control group is known, and the results of running medical tests are each available for a price~\cite{DZBSM13ml}.
+In this context, multi-armed bandit methods~\cite{DBSSZ07icdm} provide the best strategies.
+In~\cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for experiment design in dynamical system identification.
+These approaches are directly relevant to biological experiment design and modelling. %and are now part of the DREAM challenge ~\cite{Meyer14bmc}.
 They should gain importance in the forthcoming years with the increasing automation of biological experiments.
 
 
@@ -317,7 +351,7 @@ They should gain importance in the forthcoming years with the increasing automat
 \section{Conclusion and perspectives}
 \wip{}
 
-\bibliographystyle{siam}
-\bibliography{biblio,contraintes}
+\bibliographystyle{splncs03}
+\bibliography{contraintes}
 
 \end{document}
