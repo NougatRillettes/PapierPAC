@@ -1,0 +1,6 @@
+{"Prey": 1000, "Pred": 10}
+Prey -> Prey
+Pred -< Pred
+Prey, Pred -> Pred
+Prey, Pred -< Prey
+-> Prey
