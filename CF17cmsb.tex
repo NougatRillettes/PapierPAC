@@ -11,6 +11,7 @@
 \newcommand{\sylvain}[1]{\textcolor{green}{#1}}
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
+\newcommand{\lra}{\longrightarrow}
 
 \begin{document}
 
@@ -23,7 +24,8 @@ Soliman\inst{2}}
 Ecole Normale Sup\'erieure, Paris, France\\
   \email{arthur.carcano@ens.fr}
 \and Inria, University Paris-Saclay, Lifeware group, France\\
-   \email{Francois.Fages@inria.fr}
+   \email{Francois.Fages@inria.fr},
+   \email{Sylvain.Soliman@inria.fr}
 }
 
 \maketitle
@@ -119,12 +121,12 @@ integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+\log_e h)$.
 
 \begin{theorem}\label{thm:kcnf}
 First, for any $k$, the class of k-CNF formulae is learnable with an
-algorithm that uses $L(h,{(2s)}^{k+1})$ examples and no oracle~\cite{Valiant84cacm}.
+algorithm that uses $L(h,{(2 n)}^{k+0})$ examples and no oracle~\cite{Valiant84cacm}.
 \end{theorem}
 
 The algorithm used in the proof proceeds as follows
 \begin{enumerate}
-  \item Initialize $g$ to the conjunction of all possible ${(2s)}^{k+1}$ disjunctions of at most $k$ literals,
+  \item Initialize $g$ to the conjunction of all possible ${(2 n)}^{k+0}$ disjunctions of at most $k$ literals,
 \item Call $L(h,(2t)k+1)$ positive examples $v$,
 \item Delete all the disjunctions in $g$ that do not contain a literal true in $v$.
 \end{enumerate}
@@ -187,7 +189,7 @@ Our implementation represents the lattice of $k$-clauses ordered by implication.
 
 \subsection{DNF Models of Influence}
 
-\begin{definition}[\cite{FMRS16cmsb}]
+\begin{definition}[Influence Systen~\cite{FMRS16cmsb}]
 
    An \emph{influence system} $I$ on a set of genes $S=\{x_1,\dots,x_n\}$ is a
    set of quintuples $(P, N, t, \sigma, f)$ called \emph{influences}, where
@@ -199,42 +201,48 @@ Our implementation represents the lattice of $k$-clauses ordered by implication.
 
 \end{definition}
 
+\begin{definition}[Boolean Semantics with Negation~\cite{FMRS16cmsb}]
+$$\forall (P_i, N_i, A_i, \sigma_i, f_i),
+{\vec x}\lra_B{\vec x'}\text{ if }{\vec x}\models \bigwedge_{p\in
+P_i}p\wedge\bigwedge_{n\in N_i}\bar{n},\ {\vec x'} = {\vec x}\ \sigma_i\ A_i$$
+\end{definition}
+
   Indeed in that formalism, given a network of $n$ genes $x_1,\ldots,x_n$, and
   an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp.\ ${x_k}_-$):
-  ${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation) function
-  of $x_k$, as the disjunction of the conditions of all positive (resp.\
-  negative) influences on $x_k$.
-
-  \sylvain{To improve: what is the condition of an influence? can we skip the
-  definition of forces?}
+  ${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation)
+  boolean function of $x_k$, as the disjunction of the conditions (the above
+  big conjunction) of all positive (resp.\ negative) influences on $x_k$.
 
   % These Boolean functions are best represented by Boolean concepts in PAC terminology
   % in order to make explicit the independent genes.
-  Then, the problem of building such a Boolean model is to give for each gene
-  two Boolean activation and deactivation functions that are compatible with the observed temporal data of gene activation.
-It is worth noticing that the PAC learning protocol makes it possible to learn such Boolean models of gene regulation
-not only from a given finite set of positive gene activation observations,
-but also from new biological experiments designed by the PAC learning algorithm itself.
+  % Then, the problem of building such a Boolean model is to give for each gene
+  % two Boolean activation and deactivation functions that are compatible with the observed temporal data of gene activation.
+% It is worth noticing that the PAC learning protocol makes it possible to learn such Boolean models of gene regulation
+% not only from a given finite set of positive gene activation observations,
+% but also from new biological experiments designed by the PAC learning algorithm itself.
 
-\sylvain{interesting but out of place}
+% \sylvain{interesting but out of place}
 
 $k$-CNF formulae can be used to represent such gene regulatory network functions with some reasonable restrictions on their connectivity.
-In this case, the algorithm is repeated $2s$ times for learning each gene (de-)activation function.
+In this case, the algorithm is repeated $2 n$ times for learning each gene (de-)activation function.
+
 In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
 leads to the learning of a minimal generalization of the positive examples.\wip{I don't really get this part}
 \francois{Is it better?}
+\sylvain{in DNF, the initial G should be a disjunction\dots}
 
 \section{PAC Learning from traces}
 
 In order to make use of this learning algorithm on real data, a first step is
 to assume that we do not have full access to the hidden boolean function for
-examples and oracles, but to restrict ourselves to time-series, in other words
-trace-based observations.
+\textsc{Sample} and \textsc{Oracle}, but to restrict ourselves to time-series,
+in other words trace-based observations.
 
 This has two major consequences: the first one is that we lose oracles
 completely. We will discuss in Section~\ref{sec:oracles} how to recover them
 by some kind of experiment design, but in the current section we will assume
-that no oracle is available.
+that no oracle is available. One immediate corollary is that the existing
+algorithm for DNF formulae is not available to us any longer.
 
 The other consequence is that instead of a pure sampling of the state-space to
 obtain examples, we will restrict ourselves to samples obtained by traces.
@@ -248,6 +256,9 @@ witnesses (i.e., positive examples) of a positive or negative influence.
 \subsection{Comparison with previous section}
 
 \section{PAC Learning from Complex Traces}
+
+In order to push our experiments even further, we shall now produce the trace
+data, not directly from a boolean model, but from more realistic simulations.
 
 For the sake of evaluating the learning algorithm,
 we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation.
