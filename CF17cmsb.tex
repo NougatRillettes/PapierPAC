@@ -155,15 +155,18 @@ logical models \emph{\`a la} Thomas, describing gene regulatory networks in a
 \emph{functional} way. Then we shall extend this approach to the more general
 class of Influence Models, as recently described in~\cite{FMRS16cmsb}.
 
+In both cases, we will assume, in this Section, that we do have perfect
+\textsc{Sample} and \textsc{Oracle} functions.
+
 \subsection{$k$-CNF Models of Thomas's Networks}
 
 This Boolean framework perfectly fits the Boolean semantics of Thomas's gene
 regulatory networks~\cite{GK73jtb,Thomas73jtb,TA90book}.
 
-
 \begin{definition}
    A \emph{Thomas} network is defined by a set of genes $\{x_1,\dots,x_n\}$
-   and $n$ boolean functions $\{f_1,\dots,f_n\}$\dots
+   and $n$ boolean functions $\{f_1,\dots,f_n\}$ describing for each gene its
+   possible next state, given the current state.
 \end{definition}
 
 Without loss of generality we will assume that the fuctions $f_i$ are given in
@@ -184,21 +187,38 @@ Our implementation represents the lattice of $k$-clauses ordered by implication.
 
 \subsection{DNF Models of Influence}
 
-\sylvain{%
-   Definition and more from~\cite{FMRS16cmsb}\dots
-}
+\begin{definition}[\cite{FMRS16cmsb}]
 
-  Indeed in that formalism, given a network of $n$ genes $x_1,\ldots,x_n$, and an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp. ${x_k}_-$): $\{0,1\}^n \rightarrow\{0,1\}$ the activation (resp. deactivation) function of $x_k$.
+   An \emph{influence system} $I$ on a set of genes $S=\{x_1,\dots,x_n\}$ is a
+   set of quintuples $(P, N, t, \sigma, f)$ called \emph{influences}, where
+   $P\subset S$ is called the \emph{positive sources} of the influence,
+   $N\subset S$ the \emph{negative sources}, $t\in S$ is the \emph{target},
+   \emph{sign} $\sigma\in\{+,-\}$ is the sign of the influence, and $f$ is a
+   real-valued mathematical function of $\mathbb{R}^n$, called the
+   \emph{force} of the influence.
 
-  These Boolean functions are best represented by Boolean concepts in PAC terminology
-  in order to make explicit the independent genes.
-  Then, the problem of building such a Boolean model \emph{\`a la} Thomas of gene activation is to give for each gene
+\end{definition}
+
+  Indeed in that formalism, given a network of $n$ genes $x_1,\ldots,x_n$, and
+  an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp. ${x_k}_-$):
+  $\{0,1\}^n \rightarrow\{0,1\}$ the activation (resp. deactivation) function
+  of $x_k$, as the disjunction of the conditions of all positive (resp.
+  negative) influences on $x_k$.
+
+  \sylvain{To improve: what is the condition of an influence? can we skip the
+  definition of forces?}
+
+  % These Boolean functions are best represented by Boolean concepts in PAC terminology
+  % in order to make explicit the independent genes.
+  Then, the problem of building such a Boolean model is to give for each gene
   two Boolean activation and deactivation functions that are compatible with the observed temporal data of gene activation.
 It is worth noticing that the PAC learning protocol makes it possible to learn such Boolean models of gene regulation
 not only from a given finite set of positive gene activation observations,
 but also from new biological experiments designed by the PAC learning algorithm itself.
 
-$k$-CNF formulae can be used to represent Thomas's gene regulatory network functions with some reasonable restrictions on their connectivity.
+\sylvain{interesting but out of place}
+
+$k$-CNF formulae can be used to represent such gene regulatory network functions with some reasonable restrictions on their connectivity.
 In this case, the algorithm is repeated $2s$ times for learning each gene (de-)activation function.
 In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
 leads to the learning of a minimal generalization of the positive examples.\wip{I don't really get this part}
