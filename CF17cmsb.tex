@@ -119,12 +119,12 @@ integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+\log_e h)$.
 
 \begin{theorem}\label{thm:kcnf}
 First, for any $k$, the class of k-CNF formulae is learnable with an
-algorithm that uses $L(h,(2s)^{k+1})$ examples and no oracle~\cite{Valiant84cacm}.
+algorithm that uses $L(h,{(2s)}^{k+1})$ examples and no oracle~\cite{Valiant84cacm}.
 \end{theorem}
 
 The algorithm used in the proof proceeds as follows
 \begin{enumerate}
-  \item Initialize $g$ to the conjunction of all possible $(2s)^{k+1}$ disjunctions of at most $k$ literals,
+  \item Initialize $g$ to the conjunction of all possible ${(2s)}^{k+1}$ disjunctions of at most $k$ literals,
 \item Call $L(h,(2t)k+1)$ positive examples $v$,
 \item Delete all the disjunctions in $g$ that do not contain a literal true in $v$.
 \end{enumerate}
@@ -170,7 +170,7 @@ regulatory networks~\cite{GK73jtb,Thomas73jtb,TA90book}.
 \end{definition}
 
 Without loss of generality we will assume that the fuctions $f_i$ are given in
-CNF.
+CNF\@.
 
 Now we can apply directly Thm.~\ref{thm:kcnf} and the corresponding
 algorithm to learn a gene regulation network \emph{\`a la} Thomas.
@@ -200,9 +200,9 @@ Our implementation represents the lattice of $k$-clauses ordered by implication.
 \end{definition}
 
   Indeed in that formalism, given a network of $n$ genes $x_1,\ldots,x_n$, and
-  an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp. ${x_k}_-$):
-  $\{0,1\}^n \rightarrow\{0,1\}$ the activation (resp. deactivation) function
-  of $x_k$, as the disjunction of the conditions of all positive (resp.
+  an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp.\ ${x_k}_-$):
+  ${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation) function
+  of $x_k$, as the disjunction of the conditions of all positive (resp.\
   negative) influences on $x_k$.
 
   \sylvain{To improve: what is the condition of an influence? can we skip the
@@ -222,7 +222,7 @@ $k$-CNF formulae can be used to represent such gene regulatory network functions
 In this case, the algorithm is repeated $2s$ times for learning each gene (de-)activation function.
 In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
 leads to the learning of a minimal generalization of the positive examples.\wip{I don't really get this part}
-\francois{Is it better ?}
+\francois{Is it better?}
 
 \section{PAC Learning from traces}
 
@@ -251,7 +251,7 @@ witnesses (i.e., positive examples) of a positive or negative influence.
 
 For the sake of evaluating the learning algorithm,
 we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation.
-This stochastic semantics gave us traces in $\mathbb{N}^n$ that we abstract as traces in $\{0,1\}^n$.
+This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as traces in ${\{0,1\}}^n$.
 \francois{Ce sera un point sur lequel revenir en discussion, a priori ca serait mieux d'apprendre la discretisation}
 
 Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
@@ -287,7 +287,7 @@ Finally the third one (figure~\ref{lympho_res}) gives very rough results and hon
 
 \begin{figure}
 	\verbatiminput{examples/test.result}
-	\caption{Results for the test example \label{test_res}}
+	\caption{Results for the test example\label{test_res}}
 \end{figure}
 \begin{figure}
 	\verbatiminput{examples/lokta.result}
