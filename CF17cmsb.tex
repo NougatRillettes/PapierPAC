@@ -6,7 +6,6 @@
 \usepackage[T1]{fontenc}
 \usepackage{verbatim}
 
-%%%%%
 \newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 \newcommand{\francois}[1]{\textcolor{blue}{#1}}
 \newcommand{\sylvain}[1]{\textcolor{green}{#1}}
@@ -15,26 +14,27 @@
 
 \begin{document}
 
-
 \title{Probably Approximately Correct Learning of Regulatory Networks from Boolean Traces}
 
-\author{Arthur Carcano\inst{1} \and Fran\c{c}ois Fages\inst{2}}
+\author{Arthur Carcano\inst{1} \and Fran\c{c}ois Fages\inst{2} \and Sylvain
+Soliman\inst{2}}
 
-\institute{Ecole Normale Sup\'erieure, Paris, France\\
+\institute{%
+Ecole Normale Sup\'erieure, Paris, France\\
   \email{arthur.carcano@ens.fr}
 \and Inria, University Paris-Saclay, Lifeware group, France\\
    \email{Francois.Fages@inria.fr}
 }
+
 \maketitle
 
-
-
 \begin{abstract}
+
+   \wip{TODO}
 
 \end{abstract}
 
 \section{Introduction}
-
 
 Biological modeling is still an art which is currently limited in its applications by the number of available modelers
 Automating the process of model building is thus a very desirable goal
@@ -54,7 +54,7 @@ or to revise a reaction model with respect to CTL properties~\cite{CCFS06tcsb}.
 Since a few years, progress in this field can be measured on public benchmarks
 of the ``Dream Challenge'' competition~\cite{Meyer14bmc}.
 
-In this paper, we present the Probably Approximately Correct Learning framework introduced by Leslie Valiant\cite{Valiant84cacm} in 1984, and introduce its usage as a method for the automated discovery of boolean models of bio-chemicals systems. \wip{To our knowledge, no prior assessment of the application of PAC learning to biology exists}, despite the quality of the results that it seems to give.
+In this paper, we present the Probably Approximately Correct Learning framework introduced by Leslie Valiant~\cite{Valiant84cacm} in 1984, and introduce its usage as a method for the automated discovery of boolean models of bio-chemicals systems. \wip{To our knowledge, no prior assessment of the application of PAC learning to biology exists}, despite the quality of the results that it seems to give.
 
 \section{Preliminaries on PAC Learning}\label{pac}
 
@@ -68,15 +68,15 @@ on the nature of biological and cognitive processes,
 of collective and individual behaviors,
 and on the study of their evolution~\cite{Valiant13book}.
 In this section, we simply recall the general theory of PAC learning,
-and illustrate it with the learning of Boolean gene networks from gene expression data.
+and illustrate it with the learning of Boolean formulae.
 
-\subsection{Formal formulation}
+\subsection{Definitions}
 
-We first introduce some definitions~: if we consider
-a finite set of Boolean variables $x_1,\ldots,x_s$, we say that:
+We first introduce some definitions.
+Let us consider a finite set of Boolean variables $x_1,\ldots,x_n$, we say that:
 \begin{itemize}
-	\item A vector is an assignment of the $s$ variables to $\mathbb{B} = \{0,1\}$
-	\item A Boolean function $F:{\mathbb{B}}^s \rightarrow \mathbb{B}$
+	\item A vector is an assignment of the $n$ variables to $\mathbb{B} = \{0,1\}$
+	\item A Boolean function $F:{\mathbb{B}}^n \rightarrow \mathbb{B}$
 	assigns a Boolean value to each vector.
 \end{itemize}
 
@@ -89,25 +89,24 @@ The idea behind PAC learning protocol is to discover a hidden boolean function $
 \end{itemize}
 
 
-%\begin{definition}[\cite{Valiant84cacm}]
-A class $\cal M$ of boolean functions of arity $s$ (that is, $\forall f \in \mathcal{M}, f: {\mathbb{B}}^s \rightarrow \mathbb{B}$) is said to be learnable if there exists an algorithm $\cal A$ such that:
-\begin{itemize}
-  \item
-$\cal A$ runs in polynomial time in $s$ -- the size of the models to learn -- and $h$ the precision parameter.
-  \item
-For all functions $F$ in $\cal M$, and
-all distributions $D$ of positive examples,
-$\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation, or model $G$ of $F$ in $\cal M$ such that
-\begin{itemize}
-  \item
-$g(v)=1$ implies $F(v)=1$ (no false positives)
-\item
-$\sum_{v\ s.t.~F(v)=1\ G(v)=0} D(v) < h^{-1}$ (false negative have a low probability to be sampled)
-\end{itemize}
-\end{itemize}
-%\end{definition}
+\begin{definition}[Learnable class~\cite{Valiant84cacm}]
+   A class $\cal M$ of \emph{boolean functions} is said to be \emph{learnable}
+   if there exists an algorithm $\cal A$ such that:
+   \begin{itemize}
+      \item $\cal A$ runs in polynomial time in $n$ -- the size of the models to learn -- and $h$ the precision parameter.
+      \item
+         For all functions $F$ in $\cal M$, and all distributions $D$ of positive examples,
+         $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ in $\cal M$ such that
+         \begin{itemize}
+            \item $G(v)=1$ implies $F(v)=1$ (no false positives)
+            \item
+               $\sum_{v\ s.t.\ F(v)=1\wedge G(v)=0} D(v) < h^{-1}$ (false negative have a low probability to be sampled)
+         \end{itemize}
+   \end{itemize}
+\end{definition}
 
 
+\subsection{Boolean formulae}
 
 Interestingly, Valiant showed the learnability of some important classes of functions in this framework,
 in particular for Boolean formulae in conjunctive normal forms with at most $k$ literals (k-CNF)
@@ -131,20 +130,30 @@ The algorithm used in the proof proceeds as follows
 \end{enumerate}
 
 
-%\begin{theorem}[\cite{Valiant84cacm}]
-    Second, the class of monotone DNF formulae is also learnable with an algorithm that uses $L(h,d)$ examples and $ds$ calls to the oracle,
+\begin{theorem}[\cite{Valiant84cacm}]
+    Second, the class of monotone DNF formulae is also learnable with an
+    algorithm that uses $L(h,d)$ examples and $d n$ calls to the oracle,
     where $d$ is the largest number of prime implicants in an equivalent prime DNF formula~\cite{Valiant84cacm}.
-%\end{theorem}
+\end{theorem}
+
 The algorithm is the following:
 \begin{enumerate}
 \item Initialize $g$ with constant zero,
 \item
 Do $L(h,d)$ calls to positive examples $v$,
 \item
-If $g$ is not implied by $v$, add the conjunction of determined literals that are essential to $f$ which is determined by $ds$ calls to the oracle.
+If $g$ is not implied by $v$, add the conjunction of determined literals that
+are essential to $f$ which is determined by $d n$ calls to the oracle.
 \end{enumerate}
 
 \section{PAC Learning Gene regulatory Networks}
+
+We will now apply PAC-learning and the already existing algorithms proving
+learnability to two different classes of Boolean models commonly used in
+Systems Biology. First, we shall describe how PAC-learning applies to the
+logical models \emph{\`a la} Thomas, describing gene regulatory networks in a
+\emph{functional} way. Then we shall extend this approach to the more general
+class of Influence Models, as recently described in~\cite{FMRS16cmsb}.
 
 \subsection{$k$-CNF Models of Thomas's Networks}
 
@@ -153,8 +162,8 @@ regulatory networks~\cite{GK73jtb,Thomas73jtb,TA90book}.
 
 
 \begin{definition}
-   A \emph{Thomas} network is defined by a set of genes $\{x_1,\dots,x_s\}$
-   and $s$ boolean functions $\{f_1,\dots,f_s\}$\dots
+   A \emph{Thomas} network is defined by a set of genes $\{x_1,\dots,x_n\}$
+   and $n$ boolean functions $\{f_1,\dots,f_n\}$\dots
 \end{definition}
 
 Without loss of generality we will assume that the fuctions $f_i$ are given in
@@ -179,7 +188,7 @@ Our implementation represents the lattice of $k$-clauses ordered by implication.
    Definition and more from~\cite{FMRS16cmsb}\dots
 }
 
-  Indeed in that formalism, given a network of $s$ genes $x_1,\ldots,x_s$, and an integer $1 \leq k \leq s$ we can define ${x_k}_+$ (resp. ${x_k}_-$): $\{0,1\}^s \rightarrow\{0,1\}$ the activation (resp. deactivation) function of $x_k$.
+  Indeed in that formalism, given a network of $n$ genes $x_1,\ldots,x_n$, and an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp. ${x_k}_-$): $\{0,1\}^n \rightarrow\{0,1\}$ the activation (resp. deactivation) function of $x_k$.
 
   These Boolean functions are best represented by Boolean concepts in PAC terminology
   in order to make explicit the independent genes.
@@ -222,7 +231,7 @@ witnesses (i.e., positive examples) of a positive or negative influence.
 
 For the sake of evaluating the learning algorithm,
 we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation.
-This stochastic semantics gave us traces in $\mathbb{N}^s$ that we abstract as traces in $\{0,1\}^s$.
+This stochastic semantics gave us traces in $\mathbb{N}^n$ that we abstract as traces in $\{0,1\}^n$.
 \francois{Ce sera un point sur lequel revenir en discussion, a priori ca serait mieux d'apprendre la discretisation}
 
 Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
@@ -286,7 +295,7 @@ while the predator can always disappear in presence or absence of the prey.
 
   Learning reaction models from observed transitions is much more tricky,
   since some reactions may change the Boolean value of several reactants or products in one single transition.
-%  Let us first remark that the transition relation $r(x_1,\ldots,x_s,x'_1,\ldots,x'_s)$
+%  Let us first remark that the transition relation $r(x_1,\ldots,x_n,x'_1,\ldots,x'_n)$
 %  is naturally represented in DNF by the disjunction of the conjunctions associated to each reaction
 %  (remember that there can be several Boolean transitions associated to one reaction for taking
 %into account the possibly partial or total consumption of the reactants).
