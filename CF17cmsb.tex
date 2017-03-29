@@ -126,9 +126,12 @@ algorithm that uses $L(h,{(2 n)}^{k+0})$ examples and no oracle~\cite{Valiant84c
 
 The algorithm used in the proof proceeds as follows
 \begin{enumerate}
-  \item Initialize $g$ to the conjunction of all possible ${(2 n)}^{k+0}$ disjunctions of at most $k$ literals,
-\item Call $L(h,(2t)k+1)$ positive examples $v$,
-\item Delete all the disjunctions in $g$ that do not contain a literal true in $v$.
+  \item Initialize $g$ to the conjunction of all possible disjunctions of at most $k$ literals (there are $O(n^k)$ such disjunctions),
+\item Call $L(h,(2t)^{k+1})$ positive examples $v$, and for each $v$~:
+\begin{itemize}
+\item Delete all the disjunctions in $g$ that do not contain a literal true in $v$.	
+\end{itemize}
+
 \end{enumerate}
 
 
