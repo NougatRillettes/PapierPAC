@@ -1,0 +1,31 @@
+p38,JNK / DNA_damage,ERK,MDM2 -> Apoptosis.
+DNA_damage,JNK / ERK,p38,MDM2 -> Apoptosis.
+DNA_damage,p38,JNK / ERK -> Apoptosis.
+MDM2 / DNA_damage -< Apoptosis.
+ERK -< Apoptosis.
+/ DNA_damage,p38 -< Apoptosis.
+MDM2 / p38 -< Apoptosis.
+/ JNK -< Apoptosis.
+p38 / DNA_damage,MDM2 -> Growth_Arrest.
+DNA_damage / p38,MDM2 -> Growth_Arrest.
+DNA_damage,p38 -> Growth_Arrest.
+MDM2 / DNA_damage -< Growth_Arrest.
+/ DNA_damage,p38 -< Growth_Arrest.
+MDM2 / p38 -< Growth_Arrest.
+ERK,PI3K / DNA_damage,p38 -> Proliferation.
+ERK,p38,PI3K,MDM2 / DNA_damage -> Proliferation.
+DNA_damage,ERK,PI3K,MDM2 / p38 -> Proliferation.
+/ ERK -< Proliferation.
+DNA_damage,p38 -< Proliferation.
+/ PI3K -< Proliferation.
+DNA_damage / MDM2 -< Proliferation.
+p38 / MDM2 -< Proliferation.
+RAS / DNA_damage,ERK,p38,JNK,PLCG -> ERK.
+PLCG / DNA_damage,ERK,p38,JNK,PI3K -> ERK.
+PLCG,PI3K,RAS / DNA_damage,ERK,p38,JNK -> ERK.
+ERK,RAS / DNA_damage,p38,JNK -> ERK.
+DNA_damage,RAS / ERK,p38,JNK,PLCG -> ERK.
+DNA_damage,PLCG / ERK,p38,JNK,PI3K -> ERK.
+DNA_damage,PLCG,PI3K / ERK,p38,JNK,RAS,MDM2 -> ERK.
+DNA_damage,PLCG,PI3K,RAS / ERK,p38,JNK -> ERK.
+DNA_damage,ERK,RAS / p38,JNK -> ERK.
