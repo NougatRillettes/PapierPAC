@@ -82,7 +82,7 @@ for loop_n in range(loop_end):
     doable = [r for r in reactions if canFire(r)]
     if not doable:
         break
-    chosen = random.choices(doable)[0]
+    chosen = random.choices(doable,[r['propensity'] for r in doable])[0]
     activated = chosen['kind'] == '>'
     for r in chosen['products']:
         if state[r] ^ activated:
