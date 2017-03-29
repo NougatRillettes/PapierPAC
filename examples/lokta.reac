@@ -1,4 +1,4 @@
 {"Predator": 10, "Prey": 1000}
-Predator, Prey -> 2*Predator
-Prey -> 2*Prey
-Predator ->
+Predator, Prey => 2*Predator
+Prey => 2*Prey
+Predator =>

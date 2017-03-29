@@ -14,7 +14,7 @@ class Indexer(dict):
         self[key] = n
         return n
 cre = re.compile(r'([\w\*]+)')
-cre2 = re.compile(r'(?P<reac>[^/]*)(/(?P<inhib>.*))?->(?P<prod>[^(]*)(\((?P<prop>.*)\))?')
+cre2 = re.compile(r'(?P<reac>[^/]*)(/(?P<inhib>.*))?=>(?P<prod>[^(]*)(\((?P<prop>.*)\))?')
 cre3 = re.compile(r'(?:(.*)\*)?(.*)')
 
 indexer = Indexer()
