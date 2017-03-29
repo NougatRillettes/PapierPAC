@@ -1,0 +1,5 @@
+{"Predator": 1, "Prey": 1}
+Predator, Prey -> Predator (100)
+Predator, Prey -< Prey  (100)
+Prey -> Prey (1)
+Predator -< Predator (1)
