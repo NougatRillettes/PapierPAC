@@ -1,8 +1,19 @@
 from copy import copy
 from collections import deque
 import json
-from sys import argv
 from itertools import combinations
+import argparse
+
+parser = argparse.ArgumentParser(description='Run PAC learning for k-CNF on one of \
+                                                the simulators output.')
+parser.add_argument('file',
+                    help='Input file containing examples')
+parser.add_argument('k',type=int,
+                    help='Maximum size of the disjunctions')
+
+
+
+
 
 class Partition:
     def __init__(self):
@@ -78,8 +89,10 @@ def conjonc(table,n):
             x.marked = True
     return res
 
+args = parser.parse_args()
+
 dic = None
-with open(argv[1]) as f:
+with open(args.file) as f:
     dic = json.loads(f.read())
 
 indexer = dic['indexer']
@@ -98,7 +111,7 @@ mask = 0
 for _ in range(n):
     mask = 4*mask +1
 
-k = int(argv[2])
+k = args.k
 for i in range(n):
     table = generate_k_partitions(k,n)
     #print(table)

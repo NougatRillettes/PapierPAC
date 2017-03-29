@@ -6,7 +6,16 @@ import operator
 from collections import Counter
 import math
 import json
-from sys import argv,stderr
+from sys import stderr
+import argparse
+
+parser = argparse.ArgumentParser(description='Run the boolean Gillespie algorithm on the given influence system.')
+parser.add_argument('file',
+                    help='Input file describing the influence system')
+parser.add_argument('h', type=int,
+                    help='Precision parameter')
+parser.add_argument('k', type=int,
+                    help='Maximum size of the disjunctions')
 
 class Indexer(dict):
     def __missing__(self,key):
@@ -19,8 +28,9 @@ cre3 = re.compile(r'(?:(.*)\*)?(.*)')
 
 indexer = Indexer()
 
+args = parser.parse_args()
 f = ""
-with open(argv[1]) as foo:
+with open(args.file) as foo:
     f = foo.read()
 
 reactions = []
@@ -71,8 +81,8 @@ for _ in indexer:
     influences.append(set())
 
 
-h = int(argv[2])
-k = int(argv[3])
+h = args.h
+k = args.k
 loop_end = bigL(h,k)
 for loop_n in range(loop_end):
     if loop_n % (2)**14 == 0:
