@@ -134,6 +134,9 @@ The algorithm used in the proof proceeds as follows
 
 \end{enumerate}
 
+In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
+leads to the learning of a minimal  generalization of the positive examples.
+
 
 \begin{theorem}[\cite{Valiant84cacm}]
     Second, the class of monotone DNF formulae is also learnable with an
@@ -174,21 +177,18 @@ regulatory networks~\cite{GK73jtb,Thomas73jtb,TA90book}.
    possible next state, given the current state.
 \end{definition}
 
-Without loss of generality we will assume that the fuctions $f_i$ are given in
-CNF\@.
+%Without loss of generality we will assume that the fuctions $f_i$ are given in
+%CNF\@.
 
-Now we can apply directly Thm.~\ref{thm:kcnf} and the corresponding
-algorithm to learn a gene regulation network \emph{\`a la} Thomas.
+
+$k$-CNF formulae can be used to represent such gene regulatory network functions with some reasonable restrictions on their connectivity.
+In this case, the algorithm given in the proof of Theorem~\ref{thm:kcnf} is repeated $n$ times in order to learn each of the $f_i$.
 
 \begin{example}
    Running example?
 \end{example}
 
-Our implementation represents the lattice of $k$-clauses ordered by implication. Our data structure allows:
-\begin{itemize}
-	\item $O(1)$ access to any $k$-clause
-	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
-\end{itemize}
+
 
 \subsection{DNF Models of Influence}
 
@@ -226,13 +226,7 @@ P_i}p\wedge\bigwedge_{n\in N_i}\bar{n},\ {\vec x'} = {\vec x}\ \sigma_i\ A_i$$
 
 % \sylvain{interesting but out of place}
 
-$k$-CNF formulae can be used to represent such gene regulatory network functions with some reasonable restrictions on their connectivity.
-In this case, the algorithm is repeated $2 n$ times for learning each gene (de-)activation function.
 
-In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
-leads to the learning of a minimal generalization of the positive examples.\wip{I don't really get this part}
-\francois{Is it better?}
-\sylvain{in DNF, the initial G should be a disjunction\dots}
 
 \section{PAC Learning from traces}
 
@@ -269,6 +263,12 @@ This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as
 \francois{Ce sera un point sur lequel revenir en discussion, a priori ca serait mieux d'apprendre la discretisation}
 
 Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
+
+Our implementation of the PAC-learning algorithm represents the lattice of $k$-clauses ordered by implication, thus allowing:
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause
+	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
+\end{itemize}
 
 
 \subsection{Results and comments}
