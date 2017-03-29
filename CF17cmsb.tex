@@ -120,7 +120,7 @@ Interestingly, this function is quasi-linear in $h$ and $S$, i.e.~for all
 integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+\log_e h)$.
 
 \begin{theorem}\label{thm:kcnf}
-First, for any $k$, the class of k-CNF formulae is learnable with an
+First, for any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
 algorithm that uses $L(h,{(2 n)}^{k+1})$ examples and no oracle~\cite{Valiant84cacm}.
 \end{theorem}
 
@@ -134,24 +134,26 @@ The algorithm used in the proof proceeds as follows
 
 \end{enumerate}
 
-In this representations, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
+In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
 leads to the learning of a minimal  generalization of the positive examples.
 
 
-\begin{theorem}[\cite{Valiant84cacm}]
-    Second, the class of monotone DNF formulae is also learnable with an
+\begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
+    Second, the class of monotone DNF formulae n $n$ variables is also learnable with an
     algorithm that uses $L(h,d)$ examples and $d n$ calls to the oracle,
-    where $d$ is the largest number of prime implicants in an equivalent prime DNF formula~\cite{Valiant84cacm}.
+    \wip{where $d$ is the largest number of prime implicants in an equivalent prime DNF formula}~\cite{Valiant84cacm}.
 \end{theorem}
 
 The algorithm is the following:
 \begin{enumerate}
 \item Initialize $g$ with constant zero,
 \item
-Do $L(h,d)$ calls to positive examples $v$,
-\item
-If $g$ is not implied by $v$, add the conjunction of determined literals that
-are essential to $f$ which is determined by $d n$ calls to the oracle.
+Do $L(h,d)$ calls to positive examples $v$, and for each $v$,
+\begin{itemize}
+	\item 
+	If $g$ is not implied by $v$, add the conjunction of determined literals that
+	are essential to $f$ which is determined by $d n$ calls to the oracle.
+\end{itemize}
 \end{enumerate}
 
 \section{PAC Learning Gene regulatory Networks}
