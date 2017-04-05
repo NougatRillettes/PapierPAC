@@ -3,6 +3,7 @@ from collections import deque
 import json
 from itertools import combinations
 import argparse
+from sys import stderr
 
 parser = argparse.ArgumentParser(description='Run PAC learning for k-CNF on one of \
                                                 the simulators output.')
@@ -10,6 +11,8 @@ parser.add_argument('file',
                     help='Input file containing examples')
 parser.add_argument('k',type=int,
                     help='Maximum size of the disjunctions')
+parser.add_argument('--hints',action='store',\
+                    default="")
 
 
 
@@ -107,18 +110,32 @@ def varName(i):
         return revIndexer[i//2]
     else:
         return '!'+revIndexer[i//2]
-mask = 0
-for _ in range(n):
-    mask = 4*mask +1
+
+hints = {}
+if args.hints:
+    with open(args.hints) as f:
+        hints = json.loads(f.read())
 
 k = args.k
-for i in range(n):
+
+
+def applyAlg(i):
     table = generate_k_partitions(k,n)
     #print(table)
-    for s in influences[2*i]:
-        sample(s,table,k)
-    print("{}+ : {}".format(revIndexer[i],[[varName(x) for x in c] for c in conjonc(table,n)]))
-    table = generate_k_partitions(k,n)
-    for s in influences[2*i+1]:
-        sample(s,table,k)
-    print("{}- : {}".format(revIndexer[i],[[varName(x) for x in c] for c in conjonc(table,n)]))
+    for s in influences[i]:
+        s2 = set(s)
+        try:
+            #s2 = [x for x in s if revIndexer[x//2] in hints[revIndexer[i]]]
+            s2 |= {2*j for j in range(n) if revIndexer[j] not in hints[revIndexer[i//2]]}
+            s2 |= {2*j+1 for j in range(n) if revIndexer[j] not in hints[revIndexer[i//2]]}
+            #print([varName(x) for x in s],[varName(x) for x in s2],sep='\n',file=stderr,end='--\n')
+        except KeyError:
+            pass
+        sample(s2,table,k)
+    print("{}{} : {}".format(revIndexer[i//2],
+                    '-' if i%2 else '+',
+                    [[varName(x) for x in c] for c in conjonc(table,n)]))
+
+for i in range(n):
+    applyAlg(2*i)
+    applyAlg(2*i+1)

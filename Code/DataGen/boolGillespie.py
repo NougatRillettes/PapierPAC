@@ -67,9 +67,9 @@ def canFire(r):
         if not state[spec]:
             return False
     for spec in r['inhibitors']:
-        if state[spec]:
-            return False
-    return True
+        if not state[spec]:
+            return True
+    return not r['inhibitors']
 
 def bigL(h,k):
     return int(2*h*((2*len(indexer))**(k+1)+math.log(h))+1)
@@ -85,8 +85,12 @@ h = args.h
 k = args.k
 loop_end = bigL(h,k)
 for loop_n in range(loop_end):
-    if loop_n % (2)**14 == 0:
+    if loop_n % (2)**16 == 0:
         print(state,file=stderr)
+        for (k,v) in indexer.items():
+            if state[v]:
+                print(k,end=' ',file=stderr)
+        print(file=stderr)
         print(100*loop_n/loop_end,file=stderr)
 
     doable = [r for r in reactions if canFire(r)]

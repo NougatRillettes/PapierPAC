@@ -67,9 +67,9 @@ def canFire(r):
         if state[spec] < coef:
             return False
     for (_,spec) in r['inhibitors']:
-        if state[spec] > 0:
-            return False
-    return True
+        if state[spec] == 0:
+            return True
+    return not r['inhibitors']
 
 def bigL(h,k):
     return int(2*h*((2*len(indexer))**(k+1)+math.log(h))+1)
