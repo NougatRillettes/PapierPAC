@@ -1,4 +1,5 @@
 \documentclass{llncs}
+\pagestyle{plain}
 \usepackage{amsmath,amssymb,amsfonts,stmaryrd}
 \usepackage{graphicx}
 \usepackage[usenames,dvipsnames]{color}
@@ -46,29 +47,47 @@ and also design experiments that can now be largely automated
 with a gain in both the quantification and the reliability of the observations, at both the single cell and cell population levels.
 
 Machine learning is revolutionizing the statistical methods in biological data analytics,
-data classification and clustering, and predictions making.
-However, learning dynamical models from temporal data is more challenging.
+data classification and clustering, and prediction making.
+However, learning dynamical models from data time-series is more challenging.
 There has been early work on the use of machine learning techniques, such as inductive
- logic programming~\cite{Muggleton95ngc} combined with active learning in the vision of the ``robot scientist''
-to infer gene functions~\cite{BMOKRK01etai},
+ logic programming~\cite{Muggleton95ngc} combined with active learning in the vision of the ``robot scientist''~\cite{BMOKRK01etai},
+to infer gene functions,
 metabolic pathway descriptions~\cite{AM02etai,AM02slps}
 or gene influence systems~\cite{BCRG04jtb},
 or to revise a reaction model with respect to CTL properties~\cite{CCFS06tcsb}.
 Since a few years, progress in this field can be measured on public benchmarks
 of the ``Dream Challenge'' competition~\cite{Meyer14bmc}.
+Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide efficient tools such as CLASP~\cite{GKNS07lpnmr}
+to implement learning algorithms for Boolean models.
+They have been applied in~\cite{GSTUV08iclp} to the detection of  inconsistencies in large biological networks,
+and have been subsequentially applied to the inference of gene networks from gene expression data and to the design of discriminant experiments \cite{VKASSSG15frontiers}.
+Furthermore, ASP has been combined with CTL model-checking in~\cite{OPSSG16biosystems} to learn mammalian signalling networks from time series data,
+and identify erroneous time-points in the data.
 
-In this paper, we consider the Probably Approximately Correct Learning framework introduced by Leslie Valiant~\cite{Valiant84cacm} in 1984,
-and present its use as a method for the automated discovery of boolean influence models of biochemical processes from Boolean traces. 
+Budgeted learning extends active learning with a notion of cost for the calls to the oracle.
+The original motivation for the budgeted learning protocol came from medical applications in which the outcome of a treatment,
+drug trial, or control group is known, and the results of running medical tests are each available for a price~\cite{DZBSM13ml}.
+In this context, multi-armed bandit methods~\cite{DBSSZ07icdm} provide the best strategies.
+In~\cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for experiment design in dynamical system identification.
+
+In this paper, we consider the Probably Approximately Correct (PAC) Learning 
+framework of Leslie Valiant~\cite{Valiant84cacm},
+and investigate its use as a method for the automated discovery of Boolean influence models of biochemical processes from Boolean traces. 
 To the best of our knowledge, 
-the application of PAC learning to biological system modeling has not been reported before.
-We show that Thomas gene regulatory networks can be naturally represented by k-CNF formulae
-and learned from Boolean traces with a quasi linear number of Boolean transition samples using Valiant's algorithm for k-CNF formulae.
+the application of PAC learning to Boolean models of biological systems has not been reported before.
+
+We show that Thomas gene regulatory networks \cite{Thomas91jtb,Thomas73jtb} can be naturally represented by k-CNF formulae
+and learned from Boolean transition samples with a quasi linear number of Boolean transition samples, using Valiant's PAC learning algorithm for k-CNF formulae.
 We also show that Boolean influence systems with their positive Boolean semantics discussed in \cite{FMRS16cmsb}
-can be naturally represented by monotone DNF formulae and actively learned with a quasi linear number of calls to a (biological experiment) oracle
-using the active learning algorithm of Valiant for monotone DNF formulae.
-These results are illustrated in the following with a simple running example and evaluated on...
-We conclude on the merits of this framework, and on its limits to scale up 
-and to be usable in the future for real experiment design in a wet lab context.
+can be naturally represented by monotone DNF formulae.
+Valiant's PAC active learning algorithm for monotone DNF formulae makes it possible in theory 
+to learn a Boolean influence model from a set of positive examples and a set of calls to an oracle for the Boolean transitions.
+However, ...
+
+These results are illustrated in the following with a Boolean influence model of the lymphocyte T as running example.
+They are further evaluated on... of size ...
+We conclude on the merits of this framework, but also on its limits to scale up,
+and to be usable in the context of a wet lab context for real biological experiment design.
 
 
 \section{Preliminaries on PAC Learning}\label{pac}
@@ -94,7 +113,7 @@ Let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
 	assigns a Boolean value to each vector.
 \end{itemize}
 
-The idea behind PAC learning protocol is to discover a hidden boolean function $F$ while restricting itself to the two following operations~:
+The idea behind PAC learning protocol is to discover a hidden Boolean function $F$ while restricting itself to the two following operations~:
 \begin{itemize}
   \item
 \textsc{Sample}$()$~: that calls for positive examples, i.e.~vectors $v$ such that $F(v)=1$, given with some probability distribution $D(v)$,
@@ -104,7 +123,7 @@ The idea behind PAC learning protocol is to discover a hidden boolean function $
 
 
 \begin{definition}[Learnable class~\cite{Valiant84cacm}]
-   A class $\cal M$ of \emph{boolean functions} is said to be \emph{learnable}
+   A class $\cal M$ of \emph{Boolean functions} is said to be \emph{learnable}
    if there exists an algorithm $\cal A$ such that:
    \begin{itemize}
       \item $\cal A$ runs in polynomial time in $n$ -- the dimension of the models to learn -- and $h$ the precision parameter.
@@ -181,7 +200,7 @@ can be applied to the
 learnability of two different classes of Boolean models commonly used in
 Systems Biology. First, we describe how PAC-learning applies to the
 logical models \emph{\`a la} Thomas, describing gene regulatory networks in a
-\emph{functional} way. Then we extend this approach to the positive Boolean semantics of influence systems, described in~\cite{FMRS16cmsb}.
+\emph{functional} way. Then we extend this approach to the positive Boolean semantics of influence systems, as described in~\cite{FMRS16cmsb}.
 
 In both cases, we will assume, in this Section, that we do have perfect
 \textsc{Sample} and \textsc{Oracle} functions.
@@ -189,11 +208,11 @@ In both cases, we will assume, in this Section, that we do have perfect
 \subsection{$k$-CNF Models of Thomas's Networks}
 
 This Boolean framework perfectly fits the Boolean semantics of Thomas's gene
-regulatory networks~\cite{GK73jtb,Thomas73jtb,TA90book}.
+regulatory networks~\cite{Thomas73jtb}.
 
 \begin{definition}
    A \emph{Thomas} network is defined by a set of genes $\{x_1,\dots,x_n\}$
-   and $n$ boolean functions $\{f_1,\dots,f_n\}$ describing for each gene its
+   and $n$ Boolean functions $\{f_1,\dots,f_n\}$ describing for each gene its
    possible next state, given the current state.
 \end{definition}
 
@@ -252,7 +271,7 @@ and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
   Indeed in that formalism, given a network of $n$ genes $x_1,\ldots,x_n$, and
   an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp.\ ${x_k}_-$):
   ${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation)
-  boolean function of $x_k$, as the disjunction of the conditions (the above
+  Boolean function of $x_k$, as the disjunction of the conditions (the above
   big conjunction) of all positive (resp.\ negative) influences on $x_k$.
 
   % These Boolean functions are best represented by Boolean concepts in PAC terminology
@@ -270,7 +289,7 @@ and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
 \section{PAC Learning from Boolean Traces}
 
 In order to make use of this learning algorithm on real data, a first step is
-to assume that we do not have full access to the hidden boolean function for
+to assume that we do not have full access to the hidden Boolean function for
 \textsc{Sample} and \textsc{Oracle}, but to restrict ourselves to the observations that can be obtained from data time-series,
 and more precisely in this Section from Boolean activation traces.
 
@@ -295,7 +314,7 @@ witnesses (i.e., positive examples) of a positive or negative influence.
 \begin{figure}[htbp]
 	\verbatiminput{examples/bool-lokta.res}
 	\vspace{-1em}
-	\caption{Results of PAC-learning on traces of the boolean\label{bool-LV.res}}
+	\caption{Results of PAC-learning on traces of the Boolean\label{bool-LV.res}}
 \end{figure}
 
 \subsection{Comparison with previous section}
@@ -303,7 +322,7 @@ witnesses (i.e., positive examples) of a positive or negative influence.
 \section{PAC Learning from Stochastic Traces}
 
 In order to push our experiments even further, we shall now produce the trace
-data, not directly from a boolean model, but from more realistic simulations.
+data, not directly from a Boolean model, but from more realistic simulations.
 
 For the sake of evaluating the learning algorithm,
 we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation.
@@ -398,27 +417,11 @@ This strategy is essentially similar to what the biologists do to elucidate the 
 in a qualitative manner.
 
 
-\section{Related Work}
-
-Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide particularly efficient tools such as CLASP~\cite{GKNS07lpnmr} to develop learning algorithms for Boolean models.
-They were applied in~\cite{GSTUV08iclp} to detect inconsistencies in large biological networks,
-and have been subsequentially applied to the inference of gene networks from gene expression data and design expmeriments \cite{VKASSSG15frontiers}.
-Interestingly, ASP has been combined with CTL model-checking in~\cite{OPSSG16biosystems} to learn mammalian signalling networks from time series data,
-and identify erroneous time-points in the data, a possibility not considered in the previous presentation of PAC learning.
-
-
-Budgeted learning extends active learning with a notion of cost for the calls to the oracle.
-The original motivation for the budgeted learning protocol came from medical applications in which the outcome of a treatment,
-drug trial, or control group is known, and the results of running medical tests are each available for a price~\cite{DZBSM13ml}.
-In this context, multi-armed bandit methods~\cite{DBSSZ07icdm} provide the best strategies.
-In~\cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for experiment design in dynamical system identification.
-These approaches are directly relevant to biological experiment design and modelling. %and are now part of the DREAM challenge ~\cite{Meyer14bmc}.
-
-More work is needed however to compare these approaches and develop common benchmarks.
-
-
 \section{Conclusion and perspectives}
-\wip{}
+
+what we have done
+
+what is missing: comparison to ASP on common benchmark, comparison to budgeted learning, applicability to real biological experiment design.
 
 \bibliographystyle{splncs03}
 \bibliography{contraintes}
