@@ -33,14 +33,21 @@ Ecole Normale Sup\'erieure, Paris, France\\
 \maketitle
 
 \begin{abstract}
-
-   \wip{TODO}
-
+Automating the process of model building from experimental data 
+is a very desirable goal to palliate the lack of modellers for many application.
+Despite the spectacular progress of machine learning techniques in data analytics, classification and clustering,
+learning dynamical models from data time-series is still quite challenging.
+In this paper we investigate the use of the Probably Approximately Correct (PAC) learning 
+framework of Leslie Valiant as a method for the automated discovery of Boolean influence models of biochemical processes from Boolean traces. 
+We show that Thomas's Boolean influence systems can be naturally represented by k-CNF formulae
+from Boolean transition samples with a quasi linear number of Boolean transition samples,
+and that positive Boolean influence systems can be represented by monotone DNF formulae.
+We evaluate PAC learning algorithms in this context and conclude on its merits and limits with respect to experiment design.
 \end{abstract}
 
 \section{Introduction}
 
-Biological modeling is still an art which is currently limited in its applications by the number of available modelers
+Modeling biological systems is still an art which is currently limited in its applications by the number of available modelers.
 Automating the process of model building is thus a very desirable goal
 to attack new applications, develop patient-tailored therapeutics,
 and also design experiments that can now be largely automated
@@ -76,8 +83,9 @@ and investigate its use as a method for the automated discovery of Boolean influ
 To the best of our knowledge, 
 the application of PAC learning to Boolean models of biological systems has not been reported before.
 
-We show that Thomas gene regulatory networks \cite{Thomas91jtb,Thomas73jtb} can be naturally represented by k-CNF formulae
-and learned from Boolean transition samples with a quasi linear number of Boolean transition samples, using Valiant's PAC learning algorithm for k-CNF formulae.
+We show that Thomas's gene regulatory networks \cite{Thomas91jtb,Thomas73jtb} can be naturally represented by 
+Boolean formulae in conjunctive normal forms with a bounded number of litterals (i.e.~k-CNF formulae),
+and can be learned from Boolean transition samples with a quasi linear number of Boolean transition samples, using Valiant's PAC learning algorithm for k-CNF formulae.
 We also show that Boolean influence systems with their positive Boolean semantics discussed in \cite{FMRS16cmsb}
 can be naturally represented by monotone DNF formulae.
 Valiant's PAC active learning algorithm for monotone DNF formulae makes it possible in theory 
@@ -86,6 +94,8 @@ However, ...
 
 These results are illustrated in the following with a Boolean influence model of the lymphocyte T as running example.
 They are further evaluated on... of size ...
+We evaluate the PAC learning protocols first without prior knowledge, and then with knowledge of the unsigned or signed influence graph without Boolean functions.
+
 We conclude on the merits of this framework, but also on its limits to scale up,
 and to be usable in the context of a wet lab context for real biological experiment design.
 
