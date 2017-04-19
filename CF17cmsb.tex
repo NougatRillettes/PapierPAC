@@ -6,7 +6,8 @@
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage{verbatim}
-\usepackage{algorithm}
+%\usepackage{algorithm}
+\usepackage{float}
 
 \newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 \newcommand{\francois}[1]{\textcolor{blue}{#1}}
@@ -14,6 +15,10 @@
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
 \newcommand{\lra}{\longrightarrow}
+
+\floatstyle{ruled}
+\newfloat{algorithm}{h}{algfig}
+\floatname{algorithm}{Algorithm}
 
 \begin{document}
 
@@ -166,9 +171,7 @@ First, for any $k$, the class of $k$-CNF formulae on $n$ variables is learnable 
 algorithm that uses $L(h,{(2 n)}^{k+1})$ examples and no oracle.
 \end{theorem}
 
-The algorithm used in the proof proceeds as follows
-
-\begin{algorithm}\label{algCNF}
+\begin{algorithm}
 \begin{enumerate}
   \item Initialize $g$ to the conjunction of all possible disjunctions of at most $k$ literals (there are $O(n^k)$ such disjunctions),
 \item Call $L(h,(2n)^{k+1})$ positive examples $v$, and for each $v$~:
@@ -177,9 +180,10 @@ The algorithm used in the proof proceeds as follows
 \end{itemize}
 
 \end{enumerate}
+\caption{Algorithm for the PAC-learning of $k$-CNF formulae.\label{algCNF}}
 \end{algorithm}
 
-In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
+Algorithm \ref{algCNF} is used in the proof by Valiant. In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
 leads to the learning of a minimal  generalization of the positive examples.
 
 
@@ -189,9 +193,9 @@ leads to the learning of a minimal  generalization of the positive examples.
     \wip{where $d$ is the largest number of prime implicants in an equivalent prime DNF formula}~\cite{Valiant84cacm}.
 \end{theorem}
 
-The proof is based on the following
+Proof of this theorem relies on algorithm \ref{algDNF}. As previously, the algorithm guarantees that a minimal generalization is learned, up to the approximations previously defined.
 
-\begin{algorithm}\label{algDNF}
+\begin{algorithm}
 \begin{enumerate}
 \item Initialize $g$ with constant zero,
 \item
@@ -202,6 +206,7 @@ Do $L(h,d)$ calls to positive examples $v$, and for each $v$,
 	are essential to $f$ which is determined by $d n$ calls to the oracle.
 \end{itemize}
 \end{enumerate}
+\caption{Algorithm for the PAC-learning of monotone DNF formulae.\label{algDNF}}
 \end{algorithm}
 
 \section{PAC Learning Gene regulatory Networks}
