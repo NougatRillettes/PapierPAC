@@ -139,6 +139,7 @@ The idea behind PAC learning protocol is to discover a hidden Boolean function $
 
 
 \begin{definition}[Learnable class~\cite{Valiant84cacm}]
+	\label{def:learnclass}
    A class $\cal M$ of \emph{Boolean functions} is said to be \emph{learnable}
    if there exists an algorithm $\cal A$ such that:
    \begin{itemize}
@@ -284,11 +285,6 @@ such that ${\vec x}\models \bigwedge_{p\in P_i}$
 and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
 \end{definition}
 
-  Indeed in that formalism, given a network of $n$ genes $x_1,\ldots,x_n$, and
-  an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp.\ ${x_k}_-$):
-  ${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation)
-  Boolean function of $x_k$, as the disjunction of the conditions (the above
-  big conjunction) of all positive (resp.\ negative) influences on $x_k$.
 
   % These Boolean functions are best represented by Boolean concepts in PAC terminology
   % in order to make explicit the independent genes.
@@ -301,13 +297,12 @@ and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
 % \sylvain{interesting but out of place}
 
 
+\section{In practice application of PAC-learning of $k$-CNF}
 
-\section{PAC Learning from Boolean Traces}
 
 In order to make use of this learning algorithm on real data, a first step is
 to assume that we do not have full access to the hidden Boolean function for
-\textsc{Sample} and \textsc{Oracle}, but to restrict ourselves to the observations that can be obtained from data time-series,
-and more precisely in this Section from Boolean activation traces.
+\textsc{Sample} and \textsc{Oracle}, but to restrict ourselves to the observations that can be obtained from data time-series.
 
 This has two major consequences: the first one is that we lose oracles
 completely. We will discuss in Section~\ref{sec:oracles} how to recover them
@@ -317,25 +312,68 @@ algorithm for DNF formulae is not available to us any longer.
 
 The other consequence is that instead of a pure sampling of the state-space to
 obtain examples, we will restrict ourselves to samples obtained by traces.
-Notably, in the traces we will focus on changes between successive states as
-witnesses (i.e., positive examples) of a positive or negative influence.
+From now on, we can hence no longer pretend to recover à la Thomas networks but we will instead focus on finding the activation and deactivation functions for each genes, which are defined below.
 
-\subsection{Example}
+\begin{definition}
+ 	Given a network of $n$ genes $x_1,\ldots,x_n$, and
+ 	an integer $1 \leq k \leq n$ we can define ${x_k}_+$ (resp.\ ${x_k}_-$):
+ 	${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation)
+ 	Boolean function of $x_k$. In a given state $v$, ${x_k}_+(v)$ (resp.\ ${x_k}_-$(v)) is worth 1 if and only if the gene $x_k$ can be activated (resp. deactivated) from state $v$.
+\end{definition}
 
-\begin{figure}[htbp]
+To this end, we consider that a positive example for an (resp. de-)activation function is simply a state from which the direct next step was the (resp. de-)activation of the gene.
+
+
+
+\subsection{PAC Learning from Boolean Traces}
+
+A first experimentation was to simulate boolean traces for a given influence network, and use them as a basis to learn. A toy example is given in figure \ref{bool-LV} (influence network) and the correspondign results are presented in figures \ref{bool-LV.res} and \ref{bool-LV.res.pretty}
+
+Output is to be read as follow:\\
+\texttt{Foo+:~[['A','Z'],~['!E'],~['!Foo']]} means that the activation (\texttt{+}) function of B is $(A \vee Z)\wedge\neg E$. Remark that to be activated, Foo obviously needed to be deactivated first.
+
+\subsubsection{Results}
+
+\begin{figure}[htp]
 	\verbatiminput{examples/bool-lokta.reac}
 	\vspace{-1em}
-	\caption{An influence system describing the Lokta-Voltera prey vs. predator model. Numbers in parenthesis indicate the propensity of a reaction\label{bool-LV}}
+	\caption{An influence system describing the Lokta-Voltera prey vs. predator model. Numbers in parenthesis indicate the force of an influence. \label{bool-LV}}
 \end{figure}
-\begin{figure}[htbp]
+\begin{figure}[htp]
 	\verbatiminput{examples/bool-lokta.res}
 	\vspace{-1em}
-	\caption{Results of PAC-learning on traces of the Boolean\label{bool-LV.res}}
+	\caption{Results of PAC-learning on traces of the Boolean simulation of the Lokta-Voltera toy example.\label{bool-LV.res}}
 \end{figure}
+\begin{figure}[htp]
+	\ttfamily
+	Predator+: $False$
+	
+	Predator-: Predator $\wedge$ (no Prey)
+	
+	Prey+: $False$
+	
+	Prey-: Predator $\wedge$ Prey
+	\rmfamily
+	\caption{Prettified results of PAC-learning on traces of the Boolean simulation of the Lokta-Voltera toy example.\label{bool-LV.res.pretty}}
+\end{figure}
+\pagebreak
+The results can be interpreted as follow:
 
-\subsection{Comparison with previous section}
+Both the predator and the prey species cannot appear. It is important to note that the activation functions in the Lokta Voltera models means the apparition on extinction of the species as a whole and not of individuals of it.
 
-\section{PAC Learning from Stochastic Traces}
+For the predator to disappear, it is necessary that there is predator in the first place and that there is no prey. If the first part of this conjunction is obviously true, the second is false: strictly speaking, predators may disappear even if there is prey left, yet this case is very unlikely: the most likely case is that the predator will go extinct only once there are no more preys left for it to eat. This is a good example of how the learning is only approximate.
+
+Finally, for the prey to go extinct, there must be both prey in the first place and predator to eat it. This is true.
+
+\subsubsection{On the quantification of the approximation}
+
+As it can be seen even on this very simple example, the "approximately" in "probably approximately correct" is not there for nothing. Yet, as explained in definition \ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
+
+Even though we were not able to write it down exactly, it is our conjecture that in the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
+
+
+
+\subsection{PAC Learning from Stochastic Traces}
 
 In order to push our experiments even further, we shall now produce the trace
 data, not directly from a Boolean model, but from more realistic simulations.
@@ -343,53 +381,48 @@ data, not directly from a Boolean model, but from more realistic simulations.
 For the sake of evaluating the learning algorithm,
 we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation.
 This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as traces in ${\{0,1\}}^n$.
-\francois{Ce sera un point sur lequel revenir en discussion, a priori ca serait mieux d'apprendre la discretisation}
 
-Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
-
-Our implementation of the PAC-learning algorithm represents the lattice of $k$-clauses ordered by implication, thus allowing:
-\begin{itemize}
-	\item $O(1)$ access to any $k$-clause
-	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
-\end{itemize}
+%Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
 
 
-\subsection{Results and comments}
+We ran two example reactions, given in figures~\ref{test}, and \ref{preypred}.
 
-We ran three example reactions, given in figures~\ref{test},~\ref{preypred}, and~\ref{lympho}.
 \begin{figure}[htbp]
 	\verbatiminput{examples/test.reac}
 	\vspace{-1em}
-	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C.\label{test}}
+	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution.\label{test}}
 \end{figure}
 \begin{figure}[htbp]
 	\verbatiminput{examples/lokta.reac}
 	\vspace{-1em}
-	\caption{A Prey-Predator model. Only predators die of old age.\label{preypred}}
-\end{figure}
-\begin{figure}[htbp]
-	\verbatiminput{examples/lympho-bool.reac}
-	\vspace{-1em}
-   \caption{The Th lymphocyte differentiation model of~\cite{RRMTC06tcsb}.\label{lympho}}
+	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in figure \ref{bool-LV}.\label{preypred}}
 \end{figure}
 
 The first example gave perfect results, as indicated on figure~\ref{test_res}.
-
-Output is to be read as follow:\\
-\texttt{Foo+:~[['A','Z'],~['!E'],~['!Foo']]} means that the activation (\texttt{+}) function of B is $(A \vee Z)\wedge\neg E$. Remark that to be activated, Foo obviously needed to be deactivated first.
-
-The second one (figure~\ref{preypred_res}) displays two typical error: because there more than 1 prey, in the Gillespie algorithm, the eating of a prey is way more likely than the death of old age of a predator, hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the Gillespie algorithm to believe that the absence of prey is needed for extinction.
-
-Finally the third one (figure~\ref{lympho_res}) gives very rough results and honesty forces us to admit that empiric tweaking of the model has been done to get results that were not too bad.
-
 \begin{figure}
 	\verbatiminput{examples/test.result}
 	\caption{Results for the test example\label{test_res}}
 \end{figure}
+
+As previously, the prey-predator example (figure~\ref{preypred_res}) displays a typical error: because there is more than 1 prey, in the Gillespie algorithm, eating of a prey by a predator is way more likely than the death of old age of a predator, and hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the learning algorithm to believe that the absence of prey is needed for extinction.
 \begin{figure}
 	\verbatiminput{examples/lokta.result}
 	\caption{Results for the Prey-Predator model\label{preypred_res}}
 \end{figure}
+\subsection{PAC learning with hints}
+All the systems proposed so far were of humble size. An actual influence system of bigger dimensions is the one that governs the differentiation of the lymphocyte T, as described by R\'{e}mi, Ruet and Thieffry\cite{RRMTC06tcsb}. Its description is given figure \ref{lympho} (page \pageref{lympho}).
+
+\begin{figure}[htbp]
+	\verbatiminput{examples/lympho-bool.reac}
+	\vspace{-1em}
+	\caption{The Th lymphocyte differentiation model of~\cite{RRMTC06tcsb}.\label{lympho}}
+\end{figure}
+However, results of learning on the traces resulting from the boolean simulation of this system gave very poor results (figure \ref{lympho_res}). Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
+
+\wip{explain hints}
+
+After supplying hints indicated in figure \ref{hints}, the results (figure \ref{hints.res}) are \wip{good}.
+	
 \begin{figure}
 	\verbatiminput{examples/lympho_edited.result}
 	\caption{Results for lymphocite model, edited. Lines with MISS are one on which the algorithm is too far. The tautological negation (\texttt{!A} for \texttt{A+}) have also been deleted.\label{lympho_res}}
@@ -403,9 +436,16 @@ However, when given hints on the possible relations, as indicated in figure \ref
 \end{figure}
 \begin{figure}
 	\verbatiminput{examples/lympho-bool.res}
-	\caption{Results for lymphocite model, with hints.\label{res_hints}}
+	\caption{Results for lymphocite model, with hints.\label{hints.res}}
 \end{figure}
 
+\subsection{Notes on the implementation}
+
+Our implementation of the PAC-learning algorithm represents the lattice of $k$-clauses ordered by implication, thus allowing:
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause
+	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
+\end{itemize}
 \section{Active Learning of Positive Influence Systems}
 \label{sec:oracles}
 
