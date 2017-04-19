@@ -129,12 +129,13 @@ Let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
 	assigns a Boolean value to each vector.
 \end{itemize}
 
-The idea behind PAC learning protocol is to discover a hidden Boolean function $F$ while restricting itself to the two following operations~:
+The idea behind the PAC learning protocol is to discover a hidden Boolean function $F$ while restricting oneself to the two following operations~:
 \begin{itemize}
   \item
-\textsc{Sample}$()$~: that calls for positive examples, i.e.~vectors $v$ such that $F(v)=1$, given with some probability distribution $D(v)$,
+\textsc{Sample}$()$~: which returns a positive example, i.e.~a vector $v$ such that $F(v)=1$. 
+The output of \textsc{Sample}$()$ follow a given probability distribution $D(v)$, which will be later used to measure the approximation of the result.
   \item
-\textsc{Oracle}$(x)$~: that calls an oracle on some input $v$ to obtain the value of $F(v)$
+\textsc{Oracle}$(x)$~: which calls an oracle on some input $v$ to obtain the value of $F(v)$
 \end{itemize}
 
 
@@ -145,7 +146,7 @@ The idea behind PAC learning protocol is to discover a hidden Boolean function $
    \begin{itemize}
       \item $\cal A$ runs in polynomial time in $n$ -- the dimension of the models to learn -- and $h$ the precision parameter.
       \item
-         For all functions $F$ in $\cal M$, and all distributions $D$ of positive examples,
+         For all functions $F$ in $\cal M$, and all distributions $D$ on the positive examples outputted by \textsc{Sample}$()$,
          $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ in $\cal M$ such that
          \begin{itemize}
             \item $G(v)=1$ implies $F(v)=1$ (no false positives)
