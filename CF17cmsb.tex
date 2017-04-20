@@ -45,6 +45,7 @@ learning dynamical models from data time-series is challenging.
 In this paper we investigate the use of the Probably Approximately Correct (PAC) learning 
 framework of Leslie Valiant as a method for the automated discovery of Boolean influence models of biochemical processes from Boolean traces. 
 We show that Thomas's Boolean influence systems can be naturally represented by k-CNF formulae
+and learned
 from Boolean transition samples with a quasi linear number of Boolean transition samples,
 and that positive Boolean influence systems can be represented by monotone DNF formulae.
 We evaluate PAC learning algorithms in this context on Boolean models of T-lymphocyte and MAPK signalling,
@@ -53,13 +54,13 @@ and discuss the merits of this framework and its limitations with respect to rea
 
 \section{Introduction}
 
-Modeling biological systems is still an art which is currently limited in its applications by the number of available modelers.
+Modelling biological systems is still an art which is currently limited in its applications by the number of available modellers.
 Automating the process of model building is thus a very desirable goal
 to attack new applications, develop patient-tailored therapeutics,
 and also design experiments that can now be largely automated
-with a gain in both the quantification and the reliability of the observations, at both the single cell and cell population levels.
+with a gain in both the quantification and the reliability of the observations, at both the single cell and population levels.
 
-Machine learning is revolutionizing the statistical methods in biological data analytics,
+Machine learning is revolutionising the statistical methods in biological data analytics,
 data classification and clustering, and prediction making.
 However, learning dynamical models from data time-series is more challenging.
 There has been early work on the use of machine learning techniques, such as inductive
@@ -102,6 +103,8 @@ These results are illustrated in the following with a Boolean influence model of
 They are further evaluated on... of size ...
 We evaluate the PAC learning protocols first without prior knowledge, and then with knowledge of the unsigned or signed influence graph without Boolean functions.
 
+\sylvain{will be completed when we know what is in the article or not}
+
 We conclude on the merits of this framework, but also on its limits to scale up,
 and to be usable in the context of a wet lab context for real biological experiment design.
 
@@ -110,7 +113,7 @@ and to be usable in the context of a wet lab context for real biological experim
 
 In his seminal paper on a theory of the learnable~\cite{Valiant84cacm},
 Valiant questioned what can be learned from a computational viewpoint,
-and introduced the concept of probably approximate correct (PAC) learning,
+and introduced the concept of probably approximately correct (PAC) learning,
 together with a general-purpose polynomial-time learning protocol.
 Beyond the learning algorithms that one can derive with this methodology,
 Valiant's theory of the learnable has profound implications
@@ -151,7 +154,8 @@ The output of \textsc{Sample}$()$ follow a given probability distribution $D(v)$
          \begin{itemize}
             \item $G(v)=1$ implies $F(v)=1$ (no false positives)
             \item
-               $\sum_{v\ s.t.\ F(v)=1\wedge G(v)=0} D(v) < h^{-1}$ (false negative have a low probability to be sampled)
+               $\displaystyle\sum_{v\ s.t.\ F(v)=1\wedge G(v)=0} D(v) < h^{-1}$ (false
+               negatives have a low probability to be sampled)
          \end{itemize}
    \end{itemize}
 \end{definition}
@@ -169,13 +173,13 @@ Interestingly, this function is quasi-linear in $h$ and $S$, i.e.~for all
 integers $S\ge 1$ and reals $h>1$, $L(h,S) \le 2h(S+\log_e h)$~\cite{Valiant84cacm},.
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
-First, for any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
+For any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
 algorithm that uses $L(h,{(2 n)}^{k+1})$ examples and no oracle.
 \end{theorem}
 
 \begin{algorithm}
 \begin{enumerate}
-  \item Initialize $g$ to the conjunction of all possible disjunctions of at most $k$ literals (there are $O(n^k)$ such disjunctions),
+  \item Initialise $g$ to the conjunction of all possible disjunctions of at most $k$ literals (there are $O(n^k)$ such disjunctions),
 \item Call $L(h,(2n)^{k+1})$ positive examples $v$, and for each $v$~:
 \begin{itemize}
 \item Delete all the disjunctions in $g$ that do not contain a literal true in $v$.	
@@ -185,31 +189,41 @@ algorithm that uses $L(h,{(2 n)}^{k+1})$ examples and no oracle.
 \caption{Algorithm for the PAC-learning of $k$-CNF formulae.\label{algCNF}}
 \end{algorithm}
 
-Algorithm \ref{algCNF} is used in the proof by Valiant. In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
+Alg.~\ref{algCNF} is used in the proof by Valiant. In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible disjunctions
 leads to the learning of a minimal  generalization of the positive examples.
 
+\sylvain{well, it has nothing to do with minimality\dots}
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
-    Second, the class of monotone DNF formulae n $n$ variables is also learnable with an
+    The class of monotone DNF formulae on $n$ variables is also learnable with an
     algorithm that uses $L(h,d)$ examples and $d n$ calls to the oracle,
-    \wip{where $d$ is the largest number of prime implicants in an equivalent prime DNF formula}~\cite{Valiant84cacm}.
+    where $d$ is the \emph{degree} of the function to learn~\cite{Valiant84cacm}.
 \end{theorem}
 
-Proof of this theorem relies on algorithm \ref{algDNF}. As previously, the algorithm guarantees that a minimal generalization is learned, up to the approximations previously defined.
+The \emph{degree} of a Boolean formula is the largest number of prime
+implicants in an equivalent formula that is written as a non-redundant sum of
+prime-implicants.
+
+Proof of this theorem relies on Alg.~\ref{algDNF}. As previously, the algorithm guarantees that a minimal generalization is learned, up to the approximations previously defined.
 
 \begin{algorithm}
 \begin{enumerate}
-\item Initialize $g$ with constant zero,
+\item Initialise $g$ with constant zero,
 \item
 Do $L(h,d)$ calls to positive examples $v$, and for each $v$,
 \begin{itemize}
 	\item 
-	If $g$ is not implied by $v$, add the conjunction of determined literals that
-	are essential to $f$ which is determined by $d n$ calls to the oracle.
+	If $g$ is not implied by $v$, add $m$ to $g$, where $m$ is the conjunction
+   of literals determined in $v$ that are essential to $f$ (the function being
+   learned).
 \end{itemize}
 \end{enumerate}
 \caption{Algorithm for the PAC-learning of monotone DNF formulae.\label{algDNF}}
 \end{algorithm}
+
+Note that the complexity is a consequence that each $m$ is a prime implicant
+of $f$ by construction and that it is constructed by at most $n$ calls to the
+oracle.
 
 \section{PAC Learning Gene regulatory Networks}
 
@@ -220,7 +234,7 @@ Systems Biology. First, we describe how PAC-learning applies to the
 logical models \emph{\`a la} Thomas, describing gene regulatory networks in a
 \emph{functional} way. Then we extend this approach to the positive Boolean semantics of influence systems, as described in~\cite{FMRS16cmsb}.
 
-In both cases, we will assume, in this Section, that we do have perfect
+In both cases, we will assume in this Section as in Valiant's seminal work, that we do have perfect
 \textsc{Sample} and \textsc{Oracle} functions.
 
 \subsection{$k$-CNF Models of Thomas's Networks}
@@ -234,22 +248,24 @@ regulatory networks~\cite{Thomas73jtb}.
    possible next state, given the current state.
 \end{definition}
 
-%Without loss of generality we will assume that the fuctions $f_i$ are given in
-%CNF\@.
-
-
 $k$-CNF formulae can be used to represent such gene regulatory network functions with some reasonable restrictions on their connectivity.
 In particular, it is worth noticing that in Thomas networks of degree bounded by $k$,
 each gene has at most $k$ regulators, each gene activation function $f_i$ thus depends of at most $k$ variables
 and can certainly be represented by a $k$-CNF formula.
 
-In this case, the algorithm \ref{algCNF} is repeated $n$ times in order to learn each of the $f_i$.
+In this case, the Alg.~\ref{algCNF} is repeated $n$ times in order to learn each of the $f_i$.
 
 \begin{example}
-   Running example?
+   \sylvain{I will add some introductory text here to present the example}
+   The actual code of this model is displayed in Fig.~\ref{lympho}.
+\begin{figure}[htbp]
+	\verbatiminput{examples/lympho-bool.reac}
+	\caption{The Th lymphocyte differentiation model of~\cite{RRMTC06tcsb}.\label{lympho}}
+\end{figure}
 \end{example}
 
-
+\sylvain{what should be here are the results of the ``true'' sample/oracle
+based learning on the example}
 
 \subsection{Monotone DNF Models of Influence Systems}
 
@@ -286,17 +302,8 @@ such that ${\vec x}\models \bigwedge_{p\in P_i}$
 and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
 \end{definition}
 
-
-  % These Boolean functions are best represented by Boolean concepts in PAC terminology
-  % in order to make explicit the independent genes.
-  % Then, the problem of building such a Boolean model is to give for each gene
-  % two Boolean activation and deactivation functions that are compatible with the observed temporal data of gene activation.
-% It is worth noticing that the PAC learning protocol makes it possible to learn such Boolean models of gene regulation
-% not only from a given finite set of positive gene activation observations,
-% but also from new biological experiments designed by the PAC learning algorithm itself.
-
-% \sylvain{interesting but out of place}
-
+\sylvain{TODO: add a paragraph explaining how this fits into DNF for
+PAC-learning}
 
 \section{In practice application of PAC-learning of $k$-CNF}
 
@@ -313,7 +320,10 @@ algorithm for DNF formulae is not available to us any longer.
 
 The other consequence is that instead of a pure sampling of the state-space to
 obtain examples, we will restrict ourselves to samples obtained by traces.
-From now on, we can hence no longer pretend to recover à la Thomas networks but we will instead focus on finding the activation and deactivation functions for each genes, which are defined below.
+From now on, we can hence no longer pretend to recover {\`a} la Thomas networks but we will instead focus on finding the activation and deactivation functions for each genes, which are defined below.
+
+\sylvain{this explanation of why we choose activation/deactivation does not
+convince me}
 
 \begin{definition}
  	Given a network of $n$ genes $x_1,\ldots,x_n$, and
@@ -324,6 +334,7 @@ From now on, we can hence no longer pretend to recover à la Thomas networks but
 
 To this end, we consider that a positive example for an (resp. de-)activation function is simply a state from which the direct next step was the (resp. de-)activation of the gene.
 
+\sylvain{This is the main topic! It should be more than 2 lines long}
 
 
 \subsection{PAC Learning from Boolean Traces}
@@ -413,11 +424,6 @@ As previously, the prey-predator example (figure~\ref{preypred_res}) displays a 
 \subsection{PAC learning with hints}
 All the systems proposed so far were of humble size. An actual influence system of bigger dimensions is the one that governs the differentiation of the lymphocyte T, as described by R\'{e}mi, Ruet and Thieffry\cite{RRMTC06tcsb}. Its description is given figure \ref{lympho} (page \pageref{lympho}).
 
-\begin{figure}[htbp]
-	\verbatiminput{examples/lympho-bool.reac}
-	\vspace{-1em}
-	\caption{The Th lymphocyte differentiation model of~\cite{RRMTC06tcsb}.\label{lympho}}
-\end{figure}
 However, results of learning on the traces resulting from the boolean simulation of this system gave very poor results (figure \ref{lympho_res}). Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
 \wip{explain hints}
@@ -429,7 +435,8 @@ After supplying hints indicated in figure \ref{hints}, the results (figure \ref{
 	\caption{Results for lymphocite model, edited. Lines with MISS are one on which the algorithm is too far. The tautological negation (\texttt{!A} for \texttt{A+}) have also been deleted.\label{lympho_res}}
 \end{figure}
 
-However, when given hints on the possible relations, as indicated in figure \ref{hints}, results (given figure~\ref{res_hints}) are correct.
+However, when given hints on the possible relations, as indicated in
+Fig.~\ref{hints}, results (given Fig.~\ref{res_hints}) are correct.
 
 \begin{figure}
 	\verbatiminput{examples/lympho.hints}
