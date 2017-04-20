@@ -1,0 +1,128 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+
+%\usepackage{multicol}
+
+\title{PAC learning for gene networks}
+\date{20 Apr. 2017}
+\author{Arthur \textsc{Carcano}\inst{1} \and François \textsc{Fages}\inst{2} \and Sylvain \textsc{Soliman}\inst{2}}
+\institute{\inst{1}\'{E}cole Normale Supérieure %
+	\and \inst{2}Inria, Lifeware group}
+
+\usetheme[block=fill,progressbar=frametitle,sectionpage=simple]{metropolis}
+
+\usepackage{color}
+\usepackage{subcaption}
+\usepackage{adjustbox}
+\usepackage{algpseudocode}
+
+\usepackage{verbatim}
+
+\newcommand{\transition}{\vspace{1em}\flushright \itshape}
+\newcommand{\ok}{\textcolor{blue}{\checkmark}}
+\newcommand{\nope}{\textcolor{red}{$\times$}}
+\newcommand{\B}{\mathbb{B}}
+\begin{document}
+	
+	\frame{
+		\titlepage
+	}
+	
+	\frame{
+		\frametitle{Outline of the talk}
+	\tableofcontents
+}
+
+\section{What PAC learning is about}
+\subsection{First intuition}
+\begin{frame}{First intuition}
+\begin{itemize}
+	\item There is a function $F$
+	\begin{itemize}
+		\item Input: $n$ boolean
+		\item Output: one boolean
+	\end{itemize}
+	\item We want to recover $F$
+	\item We can:
+	\begin{itemize}
+		\item Get \textbf{Positive examples} (values for which $F$ is true): \textbf{cheap} (sample)
+		\item \textbf{Evaluate} $F$ on some input: \textbf{expensive} (oracle)
+	\end{itemize}
+\end{itemize}	
+\transition Can we get $F$ back ?
+\end{frame}
+\begin{frame}{Saving private $F$}
+	\begin{itemize}
+		\item In general, we cannot get $F$ back without $2^n$ calls to the oracle
+		\item But with \textbf{approximation} and \textbf{restriction} on $F$ we can.	
+	\end{itemize}
+\end{frame}
+
+\subsection{A bit of math}
+\begin{frame}{A bit of math}
+	From now on we fix $n \in \mathbb{N}$.
+	\begin{block}{Vector}
+	An element $v$ of $\mathbb{B}^n = \{0,1\}^n$
+	\vspace{1em}
+	
+	$\sim$ A possible assignment for $n$ boolean variables
+	\end{block}
+\begin{block}{Boolean function}
+	$F : \mathbb{B}^n \longrightarrow \mathbb{B}$
+\end{block}
+\end{frame}
+\begin{frame}{Learnable classes}
+\begin{block}{Learnable class}
+		Set of boolean functions s.t.:
+		\vspace{1em}
+		
+		$\exists$ An algorithm that runs in time polynomial in $n$ and $h$, that only calls \textsc{Sample} and \textsc{Oracle}
+		\vspace{1em} and outputs $G$
+		
+		\begin{itemize}
+			\item $G(v) = 1 \Rightarrow F(v) = 1$ (no false positive)
+			\item Probability of sampling a false negative ($F(v) = 1, G(v)=0$) is less than $h^{-1}$.
+		\end{itemize}
+\end{block}
+\end{frame}
+\begin{frame}{Two classes of interest}
+Two learnable class on which we focus
+\begin{enumerate}
+	\item Monotone DNF (with no negation)
+	\item $k$-CNF (clauses of at most $k$ terms)
+\end{enumerate}
+\end{frame}
+\subsection{Intuition of the link with biology}
+\begin{frame}{Link with biology (intuition)}
+	\begin{itemize}
+		\item A gene is activated or not (boolean)
+		\item There is $n$ genes  (vector)
+		\item The (de)activation of a gene depends on the state (activated or not) of the others (boolean function)
+	\end{itemize}
+\centering
+\slshape
+Can we learn these (de)activation functions ?
+\end{frame}
+\section{Monotone DNF}
+\subsection{Valiant's result}
+\begin{frame}{Monotone DNF}
+	\begin{block}{Monotone DNF}
+		\begin{description}
+			\item[DNF] Disjunction of Conjunctions
+			\item[Monotone] No negative terms
+		\end{description}
+	\end{block}
+\begin{block}{Learnability of monotone DNFs}
+	Monotone DNF are learnable with calls to \textsc{Oracle} and \textsc{Sample}
+\end{block}
+\transition What does it mean from the biologist PoV ?
+\end{frame}
+\subsection{Biology vs PAC learning}
+\begin{frame}{Biology vs PAC learning : \textit{sampling} (1/2)}
+
+\end{frame}
+
+\end{document}

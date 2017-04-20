@@ -118,3 +118,4 @@ ENV/
 *.out
 *.synctex.gz
 *.nav
+PresSeminar/beamer.pdf
