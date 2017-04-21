@@ -1,0 +1,26 @@
+Nouveau plan
+
+1) Introduction
+
+2) Preliminaries on PAC learning
+
+3) Boolean functions in biology
+ simple presentation of the formalism for biology that use boolean function
+ 3.1) Thomas networks
+ 3.2) Influence system, whether CNF or DNF
+
+4) Plausible experimental setup
+	4.1) Explanation on the traces
+	4.2) Oracle is impossible
+	4.3) Thomas network are unadapted
+
+5) In silico application
+	5.1) Boolean traces
+	5.2) STochastic traces
+	5.3) Hints
+	5.4) Notes on implementation
+
+6) Active learning of possitive...
+
+7) Conclusion
+	
