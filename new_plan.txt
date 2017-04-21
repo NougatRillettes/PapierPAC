@@ -6,17 +6,17 @@ Nouveau plan
 
 3) Boolean functions in biology
  simple presentation of the formalism for biology that use boolean function
- 3.1) Thomas networks
- 3.2) Influence system, whether CNF or DNF
+ 3.1) Influence system, DNF
+ 3.2) Influence system, CNF 
+ 3.3) Thomas networks
 
 4) Plausible experimental setup
 	4.1) Explanation on the traces
-	4.2) Oracle is impossible
-	4.3) Thomas network are unadapted
+	4.2) Implications for PAC learning
 
 5) In silico application
 	5.1) Boolean traces
-	5.2) STochastic traces
+	5.2) Stochastic traces
 	5.3) Hints
 	5.4) Notes on implementation
 
