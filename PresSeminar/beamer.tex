@@ -34,11 +34,22 @@
 	
 	\frame{
 		\frametitle{Outline of the talk}
+		\scriptsize
 	\tableofcontents
 }
 
 \section{What PAC learning is about}
 \subsection{First intuition}
+\begin{frame}{History}
+\textit{Probably Approximately Correct learning}
+
+
+	Introduced by Leslie Valiant in 1984.
+	
+	\centering
+	\textit{A theory of the Learnable, Leslie G \textsc{Valiant},\\
+ 	Communications of the ACM, 1984}
+\end{frame}
 \begin{frame}{First intuition}
 \begin{itemize}
 	\item There is a function $F$
@@ -81,10 +92,11 @@
 		\vspace{1em}
 		
 		$\exists$ An algorithm that runs in time polynomial in $n$ and $h$, that only calls \textsc{Sample} and \textsc{Oracle}
-		\vspace{1em} and outputs $G$
+		\vspace{1em} and outputs $G$ 
 		
+		with probability $\geq 1 - h^{-1}$, 
 		\begin{itemize}
-			\item $G(v) = 1 \Rightarrow F(v) = 1$ (no false positive)
+			\item $\forall v, G(v) = 1 \Rightarrow F(v) = 1$ (no false positive)
 			\item Probability of sampling a false negative ($F(v) = 1, G(v)=0$) is less than $h^{-1}$.
 		\end{itemize}
 \end{block}
@@ -163,4 +175,85 @@ To evaluate an (de)activation function we need
 And do this an \textbf{infinite number of times} (so that if we didn't see a transition, it is because it can only happen with probability 0)
 \end{frame}
 \section{$k$-CNF}
+\subsection{Theory}
+\begin{frame}{Pros and cons}
+\begin{block}{Pros}
+ Use only \textsc{Sample}: realistic
+\end{block}
+\begin{block}{Cons}
+ Only $k$ terms in a clause
+ \vspace{1em}
+ 
+ Biology: "Only $k$ different species can fulfill a given role"
+\end{block}
+\end{frame}
+\begin{frame}{Algorithm}
+	\begin{itemize}
+		\item Start with the conjunction of all $k$-disjunctions (super restrictive)
+		\item Take $L$ samples , $L$ is given by Valiant, it is $O(n(h+\log n))$
+		\item For each of this sample, remove all the clauses that are false		
+	\end{itemize}
+
+Leads to the most general CNF possible
+\end{frame}
+\subsection{Results}
+\begin{frame}{A small example}
+	\begin{figure}[htbp]
+		\verbatiminput{../examples/lokta.reac}
+		\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. \label{preypred}}
+	\end{figure}
+\end{frame}
+\begin{frame}{But interesting results}
+	\begin{figure}
+		\footnotesize{
+		\verbatiminput{../examples/lokta.result}}
+		\caption{Results for the Prey-Predator model\label{preypred_res}}
+	\end{figure}
+\end{frame}
+\begin{frame}{Bigger example}
+\centering
+		\hspace{-3ex}\includegraphics[height=0.9\textheight]{th_net}
+\end{frame}
+\begin{frame}[fragile=singleslide]{Bad results}
+\footnotesize
+		\begin{verbatim}
+	IL4- : [['!SOCS1'], ['!TBet', '!GATA3']]
+	TBet- : [['!GATA3']]
+	STAT4+ : [['!GATA3'], ['IL12R']]
+	STAT4- : [['!TBet', 'IFNg'], ['!TBet', '!GATA3']]
+	GATA3+ : [['!TBet'], ['STAT6']]
+	GATA3- : [['!TBet']]
+	STAT1+ : [['IFNgR'], ['!TBet', '!GATA3']]
+	STAT1- : [['!TBet', '!GATA3']]
+	IFNgR+ : [['IFNg'], ['!SOCS1'], ['!TBet', '!GATA3']]
+	IFNgR- : [['!TBet', '!GATA3']]
+	SOCS1- : [['!TBet', '!GATA3']]
+	IL4R+ : [['IL4'], ['!SOCS1'], ['!TBet', '!GATA3']]
+	IL4R- : [['!TBet', '!GATA3']]
+	IL12R+ : [['IL12'], ['!STAT6'], ['!TBet', '!GATA3']]
+	STAT6+ : [['IL4R'], ['!TBet', '!GATA3']]
+	STAT6- : [['!TBet']]
+	\end{verbatim}
+\end{frame}
+\subsection{Hints}
+\begin{frame}{Hints}
+	Algorithm can be modified to take hints:
+	\begin{itemize}
+		\item Restrict possible influences to only some species
+		\item Input from a priori knowledge
+	\end{itemize}
+\end{frame}
+\begin{frame}{Hints (2)}
+	With complete hints, results are perfect. (not shown because too big)
+\end{frame}
+\begin{frame}{Conclusion}
+\begin{itemize}
+	\item Existing framework from '84
+	\item Promising for learning of boolean gene networks
+	\item Can take into account previous knowledge of the system
+\end{itemize}
+
+\centering
+\textit{Thank you ! Questions ?}
+\end{frame}
 \end{document}
