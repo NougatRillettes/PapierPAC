@@ -225,21 +225,68 @@ Note that the complexity is a consequence that each $m$ is a prime implicant
 of $f$ by construction and that it is constructed by at most $n$ calls to the
 oracle.
 
-\section{PAC Learning Gene regulatory Networks}
+\section{Boolean functions in biology}
 
-We will now investigate how PAC-learning, and the existing PAC learning algorithms for Boolean formulae,
-can be applied to the
-learnability of two different classes of Boolean models commonly used in
-Systems Biology. First, we describe how PAC-learning applies to the
-logical models \emph{\`a la} Thomas, describing gene regulatory networks in a
-\emph{functional} way. Then we extend this approach to the positive Boolean semantics of influence systems, as described in~\cite{FMRS16cmsb}.
+In this section, we will present three boolean formalisms used in biology, and to which we will later whether or not PAC learning is applicable.
 
-In both cases, we will assume in this Section as in Valiant's seminal work, that we do have perfect
-\textsc{Sample} and \textsc{Oracle} functions.
 
+\subsection{Monotone DNF Models of Influence Systems}
+
+Influence systems with forces have been introduced in \cite{FMRS16cmsb} 
+to provide influence systems \emph{\`a la} Thomas with a hierarchy of semantics
+including the differential, stochastic, Petri Net and Boolean semantics.
+The approximation and abstraction relationships that link those different interpretations of a same influence system,
+lead us to consider the positive semantics of influence systems,
+which do contain positive and negative influences but no influence inhibitors, i.e.~no negation in the conditions
+for applying the influence in the Boolean semantics \cite{FMRS16cmsb}.
+In this section we restrict ourselves to the positive semantics of influence systems
+and syntactically to influence systems without inhibitors.
+
+
+
+\begin{definition}
+	
+	An \emph{influence system} (without inhibitor) $I$ on a set of variables $S=\{x_1,\dots,x_n\}$ is a
+	finite set of quadruples $(P, t, \sigma, f)$, called \emph{influences}, where
+	$P\subset S$ is called the set of \emph{positive sources} of the influence,
+	%   $N\subset S$ \emph{negative sources}, 
+	$t\in S$ is the \emph{target} of the influence,
+	$\sigma\in\{+,-\}$ is its \emph{sign positive or negative}, and $f$ is a
+	real-valued mathematical function $P\to\mathbb{R^+}$, called the
+	\emph{force} of the influence.
+	
+\end{definition}
+
+\begin{definition}[Positive Boolean Semantics]
+	The positive Boolean semantics of an influence system $\{(P_i, t_i, \sigma_i, f_i)\}_{i\in I}$
+	over a set $S$ of $n$ variables,
+	is the Boolean transition system $\lra$ defined over Boolean state vectors in $\mathbb{B}^n$
+	by
+	${\vec x}\lra{\vec x'}$ if there exists an influence $(P_i, t_i, \sigma_i, f_i)$
+	such that ${\vec x}\models \bigwedge_{p\in P_i}$
+	and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
+\end{definition}
+
+\sylvain{TODO: add a paragraph explaining how this fits into DNF for
+	PAC-learning}
+
+\subsection{$k$-CNF representations of influence systems}
+
+If one wishes to deal with influence systems containing inhibitors, the monotone DNF representation is no longer a fit.
+
+Instead, one may switch to the $k$-CNF representation of the systems, which constrains not the presence of inhibitors but the number of species that can play a given "role". To be more precise, let's consider the following CNF for a hypothetic influence:
+
+\[
+\left(a \vee b \vee c\right) \bigwedge
+\left(d \vee e\right) \bigwedge 
+\neg f
+\]
+
+Then each of the clause can be interpreted as a role, and for the activation of our hypothetic gene, we need at least one specie that plays this role. For example, the enzyme can be $a$, $b$, or $c$ whereas 
+the reactant is $d$ or $e$, and we need that $f$ be inactive.
 \subsection{$k$-CNF Models of Thomas's Networks}
 
-This Boolean framework perfectly fits the Boolean semantics of Thomas's gene
+Finally, Valiant's framework perfectly fits the Boolean semantics of Thomas's gene
 regulatory networks~\cite{Thomas73jtb}.
 
 \begin{definition}
@@ -267,50 +314,15 @@ In this case, the Alg.~\ref{algCNF} is repeated $n$ times in order to learn each
 \sylvain{what should be here are the results of the ``true'' sample/oracle
 based learning on the example}
 
-\subsection{Monotone DNF Models of Influence Systems}
 
-Influence systems with forces have been introduced in \cite{FMRS16cmsb} 
-to provide influence systems \emph{\`a la} Thomas with a hierarchy of semantics
-including the differential, stochastic, Petri Net and Boolean semantics.
-The approximation and abstraction relationships that link those different interpretations of a same influence system,
-lead us to consider the positive semantics of influence systems,
-which do contain positive and negative influences but no influence inhibitors, i.e.~no negation in the conditions
-for applying the influence in the Boolean semantics \cite{FMRS16cmsb}.
-In this section we restrict ourselves to the positive semantics of influence systems
-and syntactically to influence systems without inhibitors.
+\section{Plausible experimental setup}
 
-\begin{definition}
+To further discuss the applicability of PAC learning to actual experiments, we hereby introduce what we believe is a plausible experimental setup, and discuss its implications on the learning of different classes of functions.
 
-   An \emph{influence system} (without inhibitor) $I$ on a set of variables $S=\{x_1,\dots,x_n\}$ is a
-   finite set of quadruples $(P, t, \sigma, f)$, called \emph{influences}, where
-   $P\subset S$ is called the set of \emph{positive sources} of the influence,
-%   $N\subset S$ \emph{negative sources}, 
-$t\in S$ is the \emph{target} of the influence,
-   $\sigma\in\{+,-\}$ is its \emph{sign positive or negative}, and $f$ is a
-   real-valued mathematical function $P\to\mathbb{R^+}$, called the
-   \emph{force} of the influence.
+\subsection{Steps and traces}
 
-\end{definition}
-
-\begin{definition}[Positive Boolean Semantics]
-The positive Boolean semantics of an influence system $\{(P_i, t_i, \sigma_i, f_i)\}_{i\in I}$
-over a set $S$ of $n$ variables,
-is the Boolean transition system $\lra$ defined over Boolean state vectors in $\mathbb{B}^n$
-by
-${\vec x}\lra{\vec x'}$ if there exists an influence $(P_i, t_i, \sigma_i, f_i)$
-such that ${\vec x}\models \bigwedge_{p\in P_i}$
-and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
-\end{definition}
-
-\sylvain{TODO: add a paragraph explaining how this fits into DNF for
-PAC-learning}
-
-\section{In practice application of PAC-learning of $k$-CNF}
-
-
-In order to make use of this learning algorithm on real data, a first step is
-to assume that we do not have full access to the hidden Boolean function for
-\textsc{Sample} and \textsc{Oracle}, but to restrict ourselves to the observations that can be obtained from data time-series.
+From now on, we do not assume anymore that we have full access to the hidden Boolean function for
+\textsc{Sample} and \textsc{Oracle}, but we restrict ourselves to the observations that can be obtained from data time-series.
 
 This has two major consequences: the first one is that we lose oracles
 completely. We will discuss in Section~\ref{sec:oracles} how to recover them
@@ -336,7 +348,7 @@ To this end, we consider that a positive example for an (resp. de-)activation fu
 
 \sylvain{This is the main topic! It should be more than 2 lines long}
 
-
+\section{In sillico application}
 \subsection{PAC Learning from Boolean Traces}
 
 A first experimentation was to simulate boolean traces for a given influence network, and use them as a basis to learn. A toy example is given in figure \ref{bool-LV} (influence network) and the correspondign results are presented in figures \ref{bool-LV.res} and \ref{bool-LV.res.pretty}
