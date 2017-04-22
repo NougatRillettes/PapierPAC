@@ -52,12 +52,12 @@
 \end{frame}
 \begin{frame}{First intuition}
 \begin{itemize}
-	\item There is a function $F$
+	\item There is a blackbox function $F$
 	\begin{itemize}
 		\item Input: $n$ boolean
 		\item Output: one boolean
 	\end{itemize}
-	\item We want to recover $F$
+	\item We want to find an expression of $F$
 	\item We can:
 	\begin{itemize}
 		\item Get \textbf{Positive examples} (values for which $F$ is true): \textbf{cheap} (sample)
@@ -101,13 +101,6 @@
 		\end{itemize}
 \end{block}
 \end{frame}
-\begin{frame}{Two classes of interest}
-Two learnable class on which we focus
-\begin{enumerate}
-	\item Monotone DNF (with no negation)
-	\item $k$-CNF (clauses of at most $k$ terms)
-\end{enumerate}
-\end{frame}
 \subsection{Intuition of the link with biology}
 \begin{frame}{Link with biology (intuition)}
 	\begin{itemize}
@@ -118,6 +111,13 @@ Two learnable class on which we focus
 \centering
 \slshape
 Can we learn these (de)activation functions ?
+\end{frame}
+\begin{frame}{Two classes of interest}
+Two learnable class on which we focus
+\begin{enumerate}
+	\item Monotone DNF (with no negation)
+	\item $k$-CNF (clauses of at most $k$ terms)
+\end{enumerate}
 \end{frame}
 \section{Monotone DNF}
 \subsection{Valiant's result}

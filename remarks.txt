@@ -20,3 +20,8 @@
 - Le système de hints n'est pas expliqué
 
 - L'implémentation doit être détaillée
+
+- Vérifier 2n^k+1 dans Th. 1
+
+- Rappeller implication limite sur k
+
