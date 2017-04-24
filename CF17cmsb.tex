@@ -308,8 +308,17 @@ Positive influence systems may hence be represented as $n$ activation and $n$ de
 
 The natural representation for (de)activation function and influences being the DNF one, and because we are here focusing on \textbf{positive} influence systems, monotone DNF seems like the perfect fit to represent positive influence system and study the applicability of PAC learning algorithms to it.
 
-For Ex.~\ref{ex:LVi} we would have as DNF formula representing the activation
-of \texttt{A}, $A^-=A \wedge B$.
+\begin{example}
+
+For Ex.~\ref{ex:LVi} we would have as DNF formulae:
+\begin{eqnarray*}
+   A^+&=&(A)\\
+   A^-&=&(A \wedge B)\\
+   B^+&=&(A\wedge B)\\
+   B^-&=&(B)
+\end{eqnarray*}
+
+\end{example}
 
 \subsection{$k$-CNF Representation of Influence Systems}
 
@@ -331,7 +340,13 @@ the reactant is $d$ or $e$, and we need that $f$ be inactive.
    Though the Lotka--Volterra example Ex.~\ref{ex:LVi} does not contain
    inhibitors, we can still translate to a CNF representation. It is easy to
    notice that $k=1$ is enough since there is only one positive and one
-   negative influence for each target, e.g., $A^- = A\wedge B$
+   negative influence for each target.
+\begin{eqnarray*}
+   A^+&=&(A)\\
+A^-&=&(A) \wedge (B)\\
+B^+&=&(A)\wedge (B)\\
+   B^-&=&(B)
+\end{eqnarray*}
 
 \end{example}
 
@@ -377,7 +392,11 @@ deux égales à 0, i.e. on reste sur place)}
 \begin{example}
    We can apply the above translation to our Lotka--Volterra example of
    Ex.~\ref{ex:LVi}. We obtain:
-   \[f_A = A \wedge\neg B\]
+   \begin{eqnarray*}
+   f_A &=& A \wedge\neg B\\
+   f_B &=& A \wedge B
+   \end{eqnarray*}
+
 \end{example}
 
 \section{Plausible experimental setup}
