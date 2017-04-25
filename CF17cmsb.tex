@@ -22,9 +22,16 @@
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
 \newcommand{\lra}{\longrightarrow}
 
+\floatstyle{boxed}
+\newfloat{listfig}{htb}{lstfig}
+\floatname{listfig}{Listing}
+
 \floatstyle{ruled}
-\newfloat{algorithm}{h}{algfig}
+\newfloat{algorithm}{htpb}{algfig}
 \floatname{algorithm}{Algorithm}
+
+
+
 
 \begin{document}
 
@@ -570,40 +577,23 @@ we have to content ourself with an imperfect oracle.
 %\section{In sillico application}
 \section{PAC Learning from Boolean Traces}
 
-\francois{do not use figures for code}
+A first experimentation was to simulate boolean traces for a given influence network, and use them as a basis to learn. A toy example is given in listing \ref{bool-LV} (influence network) and the corresponding results are presented in listing \ref{bool-LV.res}.
 
-\francois{please pretty print [[]] with /\ \/ }
-
-A first experimentation was to simulate boolean traces for a given influence network, and use them as a basis to learn. A toy example is given in figure \ref{bool-LV} (influence network) and the correspondign results are presented in figures \ref{bool-LV.res} and \ref{bool-LV.res.pretty}
-
-Output is to be read as follow:\\
-\texttt{Foo+:~[['A','Z'],~['!E'],~['!Foo']]} means that the activation (\texttt{+}) function of B is $(A \vee Z)\wedge\neg E$. Remark that to be activated, Foo obviously needed to be deactivated first.
+In output \texttt{!A} means $\neg A"$ or "not A".
 
 \subsubsection{Results}
 
-\begin{figure}[htp]
+\begin{listfig}[htp]
 	\verbatiminput{examples/bool-lokta.reac}
 	\vspace{-1em}
 	\caption{An influence system describing the Lokta-Voltera prey vs. predator model. Numbers in parenthesis indicate the force of an influence. \label{bool-LV}}
-\end{figure}
-\begin{figure}[htp]
+\end{listfig}
+\begin{listfig}[htp]
 	\verbatiminput{examples/bool-lokta.res}
 	\vspace{-1em}
 	\caption{Results of PAC-learning on traces of the Boolean simulation of the Lokta-Voltera toy example.\label{bool-LV.res}}
-\end{figure}
-\begin{figure}[htp]
-	\ttfamily
-	Predator+: $False$
-	
-	Predator-: Predator $\wedge$ (no Prey)
-	
-	Prey+: $False$
-	
-	Prey-: Predator $\wedge$ Prey
-	\rmfamily
-	\caption{Prettified results of PAC-learning on traces of the Boolean simulation of the Lokta-Voltera toy example.\label{bool-LV.res.pretty}}
-\end{figure}
-\pagebreak
+\end{listfig}
+
 The results can be interpreted as follow:
 
 Both the predator and the prey species cannot appear. It is important to note that the activation functions in the Lokta Voltera models means the apparition on extinction of the species as a whole and not of individuals of it.
@@ -629,33 +619,31 @@ For the sake of evaluating the learning algorithm,
 we simulate wet lab experiments \emph{in silico}, using Gillespie's algorithm for stochastic simulation.
 This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as traces in ${\{0,1\}}^n$.
 
-%Our simulator uses a custom language to specify experiments and allows us to set the amount of each species before the experiment is run. The number of run is given by Valiant's bound on the number of sampling calls.
-
-
-We ran two example reactions, given in figures~\ref{test}, and \ref{preypred}.
-
-\begin{figure}[htbp]
+\begin{listfig}[hp]
 	\verbatiminput{examples/test.reac}
 	\vspace{-1em}
 	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution.\label{test}}
-\end{figure}
-\begin{figure}[htbp]
+\end{listfig}
+\begin{listfig}[hp]
+	\verbatiminput{examples/test.result}
+	\caption{Results for the test example\label{test_res}}
+\end{listfig}
+
+
+We ran two example reactions, given in listings~\ref{test}, and \ref{preypred}. As indicated in listing~\ref{test_res}, the first example gave perfect results.
+
+\begin{listfig}[hp]
 	\verbatiminput{examples/lokta.reac}
 	\vspace{-1em}
 	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in figure \ref{bool-LV}.\label{preypred}}
-\end{figure}
-
-The first example gave perfect results, as indicated on figure~\ref{test_res}.
-\begin{figure}
-	\verbatiminput{examples/test.result}
-	\caption{Results for the test example\label{test_res}}
-\end{figure}
-
-As previously, the prey-predator example (figure~\ref{preypred_res}) displays a typical error: because there is more than 1 prey, in the Gillespie algorithm, eating of a prey by a predator is way more likely than the death of old age of a predator, and hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the learning algorithm to believe that the absence of prey is needed for extinction.
-\begin{figure}
+\end{listfig}
+\begin{listfig}[hp]
 	\verbatiminput{examples/lokta.result}
 	\caption{Results for the Prey-Predator model\label{preypred_res}}
-\end{figure}
+\end{listfig}
+
+As previously, the prey-predator example (listing~\ref{preypred_res}) displays a typical error: because there is more than 1 prey, in the Gillespie algorithm, eating of a prey by a predator is way more likely than the death of old age of a predator, and hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the learning algorithm to believe that the absence of prey is needed for extinction.
+
 
 \section{PAC Learning with Prior Knowledge}
 
@@ -680,20 +668,15 @@ T-helper lymphocytes~\cite{RRMTC06tcsb}.
    \end{figure}
 
    Fig.~\ref{fig:lympho} shows the influence graph of the model. The
-   corresponding code is:
-   \verbatiminput{examples/lympho-bool.reac}
+   corresponding code is given in appendix (listing~\ref{bool-lympho}, page~\pageref{bool-lympho}):
 \end{example}
 
-However, results of learning on the traces resulting from the boolean simulation of this system gave very poor results (figure \ref{lympho_res}). Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
+However, results of learning on the traces resulting from the boolean simulation of this system gave very poor results. By this, we mean not that they were bad at predicting the behavior of the model (because guarantees on this come directly from Valiant's work) but that they were hardly readable and of little help to the human experimenter. Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
 \wip{explain hints}
 
 After supplying hints indicated in figure \ref{hints}, the results (figure \ref{hints.res}) are \wip{good}.
 	
-\begin{figure}
-	\verbatiminput{examples/lympho_edited.result}
-	\caption{Results for lymphocite model, edited. Lines with MISS are one on which the algorithm is too far. The tautological negation (\texttt{!A} for \texttt{A+}) have also been deleted.\label{lympho_res}}
-\end{figure}
 
 However, when given hints on the possible relations, as indicated in
 Fig.~\ref{hints}, results (given Fig.~\ref{res_hints}) are correct.
@@ -758,5 +741,11 @@ and to investigate the applicability to real experiments with particular biologi
 
 \bibliographystyle{splncs03}
 \bibliography{contraintes}
+
+\section*{Appendix}
+\begin{listfig}[H]
+\verbatiminput{examples/lympho-bool.reac}
+\caption{Code for the lymphocyte differentiation of example~\ref{ex:lympho}.\label{bool-lympho}}
+\end{listfig}
 
 \end{document}

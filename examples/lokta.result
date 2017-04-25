@@ -1,4 +1,4 @@
-Predator+ : [['Predator'], ['!Predator'], ['Prey'], ['!Prey']]
-Predator- : [['Predator'], ['!Prey']]
-Prey+ : [['Predator'], ['!Predator'], ['Prey'], ['!Prey']]
-Prey- : [['Predator'], ['Prey']]
+Predator+ : False
+Predator- : Predator /\ !Prey
+Prey+ : False
+Prey- : Predator /\ Prey
