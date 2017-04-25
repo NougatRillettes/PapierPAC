@@ -6,6 +6,12 @@
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage{verbatim}
+\usepackage{listings}
+\lstset{
+   basicstyle=\ttfamily, %\scriptsize\ttfamily,
+%   frame=single,
+   breaklines=true,
+}
 %\usepackage{algorithm}
 \usepackage{float}
 
@@ -78,7 +84,8 @@ and have been subsequentially applied to the inference of gene networks from gen
 Furthermore, ASP has been combined with CTL model-checking in~\cite{OPSSG16biosystems} to learn mammalian signalling networks from time series data,
 and identify erroneous time-points in the data.
 
-Budgeted learning extends active learning with a notion of cost for the calls to the oracle.
+Active learning extends machine learning with the possibility to call oracles, e.g.~make experiments,
+and budgeted learning adds costs to the calls to the oracle.
 The original motivation for the budgeted learning protocol came from medical applications in which the outcome of a treatment,
 drug trial, or control group is known, and the results of running medical tests are each available for a price~\cite{DZBSM13ml}.
 In this context, multi-armed bandit methods~\cite{DBSSZ07icdm} currently provide the best strategies.
@@ -119,7 +126,7 @@ and to be usable in the context of a wet lab context for real biological experim
 
 \section{Preliminaries on PAC Learning}\label{pac}
 
-\subsection{Definitions}
+\subsection{PAC Learning Protocol}
 
 \francois{Ouh la on ne peut pas changer les definitions de Valiant comme ca sans explliquer,
 il faut reprendre la terminologie de Valiant vecteurs dans {0,1,*} vecteurs totaux etc.}
@@ -170,15 +177,15 @@ The computational complexity of the PAC learning algorithms for these classes of
 $L(h,S)$ defined as the smallest integer $i$ such that
 in $i$ independent Bernoulli trials, each with probability at least $h^{-1}$ of success, the probability of having fewer than $S$ successes is less than $h^{-1}$.
 Interestingly, this function is quasi-linear in $h$ and $S$, i.e.~for all
-integers $S\ge 1$ and reals $h>1$, we have $L(h,S) \le 2h(S+\log_e h)$~\cite{Valiant84cacm},.
+integers $S\ge 1$ and reals $h>1$, we have $L(h,S) \le 2h(S+\log_e h)$~\cite{Valiant84cacm}.
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
 For any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
 algorithm that uses $L(h,{(2 n)}^{k+1})$ examples and no oracle.
 \end{theorem}
 
-The proof is constructive and relies on Alg.~\ref{algCNF} below. In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible \emph{clauses} (i.e.~disjunctions of litterals).
-leads to the learning of a minimalist  generalization of the positive examples (leading to probably no false positive and low probability of false negatives).
+The proof is constructive and relies on Alg.~\ref{algCNF} below. In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible \emph{clauses} (i.e.~disjunctions of litterals)
+leads to the learning of a minimalist  generalization of the positive examples with mainly no false positive and low probability of false negatives.
 
 \begin{algorithm}
 \begin{enumerate}
@@ -191,13 +198,6 @@ leads to the learning of a minimalist  generalization of the positive examples (
 \end{enumerate}
 \caption{PAC-learning of $k$-CNF formulae.\label{algCNF}}
 \end{algorithm}
-
-\subsubsection{Implementation}
-Our implementation of the PAC-learning algorithm represents the lattice of $k$-clauses ordered by implication, thus allowing:
-\begin{itemize}
-	\item $O(1)$ access to any $k$-clause
-	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that implies $a$
-\end{itemize}
 
 
 Let the \emph{degree} of a Boolean formula be the largest number of prime
@@ -215,54 +215,121 @@ The proof relies on Alg.~\ref{algDNF}. As previously, the algorithm guarantees t
 
 \begin{algorithm}
 \begin{enumerate}
-\item Initialise $g$ with constant zero,
+\item Initialise $g$ with false (constant zero),
 \item
 Do $L(h,d)$ calls to positive examples $v$, and for each $v$,
 \begin{itemize}
 	\item 
-	If $g$ is not implied by $v$, add $m$ to $g$, where $m$ is the conjunction
+	If $g$ is not implied by $v$, add monomial $m$ to $g$, where $m$ is the conjunction
    of literals determined in $v$ that are essential to $f$ (the function being
    learned).
-\item \francois{describe with more details and logical notations as in Valiant 84}
+\item \francois{to describe with more details and logical notations as in Valiant 84}
 \end{itemize}
 \item Output: g
 \end{enumerate}
 \caption{PAC-learning of monotone DNF formulae.\label{algDNF}}
 \end{algorithm}
 
-Note that the complexity is a consequence that each $m$ is a prime implicant
-of $f$ by construction and that it is constructed by at most $n$ calls to the
+The polynomial computational complexity follows from the fact that each monomial $m$ is a prime implicant
+of $f$ by construction, and that it is constructed by at most $n$ calls to the
 oracle.
 
+\subsection{Implementation}
+
+In our implementation of the PAC-learning algorithm for $k$-CNF formulae,
+we make use of the lattice structure of $k$-clauses ordered by implication.
+This data structure allows
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause
+	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that imply $a$
+\end{itemize}
 
 
-\section{Boolean Representations of Influence Systems}
 
-In this section, we present three Boolean formalisms used to model regulatory networks in cell molecular biology.
+\section{Boolean Models of Molecular Regulatory Networks}
+
+In this section, we present four Boolean formalisms used to model regulatory networks in cell molecular biology.
 %and to which we will later whether or not PAC learning is applicable.
-In all of those, we consider the Boolean state of activation of the system, that is a total vector of $\mathbb{B}^n$ that says whether or not the $i$th gene is activated, or the $i$th species present. 
+We assume a finite set of molecular species $\{x_1,\dots,x_n\}$ 
+and consider Boolean states that represent the activation or presence of each molecular species of the system, 
+i.e.~total vectors in $\mathbb{B}^n$ that specify whether or not the $i$th species is present, or the $i$th gene activated.
 
-\subsection{Influence Systems}
+\subsection{Influence Systems with Forces}
+
+\francois{I tried to import our definitions but the stochastic-Boolean semantics used in this paper is a bit different...}
 
 Influence systems with forces have been introduced in~\cite{FMRS16cmsb}
-to provide influence systems \emph{\`a la} Thomas with a hierarchy of semantics
-including the differential, stochastic, Petri Net and Boolean semantics.
-The approximation and abstraction relationships that link those different interpretations of a same influence system,
-lead us to consider the positive semantics of influence systems,
-which do contain positive and negative influences but no influence inhibitors, i.e.~no negation in the conditions
-for applying the influence in the Boolean semantics~\cite{FMRS16cmsb}.
+to generalize the widely used logical models of regulatory networks \emph{\`a la} Thomas~\cite{Thomas73jtb} 
+in order to provide them with a hierarchy of semantics
+including differential, stochastic, Petri Net and Boolean semantics.
 
-\francois{Remonter les definitions generales ici}
+\begin{definition}\cite{FMRS16cmsb}
+An \emph{influence system}
+   $I$ is a set of quintuples $(P, I, t, \sigma, f)$ called \emph{influences},
+   where 
+\begin{itemize}
+\item $P$ is a multiset on $S$, called \emph{positive sources} of the influence, 
+\item $I$ a multiset of \emph{negative sources}, 
+\item $t\in S$ is the \emph{target},
+\item $\sigma\in\{+,-\}$ is the \emph{sign} of the influence, accordingly called either \emph{positive or negative influence},
+\item and $f:\mathbb{R_+}^n\to\mathbb{R}$, called the \emph{force} of the influence,
+is a partially differentiable function, non-negative
+   on $\mathbb{R}_+^n$;
+\item $x_i\in P$ if and only if $\sigma = +$ (resp.\ $-$) and
+   ${\partial {f}}/ {\partial x_i}(\vec x)>0$ (resp.\ $<0$) for some value
+   $\vec x\in\mathbb{R}_+^n$;
+\item $x_i\in I$ if and only if $\sigma = +$ (resp.\ $-$) and
+   ${\partial {f}}/ {\partial x_i}(\vec x)<0$ (resp.\ $>0$) for some value
+  $\vec x\in\mathbb{R}_+^n$;
+\end{itemize}
+\end{definition}
+
+Influences of sign $+$ are called {positive influences} and those of
+sign $-$, {negative influences}.
+In addition, we distinguish the positive sources from the negative sources of an influence (positive or negative),
+in order to annotate the fact that in the differential semantics,
+the source increases or decreases the force of the influence,
+and in the boolean semantics with negation whether the source or the negation of the source
+is a condition for a change in the target.
+
+In the examples below, we use the ASCII syntax of Biocham v4 for influences.
+Positive (resp.~negative) influences are written with an arrow \lstinline|->| (resp.~\lstinline+-<+)
+which separates the sources from the target.
+The positive and negative sources are separated
+by a \lstinline|/|, which can be omitted if there is no negative source.
 
 \begin{example}\label{ex:LVi}
+   The classical birth-death model of Lotka--Volterra can be represented by the following
+influence system between a proliferating prey $A$ and a predator $B$:
+  \lstinputlisting[firstline=8,lastline=11]{examples/LVif.bc}
+   composed of four influences with no negative sources:
+   $(\{A, B\}, \emptyset, A, -, k1*A*B)$, $(\{A, B\}, \emptyset, B, +, k1*A*B)$, $(\{A\}, \emptyset, A, +, k2*A)$ and $(\{B\}, \emptyset, B, -, k3*B)$.
 
-  The classical birth-death process model of Lotka--Volterra can be
-  represented by the following influence system (without inhibitors) between a
-  proliferating prey $A$ and a predator $B$:
-
-   \verbatiminput{examples/LVi.bc}
-
+This example contains both positive and negative influences but no influence inhibitor, i.e.~no negative source in the influences.
+For an example of influence with inhibitor, one can consider the specific inhibition of the proliferation rate of $A$ by some variable $C$
+which is distinguished from a general negative influence of $C$ on $A$, by writing $C$ as an inhibitor of the positive influence of $A$ on $A$:
+   \begin{lstlisting}
+k2*A/(1+C) for A/C -> A.
+   \end{lstlisting}
 \end{example}
+
+While it may seem natural in the Boolean semantics of an influence system to interpret the negative sources by negations
+for the enabling conditions for applying an influence in a given state, 
+the approximation and abstraction relationships that link the different semantics of a given influence system,
+lead us to consider the positive semantics of influence systems which simply ignores the negative sources~\cite{FMRS16cmsb}.
+Here, we adopt the Boolean semantics with negation and consider the particular case of \emph{positive influence systems}
+which may contain positive and negative influences but only positive sources no negative sources.
+
+
+\begin{definition}[Boolean Semantics]
+	The Boolean semantics of an influence system $\{(P_i, t_i, \sigma_i, f_i)\}_{i\in I}$
+	over a set $S$ of $n$ variables,
+	is the Boolean transition system $\lra$ defined over Boolean state total vectors in $\mathbb{B}^n$
+	by
+	${\vec x}\lra{\vec x'}$ if there exists an influence $(P_i, t_i, \sigma_i, f_i)$
+	such that ${\vec x}\models \bigwedge_{p\in P_i}$
+	and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
+\end{definition}
 
 
 \subsection{Monotone DNF Representation of Positive Influence Systems}
@@ -271,6 +338,7 @@ for applying the influence in the Boolean semantics~\cite{FMRS16cmsb}.
 In this section we restrict ourselves to the positive semantics of influence systems
 and syntactically to influence systems without inhibitors, as in Ex.~\ref{ex:LVi}.
 
+\francois{to update}
 
 \begin{definition}
 	
@@ -399,14 +467,16 @@ deux égales à 0, i.e. on reste sur place)}
 
 \end{example}
 
-\section{Plausible experimental setup}
+\section{Experimental Setup}
 
-To further discuss the applicability of PAC learning to actual experiments, we hereby introduce what we believe is a plausible experimental setup, and discuss its implications on the learning of different classes of functions.
+%To further discuss the applicability of PAC learning to actual experiments, we hereby introduce what we believe is a plausible experimental setup, and discuss its implications on the learning of different classes of functions.
 
-\subsection{Steps and traces}
+\subsection{Steps and Traces}
 
-From now on, we do not assume anymore that we have full access to the hidden Boolean function for
-\textsc{Sample} and \textsc{Oracle}, but we restrict ourselves to the observations that can be obtained from data time-series, or traces.
+From now on, we do not assume %anymore 
+that we have full access to the hidden Boolean function for
+\textsc{Sample} and \textsc{Oracle}, but we restrict ourselves to the observations that can be obtained from data time-series, or traces,
+produced either from real biological experiments, or, for the purpose of evaluating the learning method, from simulations.
 
 \begin{figure}[htbp]
 	{\large 
@@ -439,8 +509,8 @@ More specifically, and as illustrated in figure \ref{steps}, we consider that ou
 
 Even though we will finally not require it, we first also consider that our experimental setup enables us to put the system in a given state, i.e.~ that for any $v \in \mathbb{B}^n$ we can set the experiment's initial conditions so that they are correctly abstracted by $v$.
 
-\subsection{Application of PAC learning in this setup}
-Now that our hypothetical experimental setup is described, we will discuss how the two key operations of PAC-learning (\textsc{Sample} and \textsc{Oracle}) can be implemented, if at all, in it.
+\subsection{Application of PAC Learning on Transition Traces}
+%Now that our hypothetical experimental setup is described, we will discuss how the two key operations of PAC-learning (\textsc{Sample} and \textsc{Oracle}) can be implemented, if at all, in it.
 
 Because both influence systems and \textit{\`{a} la Thomas} networks essentially boil down to (de)activation functions we limit ourself to those in the following.
 
@@ -448,20 +518,31 @@ Because both influence systems and \textit{\`{a} la Thomas} networks essentially
 
 We can first remark that sampling of (de)activation function is straightforward in this setting. Referring to figure~\ref{steps}, $(a)$ is a positive example for the activation function ${x_1}^+$, and $(c)$ for ${x_4}^-$.
 
-A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function. Issues \wip{that have not been studied yet} may arise if there is not enough samples to guarantees a good approximation. Our belief is that those issues can be solved by running several traces from different initial states.
+A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function. Issues \wip{that have not been studied yet} may arise if there is not enough samples to guarantee a good approximation. 
+%Our belief is 
+We assume here that those issues can be solved by running several traces from different initial states.
 
 \subsubsection{Oracle}
 The \textsc{Oracle} function needs to evaluate the (de)activation function on a given total vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
 
-The intuitive solution is the following : set the system in the desired state and see whether or not the gene is (de)activated. Unfortunately, different atomic steps are possible from a given state and we have no guarantee that the one we are interested in will happen. Moreover, the current state of Valiant's framework does not allow for the oracle to be probabilistic: we would hence have to run this "state and observe the first atomic step" scheme an infinite number of time to be able to tell that the (de)activation can only happen with probability 0.
+The intuitive solution is the following : set the system in the desired state and see whether or not the gene is (de)activated. 
+However, different atomic steps are possible from a given state and we have no guarantee that the one we are interested in will happen
+in several runs of the experiment. 
 
-A peculiarly fast-thinking reader may also have notice that different (and often infinitely many) states of the system may also be abstracted by the same boolean total vector $v$, and that the transition may also happen from only some of them.
-
-For those reasons, algorithm requiring the \textsc{Oracle} function seem not applicable as of today, and we choose to only focus on $k$-CNF and sampling from now on.
+Moreover, in its simple form presented above, %the current state of 
+Valiant's framework does not allow for the oracle to be probabilistic.
+In practice however, since we cannot run this "state and observe the first atomic step" scheme an infinite number of time to be able to tell that the (de)activation can only happen with probability 0,
+we have to content ourself with an imperfect oracle.
+%A peculiarly fast-thinking reader may also have notice that different (and often infinitely many) states of the system may also be abstracted by the same boolean total vector $v$, and that the transition may also happen from only some of them.
+%For those reasons, algorithm requiring the \textsc{Oracle} function seem not applicable as of today, and we choose to only focus on $k$-CNF and sampling from now on.
 
 
 %\section{In sillico application}
 \section{PAC Learning from Boolean Traces}
+
+\francois{do not use figures for code}
+
+\francois{please pretty print [[]] with /\ \/ }
 
 A first experimentation was to simulate boolean traces for a given influence network, and use them as a basis to learn. A toy example is given in figure \ref{bool-LV} (influence network) and the correspondign results are presented in figures \ref{bool-LV.res} and \ref{bool-LV.res.pretty}
 
@@ -547,6 +628,9 @@ As previously, the prey-predator example (figure~\ref{preypred_res}) displays a 
 \end{figure}
 
 \section{PAC Learning with Prior Knowledge}
+
+\francois{Will be much clearer with some drawing of influence graphs}
+
 \begin{example}
    \sylvain{I will add some introductory text here to present the example}
    The actual code of this model is displayed in Fig.~\ref{lympho}.
@@ -619,15 +703,16 @@ This strategy is essentially similar to what the biologists do to elucidate the 
 in a qualitative manner.
 
 
-\section{Conclusion and perspectives}
+\section{Conclusion}
 
-In conclusion, we have shown that Valiant's work on PAC learning seems to be a promising trail to serve as a way to automatically discover the underlying gene networks of a system, given precise traces of its run.
+In conclusion, we have shown that Valiant's work on PAC learning provides an elegant trail to serve as a way to automatically discover possible regulatory networks of a biological process, given sufficiently precise traces of its run.
+When dimension increases, PAC learning algorithms can also leverage available prior knowledge on the system to deliver results.
+Moreover, the use of oracles for monotone DNF formulae is of interest to create an online learning algorithm
+and is relevant to experimental design.
 
-Moreover, PAC learnign can already efficiently leverage available prior knowledge on the system to deliver results even when dimensions increase.
-
-Finally, the framework for monotone DNF seems to imply some experimental design that may be of interest to create an online learning algorithm.
-
-Yet, our work present no comparison to ASP on common benchmark, nor comparison to budgeted learning, and the we may still lack the needed technology in biology for applicability to real biological experiments.
+More work is needed however to make comparisons on common benchmarks
+with  other approaches already investigated in this context, such as Answer Set Programming (ASP) and budgeted learning,
+and to investigate the applicability to real experiments with particular biological technology.
 
 \bibliographystyle{splncs03}
 \bibliography{contraintes}

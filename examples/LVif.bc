@@ -1,0 +1,9 @@
+present(A).
+present(B).
+
+parameter(k1=2, k2=2, k3=1).
+
+k1*A*B for A,B -< A.
+k1*A*B for A,B -> B.
+k2*A for A->A.
+k3*B for B-<B.
