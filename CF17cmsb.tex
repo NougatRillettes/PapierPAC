@@ -676,22 +676,20 @@ T-helper lymphocytes~\cite{RRMTC06tcsb}.
 
 However, results of learning on the traces resulting from the boolean simulation of this system gave very poor results. By this, we mean not that they were bad at predicting the behavior of the model (because guarantees on this come directly from Valiant's work) but that they were hardly readable and of little help to the human experimenter. Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
-\wip{explain hints}
+What we mean by hints can be formally defined: we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in listing~\ref{hints}. It is remarkable than when given such hints, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences (as indicated in listing\ref{hints.res}).
 
-After supplying hints indicated in figure \ref{hints}, the results (figure \ref{hints.res}) are \wip{good}.
-	
-
-However, when given hints on the possible relations, as indicated in
-Fig.~\ref{hints}, results (given Fig.~\ref{res_hints}) are correct.
-
-\begin{figure}
+\begin{listfig}[htb]
 	\verbatiminput{examples/lympho.hints}
+	\vspace{-1em}
 	\caption{Hints for the lymphocyte model. For each species, a set of possible influencers is given. The PAC algorithm will then learn a model in which only the specified influencers can either induce or inhibit the species.\label{hints}}
-\end{figure}
-\begin{figure}
+\end{listfig}
+
+
+
+\begin{listfig}
 	\verbatiminput{examples/lympho-bool.res}
 	\caption{Results for lymphocite model, with hints.\label{hints.res}}
-\end{figure}
+\end{listfig}
 
 
 \section{Active Learning of Positive Influence Systems}
