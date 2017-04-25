@@ -132,9 +132,30 @@ def applyAlg(i):
         except KeyError:
             pass
         sample(s2,table,k)
-    print("{}{} : {}".format(revIndexer[i//2],
-                    '-' if i%2 else '+',
-                    [[varName(x) for x in c] for c in conjonc(table,n)]))
+    print("{}{} : ".format(revIndexer[i//2], '-' if i%2 else '+'),end='')
+    if not table[0].marked: #Never sampled, hence false
+        print("False")
+        return
+    firstC = True
+    for c in conjonc(table,n):
+        if not firstC:
+            print(" /\ ",end='')
+        firstC = False
+        if len(c) == 1:
+            print(varName(c[0]),end='')
+        else:
+            print('(',end='')
+            firstT = True
+            for t in c:
+                if not firstT:
+                    print(' \/ ',end='')
+                firstT = False
+                print(varName(t),end= '')
+            print(' )',end='')
+    if firstC:
+        print("True",end='')
+    print()
+
 
 for i in range(n):
     applyAlg(2*i)
