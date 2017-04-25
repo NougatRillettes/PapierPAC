@@ -301,7 +301,7 @@ by a \lstinline|/|, which can be omitted if there is no negative source.
 \begin{example}\label{ex:LVi}
    The classical birth-death model of Lotka--Volterra can be represented by the following
 influence system between a proliferating prey $A$ and a predator $B$:
-  \lstinputlisting[firstline=8,lastline=11]{examples/LVif.bc}
+  \lstinputlisting[firstline=6,lastline=9]{examples/LVif.bc}
    composed of four influences with no negative sources:
    $(\{A, B\}, \emptyset, A, -, k1*A*B)$, $(\{A, B\}, \emptyset, B, +, k1*A*B)$, $(\{A\}, \emptyset, A, +, k2*A)$ and $(\{B\}, \emptyset, B, -, k3*B)$.
 
@@ -378,7 +378,7 @@ The natural representation for (de)activation function and influences being the 
 
 \begin{example}
 
-For Ex.~\ref{ex:LVi} we would have as DNF formulae:
+For Ex.~\ref{ex:LVi} we would have as monotone DNF formulae:
 \begin{eqnarray*}
    A^+&=&(A)\\
    A^-&=&(A \wedge B)\\
@@ -405,12 +405,13 @@ the reactant is $d$ or $e$, and we need that $f$ be inactive.
 
 
 \begin{example}
-   Though the Lotka--Volterra example Ex.~\ref{ex:LVi} does not contain
-   inhibitors, we can still translate to a CNF representation. It is easy to
+   The Lotka--Volterra example Ex.~\ref{ex:LVi} with inhibition cannot be
+   translated to a monotone DNF formula. It has however the following CNF
+   representation. It is easy to
    notice that $k=1$ is enough since there is only one positive and one
    negative influence for each target.
 \begin{eqnarray*}
-   A^+&=&(A)\\
+   A^+&=&(A)\wedge(\neg C)\\
 A^-&=&(A) \wedge (B)\\
 B^+&=&(A)\wedge (B)\\
    B^-&=&(B)
@@ -462,9 +463,12 @@ deux égales à 0, i.e. on reste sur place)}
    Ex.~\ref{ex:LVi}. We obtain:
    \begin{eqnarray*}
    f_A &=& A \wedge\neg B\\
-   f_B &=& A \wedge B
+   f_B &=& 0
    \end{eqnarray*}
 
+   Note that the form of $f_B$ only means that the only possible state change
+   for $B$ is from $1$ to $0$. Of course $B$ can also stay at $1$ but
+   non-terminal self-loops do note appear in such a logical model.
 \end{example}
 
 \section{Experimental Setup}
