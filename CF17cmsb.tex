@@ -92,7 +92,7 @@ In this context, multi-armed bandit methods~\cite{DBSSZ07icdm} currently provide
 In~\cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for experiment design in dynamical system identification.
 
 In this paper, we consider the framework of Probably Approximately Correct (PAC) Learning 
-which was introduced by Leslie Valiant in his seminal paper on a theory of the learnable~\cite{Valiant84cacm},
+which was introduced by Leslie Valiant in his seminal paper on a theory of the learnable~\cite{Valiant84cacm}.
 Valiant questioned what can be learned from a computational viewpoint,
 and introduced the concept of probably approximately correct (PAC) learning,
 together with a general-purpose polynomial-time learning protocol.
@@ -102,7 +102,7 @@ on the nature of biological and cognitive processes,
 of collective and individual behaviors,
 and on the study of their evolution~\cite{Valiant13book}.
 
-In this paper, we investigate PAC learning as a method for the automated discovery of influence models of biochemical processes from time-series data. 
+Here we investigate PAC learning as a method for the automated discovery of influence models of biochemical processes from time-series data. 
 To the best of our knowledge, 
 the application of PAC learning to models of biological systems has not been reported before.
 We show that Thomas's gene regulatory networks \cite{Thomas91jtb,Thomas73jtb} can be naturally represented by 
@@ -128,24 +128,24 @@ and to be usable in the context of a wet lab context for real biological experim
 
 \subsection{PAC Learning Protocol}
 
-\francois{Ouh la on ne peut pas changer les definitions de Valiant comme ca sans explliquer,
-il faut reprendre la terminologie de Valiant vecteurs dans {0,1,*} vecteurs totaux etc.}
 
 Let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
 \begin{itemize}
-	\item A vector is an assignment of the $n$ variables to $\mathbb{B} = \{0,1,*\}$
-	\item A total vector is an assignment in $\{0,1\}$
-	\item A Boolean function $F:{\mathbb{B}}^n \rightarrow \mathbb{B}$
-	assigns a Boolean value to each total vector.
+	\item A vector is an assignment of the $n$ variables to $\mathbb{B}_* = \{0,1,*\}$;
+	\item A total vector is a Boolean assignment, in $\mathbb{B} = \{0,1\}$;
+	\item A Boolean function $F:{\mathbb{B}}^n \rightarrow \mathbb{B}$;
+	assigns a Boolean value to each total vector;
+\item A concept $G:{\mathbb{B}_*}^n \rightarrow \mathbb{B}$
+	assigns a Boolean value to each vector.
 \end{itemize}
 
-The idea behind the PAC learning protocol is to discover a hidden Boolean function $F$ while restricting oneself to the two following operations~:
+The idea behind the PAC learning protocol is to discover a concept, or a Boolean function, which approximates a hidden Boolean function $F$, while restricting oneself to the two following operations~:
 \begin{itemize}
   \item
-\textsc{Sample}$()$~: which returns a positive example, i.e.~a total vector $v$ such that $F(v)=1$. 
-The output of \textsc{Sample}$()$ follow a given probability distribution $D(v)$, which will be later used to measure the approximation of the result.
+\textsc{Sample}$()$~: which returns a positive example, i.e.~a vector $v$ such that $F(v)=1$. 
+The output of \textsc{Sample}$()$ is assumed to follow a given probability distribution $D(v)$, which is used to measure the approximation of the result.
   \item
-\textsc{Oracle}$(x)$~: which calls an oracle on some input $v$ to obtain the value of $F(v)$
+\textsc{Oracle}$(v)$~: which calls an oracle on some vector $v$ to obtain the value of $F(v)$.
 \end{itemize}
 
 
@@ -154,10 +154,10 @@ The output of \textsc{Sample}$()$ follow a given probability distribution $D(v)$
    A class $\cal M$ of \emph{Boolean functions} is said to be \emph{learnable}
    if there exists an algorithm $\cal A$ such that:
    \begin{itemize}
-      \item $\cal A$ runs in polynomial time in $n$ -- the dimension of the models to learn -- and $h$ the precision parameter.
+      \item $\cal A$ runs in polynomial time both in $n$ -- the dimension of the models to learn -- and $h$ the precision parameter;
       \item
-         For all functions $F$ in $\cal M$, and all distributions $D$ on the positive examples outputted by \textsc{Sample}$()$,
-         $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ in $\cal M$ such that
+         for all functions $F$ in $\cal M$, and any distribution $D$ on the positive examples, % outputted by \textsc{Sample}$()$,
+         $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ such that
          \begin{itemize}
             \item $G(v)=1$ implies $F(v)=1$ (no false positive)
             \item
@@ -166,6 +166,12 @@ The output of \textsc{Sample}$()$ follow a given probability distribution $D(v)$
    \end{itemize}
 \end{definition}
 
+For the sake of simplicity, the same precision parameter $h$ is used above for quantifying both the probability that the result is correct,
+and the approximation error in the correctness criterion.
+
+We could have also removed the distinction between concepts and Boolean functions here,
+since in the sequel we will learn Boolean functions only, and obtain samples from data time series which provide total vectors.
+We keep the distinction in this section for the sake of generality.
 
 \subsection{PAC Learning Algorithms}
 
@@ -189,43 +195,63 @@ leads to the learning of a minimalist  generalization of the positive examples w
 
 \begin{algorithm}
 \begin{enumerate}
-  \item Initialise $g$ to the conjunction of all possible clauses of at most $k$ literals (there are $(2n)^k$ such clauses),
-\item Call $L(h,(2n)^{k+1})$ positive examples $v$, and for each $v$~:
-\begin{itemize}
-\item Delete all the clauses in $g$ that do not contain a literal true in $v$.	
-\end{itemize}
-\item Output: $g$
+  \item initialise $g$ to the conjunction of all possible clauses of at most $k$ literals (there are $(2n)^k$ such clauses),
+\item do $L(h,(2n)^{k+1})$ times 
+\begin{enumerate}
+\item $v:=\textsc{Sample}()$
+\item delete all the clauses in $g$ that do not contain a literal true in $v$
+\end{enumerate}
+\item output: $g$
 \end{enumerate}
 \caption{PAC-learning of $k$-CNF formulae.\label{algCNF}}
 \end{algorithm}
 
+In our implementation of the PAC-learning algorithm for $k$-CNF formulae,
+we make use of the lattice structure of $k$-clauses ordered by implication.
+It is worth remarking that this data structure allows
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause
+	\item and for a clause $c$, $O(1)$ access to the smallest clauses implied by $c$ and to the biggest clauses that imply $c$.
+\end{itemize}
 
+Monotone DNF formulae are also learnable.
 Let the \emph{degree} of a Boolean formula be the largest number of prime
 implicants in an equivalent rewriting of the formula as a non-redundant sum of
-prime-implicants.
+prime-implicants~\cite{Valiant84cacm}.
 
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
     The class of monotone DNF formulae on $n$ variables is also learnable with an
     algorithm that uses $L(h,d)$ examples and $d n$ calls to the oracle,
-    where $d$ is the \emph{degree} of the function to learn~\cite{Valiant84cacm}.
+    where $d$ is the \emph{degree} of the function to learn.
 \end{theorem}
 
 The proof relies on Alg.~\ref{algDNF}. As previously, the algorithm guarantees that a minimal generalization is learned, up to the approximations previously defined.
 
 \begin{algorithm}
 \begin{enumerate}
-\item Initialise $g$ with false (constant zero),
+\item initialise $g$ with false (constant zero),
 \item
-Do $L(h,d)$ calls to positive examples $v$, and for each $v$,
-\begin{itemize}
+do $L(h,d)$ times 
+\begin{enumerate}
+\item $v:=\textsc{Sample}()$
 	\item 
-	If $g$ is not implied by $v$, add monomial $m$ to $g$, where $m$ is the conjunction
-   of literals determined in $v$ that are essential to $f$ (the function being
-   learned).
-\item \francois{to describe with more details and logical notations as in Valiant 84}
+	if $v\Rightarrow g$ exit
+\item for $i:=\ 1\ to \ n$
+\begin{enumerate}
+\item if $x_i$ is determined in $v$
+\begin{enumerate}
+\item $v^*:=v[x_i\leftarrow *]$
+\item if $\textsc{Oracle}(v^*)$ then 
+\begin{itemize}
+\item $v:=v^*$
+\item $m:=\bigwedge_{v\Rightarrow x_j} x_j\wedge\bigwedge_{v\Rightarrow\neg x_k}\neg x_k$ 
+\item $g:=g\vee m$
 \end{itemize}
-\item Output: g
+\end{enumerate}
+\end{enumerate}
+\end{enumerate}
+\item output: $g$
 \end{enumerate}
 \caption{PAC-learning of monotone DNF formulae.\label{algDNF}}
 \end{algorithm}
@@ -234,15 +260,6 @@ The polynomial computational complexity follows from the fact that each monomial
 of $f$ by construction, and that it is constructed by at most $n$ calls to the
 oracle.
 
-\subsection{Implementation}
-
-In our implementation of the PAC-learning algorithm for $k$-CNF formulae,
-we make use of the lattice structure of $k$-clauses ordered by implication.
-This data structure allows
-\begin{itemize}
-	\item $O(1)$ access to any $k$-clause
-	\item From clause $a$, $O(1)$ access to the smallest clauses implied by $a$ and to the biggest clauses that imply $a$
-\end{itemize}
 
 
 
