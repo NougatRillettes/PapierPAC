@@ -1,27 +1,11 @@
 - Phrases non finies dans l'intro
 
-- Je n'ai toujours pas compris la partie sur les prime implicants page 4,
-	Theorème 2, quelqu'un pourrait-il la reformuler ? Si personne ne la comprend
-	vraiment il faut décider de ce que l'on en fait.
-
-- La definition des réseaux de Thomas en section 3.1 n'en est pas vraiment une.
-
-- L'example 1 en section 3.1: je ne comprends pas ce qu'il faudrait y mettre.
-
 - La section 3.2 n'a pas vraiment de sens, j'ai supprimé un paragraphe à la fin
 	qui n'avait de toute évidence rien à y faire (je l'ai mis en 4.0). J'ai l'impression qu'elle veut
 	dire que "DNF est une restriction raisonable comme prouvé dans le papier sur
 	la positive boolean semantics" mais impossible de la déméler.
 
-	- Le paragraphe qui dit "Our simulator uses a custom language to specify..." :
-		vous voulez pê faire référence à biocham ? Pour l'instant je le commente,
-		car il n'apporte que peu au papier (il vient de mon rapport du MPRI)
-
-- Le système de hints n'est pas expliqué
-
 - L'implémentation doit être détaillée
-
-- Vérifier 2n^k+1 dans Th. 1
 
 - Rappeller implication limite sur k
 
