@@ -140,19 +140,19 @@ Let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
 \begin{itemize}
 	\item A vector is an assignment of the $n$ variables to $\mathbb{B}_* = \{0,1,*\}$;
 	\item A total vector is a Boolean assignment, in $\mathbb{B} = \{0,1\}$;
-	\item A Boolean function $F:{\mathbb{B}}^n \rightarrow \mathbb{B}$;
+	\item A Boolean function $G:{\mathbb{B}}^n \rightarrow \mathbb{B}$;
 	assigns a Boolean value to each total vector;
-\item A concept $G:{\mathbb{B}_*}^n \rightarrow \mathbb{B}$
+\item A concept $F:{\mathbb{B}_*}^n \rightarrow \mathbb{B}$
 	assigns a Boolean value to each vector.
 \end{itemize}
 
-The idea behind the PAC learning protocol is to discover a concept, or a Boolean function, which approximates a hidden Boolean function $F$, while restricting oneself to the two following operations~:
+The idea behind the PAC learning protocol is to discover a concept, or a Boolean function, which approximates a hidden concept $F$, while restricting oneself to the two following operations~:
 \begin{itemize}
   \item
-\textsc{Sample}$()$~: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$. 
+\textsc{Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
 The output of \textsc{Sample}$()$ is assumed to follow a given probability distribution $D(v)$, which is used to measure the approximation of the result.
   \item
-\textsc{Oracle}$(v)$~: returns the value $F(v)$ for any vector $v$.
+\textsc{Oracle}$(v)$: returns the value of $F(v)$ for any input vector $v$.
 \end{itemize}
 
 
@@ -163,7 +163,7 @@ The output of \textsc{Sample}$()$ is assumed to follow a given probability distr
    \begin{itemize}
       \item $\cal A$ runs in polynomial time both in $n$ -- the dimension of the models to learn -- and $h$ the precision parameter;
       \item
-         for all functions $F$ in $\cal M$, and any distribution $D$ on the positive examples, % outputted by \textsc{Sample}$()$,
+         for any function $F$ in $\cal M$, and any distribution $D$ on the positive examples,
          $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ such that
          \begin{itemize}
             \item $G(v)=1$ implies $F(v)=1$ (no false positive)
@@ -194,11 +194,12 @@ integers $S\ge 1$ and reals $h>1$, we have $L(h,S) \le 2h(S+\log_e h)$~\cite{Val
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
 For any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
-algorithm that uses $L(h,{(2 n)}^{k+1})$ examples and no oracle.
+algorithm that uses $L(h,{(2 n)}^{k+1})$ positive examples and no calls to the
+oracle.
 \end{theorem}
 
 The proof is constructive and relies on Alg.~\ref{algCNF} below. In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible \emph{clauses} (i.e.~disjunctions of litterals)
-leads to the learning of a minimalist  generalization of the positive examples with mainly no false positive and low probability of false negatives.
+leads to the learning of a minimal generalization of the positive examples with mainly no false positive and low probability of false negatives.
 
 \begin{algorithm}
 \begin{enumerate}
