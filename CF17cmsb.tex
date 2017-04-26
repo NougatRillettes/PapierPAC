@@ -275,8 +275,6 @@ oracle.
 
 \francois{I tried to import our definitions but the stochastic-Boolean semantics used in this paper is a bit different\dots}
 
-\francois{Sylvain? Any idea to simplify that stuff and don't say more nor less than necessary?}
-
 \francois{The good point with starting with influence systems instead of directly Thomas networks
 is that we can show ``realistic'' stochastic simulations and understand later Thomas's logical functions
 which otherwise would be quite strange to present on this simple example}
@@ -317,9 +315,7 @@ is a partially differentiable function, non-negative
 \end{itemize}
 \end{definition}
 
-Influences of sign $+$ are called {positive influences} and those of
-sign $-$, {negative influences}.
-In addition, we distinguish the positive sources from the negative sources of an influence (positive or negative),
+We distinguish the positive sources from the negative sources of an influence (positive or negative),
 in order to annotate the fact that in the differential semantics,
 the source increases or decreases the force of the influence,
 and in the Boolean semantics with negation whether the source or the negation of the source
@@ -358,39 +354,46 @@ which may contain positive and negative influences but only positive sources no 
 
 
 \begin{definition}[Boolean Semantics]
-	The Boolean semantics of an influence system $\{(P_i, t_i, \sigma_i, f_i)\}_{i\in I}$
-	over a set $S$ of $n$ variables,
-	is the Boolean transition system $\lra$ defined over Boolean state total vectors in $\mathbb{B}^n$
-	by
-	${\vec x}\lra{\vec x'}$ if there exists an influence $(P_i, t_i, \sigma_i, f_i)$
-	such that ${\vec x}\models \bigwedge_{p\in P_i}$
-	and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
+   The Boolean semantics of an influence system $\{(P_i, I_i, t_i, \sigma_i,
+   f_i)\}_{1\leq i\leq n}$
+   over a set $S$ of $n$ variables,
+   is the Boolean transition system $\lra$ defined over Boolean state total vectors in $\mathbb{B}^n$
+   by
+   ${\vec x}\lra{\vec x'}$ if there exists an influence $(P_i, I_i, t_i, \sigma_i, f_i)$
+   such that ${\vec x}\models \bigwedge_{p\in P_i}$
+   and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
 \end{definition}
 
+The stochastic semantics with negation is as follows:
+
+\begin{definition}[Stochastic Semantics]
+   The stochastic semantics of an influence system $\{(P_i, I_i, t_i,
+   \sigma_i, f_i)\}_{1\leq i\leq n}$ over a set $S$ of $n$ variables, relies
+   on the discrete transition system $\lra$ defined over discrete states, i.e.
+   vectors in $\mathbb{N}^n$ by $\forall (P_i, I_i, t_i, \sigma_i, f_i), {\vec
+   x}\lra{\vec x'} \text{ with propensity }f_i\text{ if }{\vec x}\geq P_i,
+   {\vec x}<I_i$ and ${\vec x'} = {\vec x}\  \sigma_i\ t_i$
+
+   Transition probabilities between discrete states are obtained through
+   normalization of the propensities of all enabled transitions, and the time
+   of next reaction can also be given \emph{\`a la}
+   Gillespie~\cite{Gillespie77jpc}.
+
+\end{definition}
 
 \subsection{Monotone DNF Representation of Positive Influence Systems}
 
 
 In this section we restrict ourselves to the positive semantics of influence systems
-and syntactically to influence systems without inhibitors, as in Ex.~\ref{ex:LVi}.
-
-\francois{to update}
-
-\begin{definition}
-	
-	An \emph{influence system} (without inhibitor) $I$ on a set of variables $S=\{x_1,\dots,x_n\}$ is a
-	finite set of quadruples $(P, t, \sigma, f)$, called \emph{influences}, where
-	$P\subset S$ is called the set of \emph{positive sources} of the influence,
-	%   $N\subset S$ \emph{negative sources}, 
-	$t\in S$ is the \emph{target} of the influence,
-	$\sigma\in\{+,-\}$ is its \emph{sign positive or negative}, and $f$ is a
-	real-valued mathematical function $P\to\mathbb{R^+}$, called the
-	\emph{force} of the influence.
-	
-\end{definition}
+and syntactically to influence systems without inhibitors, as in the beginning
+of Ex.~\ref{ex:LVi}.
+\sylvain{Not sure we need this syntactic restriction here}
+Because of this restriction, we shall write the influences as 4-tuples instead
+of 5-tuples by ignoring $I$.
 
 \begin{definition}[Positive Boolean Semantics]
-	The positive Boolean semantics of an influence system $\{(P_i, t_i, \sigma_i, f_i)\}_{i\in I}$
+	The positive Boolean semantics of an influence system $\{(P_i, t_i,
+   \sigma_i, f_i)\}_{1\leq i\leq n}$
 	over a set $S$ of $n$ variables,
 	is the Boolean transition system $\lra$ defined over Boolean state total vectors in $\mathbb{B}^n$
 	by
@@ -486,7 +489,8 @@ and can certainly be represented by a $k$-CNF formula.
 
 As proven in~\cite{FMRS16cmsb}, in the Boolean setting any influence system is
 also a Thomas' network.
-As this will be useful later on, we also remark that the Thomas' Network can be computed from the (de)activation functions presented in definition~\ref{def:activation} by:
+As this will be useful later on, we also remark that the Thomas' Network can
+be computed from the (de)activation functions presented in Def.~\ref{def:activation} by:
 
 \[
 \forall 1 \leq i \leq n, \forall v, f_i(v) = \left\{\begin{array}{l}
