@@ -366,11 +366,11 @@ which may contain positive and negative influences but only positive sources no 
 
 The stochastic semantics with negation is as follows:
 
-\begin{definition}[Stochastic Semantics]
+\begin{definition}[Stochastic Semantics]\label{def:stoch}
    The stochastic semantics of an influence system $\{(P_i, I_i, t_i,
    \sigma_i, f_i)\}_{1\leq i\leq n}$ over a set $S$ of $n$ variables, relies
-   on the discrete transition system $\lra$ defined over discrete states, i.e.
-   vectors in $\mathbb{N}^n$ by $\forall (P_i, I_i, t_i, \sigma_i, f_i), {\vec
+   on the transition system $\lra$ defined over discrete states, i.e.
+   vectors in $\mathbb{N}^n$, by $\forall (P_i, I_i, t_i, \sigma_i, f_i), {\vec
    x}\lra{\vec x'} \text{ with propensity }f_i\text{ if }{\vec x}\geq P_i,
    {\vec x}<I_i$ and ${\vec x'} = {\vec x}\  \sigma_i\ t_i$
 
@@ -635,10 +635,19 @@ Even though we were not able to write it down exactly, it is our conjecture that
 
 Let us now consider traces not directly produced from a Boolean model, but from more realistic data time series.
 For the sake of evaluating the learning method,
-we generate stochastic traces from the hidden model, using Gillespie's algorithm for stochastic simulation.
+we generate stochastic traces from the hidden model, using Gillespie's
+algorithm for the simulation of the stochastic semantics given in
+Def.~\ref{def:stoch}.
 
-This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as traces in ${\{0,1\}}^n$.
-\francois{preciser l'abstraction par augmentation/diminution/stable pas par seuil de valeurs} 
+The traces obtained are in ${\mathbb{N}}^n$, they are then abstracted to
+Boolean traces over ${\mathbb{B}}^n$ by the usual $\{0, >0\}$ abstraction.
+
+It would also be possible to try and learn directly a Boolean model from
+stochastic traces (using $x_i\lra x_i+1$ (resp.\ $x_i-1$) as positive example for the
+activiation (resp.\ deactivation)), but since the abstraction of the state
+remains necessary we present here a fully abstracted method.
+
+\sylvain{Arthur, can you confirm what is written above?}
 
 \begin{listfig}[hp]
 	\lstinputlisting{examples/test.reac}
