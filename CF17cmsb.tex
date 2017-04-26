@@ -674,27 +674,29 @@ As previously, the prey-predator example (listing~\ref{preypred_res}) displays a
 
 \subsection{Boolean Thomas Network}
 
-In this section we evaluate the performance of the $k$-CNF PAC learning  algorithm 
-on an influence system of??? variables that models the differentiation of the
-T-helper lymphocytes.
-   This model, presented in~\cite{RRMTC06tcsb} is actually a Boolean
-   simplification of the original multi-level model
-   of~\cite{Mendoza06biosystems}. It studies the regulatory network of stimuli
-   leading to differentiation between Th-1 and Th-2 lymphocytes from an
-   original CD4+ T helper (Th-0).
+In this section we evaluate the performance of the $k$-CNF PAC learning
+algorithm on an influence system of 12 variables and 32 influences that models
+the differentiation of the T-helper lymphocytes.
 
-\francois{dimensionner ce modele en donnant le nombre d'especes et d'influences, eventuellement original et simplifie si simplifie ici}
+This model, presented in~\cite{RRMTC06tcsb} is actually a Boolean
+simplification of the original multi-level model
+of~\cite{Mendoza06biosystems}. It studies the regulatory network of stimuli
+leading to differentiation between Th-1 and Th-2 lymphocytes from an original
+CD4+ T helper (Th-0).
 
-   \begin{figure}[htbp]
-   	\centering
-      \includegraphics[width=0.8\textwidth]{th_net_clean.png}
-      \caption{Fig.~4 of~\cite{RRMTC06tcsb} displaying the Th-lymphocyte
-      differentiation model.\label{fig:lympho}}
-   \end{figure}
+The model has three different stable states corresponding to Th-0 (naive
+lymphocyte), Th-1 and Th-2 when IL12 is off, and two others when IL12 is on
+(the Th-0 one is lost).
 
-   Fig.~\ref{fig:lympho} shows the influence graph of the model. The
-   corresponding code is given in appendix (listing~\ref{bool-lympho}, page~\pageref{bool-lympho}):
-%\end{example}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.8\textwidth]{th_net_clean.png}
+   \caption{Fig.~4 of~\cite{RRMTC06tcsb} displaying the Th-lymphocyte
+   differentiation model.\label{fig:lympho}}
+\end{figure}
+
+Fig.~\ref{fig:lympho} shows the influence graph of the model. The
+corresponding code is given in appendix (Listing~\ref{bool-lympho}).
 
 \subsection{Ab initio PAC Learning from Boolean Traces}
 
