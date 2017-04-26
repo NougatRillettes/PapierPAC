@@ -12,7 +12,7 @@ parser.add_argument('file',
 parser.add_argument('k',type=int,
                     help='Maximum size of the disjunctions')
 parser.add_argument('--hints',action='store',\
-                    default="")
+                    default="",help='JSON file indicating the hints')
 
 
 

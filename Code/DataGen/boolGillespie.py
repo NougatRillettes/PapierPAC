@@ -6,6 +6,7 @@ import operator
 from collections import Counter
 import math
 import json
+import time
 from sys import stderr
 import argparse
 
@@ -16,6 +17,9 @@ parser.add_argument('h', type=int,
                     help='Precision parameter')
 parser.add_argument('k', type=int,
                     help='Maximum size of the disjunctions')
+parser.add_argument('--rndic',action='store',type=int,default=0,\
+                    help='Activate the randomisation of inital conditions, argument is the number of times the simulation is rerun')
+
 
 class Indexer(dict):
     def __missing__(self,key):
@@ -80,31 +84,42 @@ for _ in indexer:
     influences.append(set())
     influences.append(set())
 
+num_sim = 1
+if args.rndic:
+    for i in range(len(indexer)):
+        state[i] = random.random() > 0.5
+    num_sim = args.rndic
+
 
 h = args.h
 k = args.k
 loop_end = bigL(h,k)
-for loop_n in range(loop_end):
-    if loop_n % (2)**16 == 0:
-        print(state,file=stderr)
-        for (k,v) in indexer.items():
-            if state[v]:
-                print(k,end=' ',file=stderr)
-        print(file=stderr)
-        print(100*loop_n/loop_end,file=stderr)
+start_time = time.time()
+for sim_n in range(num_sim):
+    for loop_n in range(loop_end):
+        if loop_n % (2)**16 == 1:
+            #print(state,file=stderr)
+            #for (k,v) in indexer.items():
+            #    if state[v]:
+            #        print(k,end=' ',file=stderr)
+            #print(file=stderr)
+            print(100*((sim_n)*loop_end + loop_n)/(num_sim*loop_end),"%",file=stderr,sep='',end=" ")
+            print("Remaining time (minutes):",(time.time()-start_time)*((num_sim*loop_end)/(sim_n*loop_end + loop_n) -1)/60,file=stderr)
 
-    doable = [r for r in reactions if canFire(r)]
-    if not doable:
-        break
-    chosen = random.choices(doable,[r['propensity'] for r in doable])[0]
-    activated = chosen['kind'] == '>'
-    for r in chosen['products']:
-        if state[r] ^ activated:
-            if activated:
-                influences[2*r] |= {tuple([2*i + (1 if x else 0) for (i,x) in enumerate(state)])}
-            else:
-                influences[2*r+1] |= {tuple([2*i + (1 if x else 0) for (i,x) in enumerate(state)])}
-        state[r] = activated
+        doable = [r for r in reactions if canFire(r)]
+        if not doable:
+            break
+        chosen = random.choices(doable,[r['propensity'] for r in doable])[0]
+        activated = chosen['kind'] == '>'
+        for r in chosen['products']:
+            if state[r] ^ activated:
+                if activated:
+                    influences[2*r] |= {tuple([2*i + (1 if x else 0) for (i,x) in enumerate(state)])}
+                else:
+                    influences[2*r+1] |= {tuple([2*i + (1 if x else 0) for (i,x) in enumerate(state)])}
+            state[r] = activated
+    for i in range(len(indexer)):
+        state[i] = random.random() > 0.5
 
 
 result = {'indexer': indexer, 'influences': [list(x) for x in influences]}
