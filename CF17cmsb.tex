@@ -3,6 +3,7 @@
 \usepackage{amsmath,amssymb,amsfonts,stmaryrd}
 \usepackage{graphicx}
 \usepackage[usenames,dvipsnames]{color}
+\usepackage{tikz}
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage{listings}
@@ -667,7 +668,6 @@ We ran two example reactions, given in listings~\ref{test}, and~\ref{preypred}. 
 	\lstinputlisting{examples/lokta.result}
 	\caption{Results for the Prey-Predator model\label{preypred_res}}
 \end{listfig}
-
 \francois{Non je ne suis pas d'accord avec ce discours sur les erreurs typiques,
 mieux vaudrait parler de sensibilite aux conditions initiales des simulations
 en jouant avec quelques experiences sur les nombres initiaux respectifs de proies et predateurs
@@ -676,8 +676,63 @@ et si on intègre ces simulations avec differentes conditions initiales on peut 
 
 \francois{Arthur peux-tu refaire ces experiences?}
 
-As previously, the prey-predator example (listing~\ref{preypred_res}) displays a typical error: because there is more than 1 prey, in the Gillespie algorithm, eating of a prey by a predator is way more likely than the death of old age of a predator, and hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the learning algorithm to believe that the absence of prey is needed for extinction.
+As previously, the prey-predator example (listing~\ref{preypred_res}) highlights how dependent to the traces the learned model is.
+To further detail this, it is necessary to dive into the Markov chain of the prey-predator stochastic process. A simplification of it is given in figure~\ref{fig:mc-lv}. One can remark that state (2) is an equilibrium state, whereas state (0) is terminal. Because most of the experiments will start in state (3), we can highlight two possible paths, A and B, leading respectively to (2) and (0). Because (de)activation (and hence sample) only comes from a changing of node in fig.~2, each of these pathways result in a different resulting model.
 
+\begin{figure}[htpb]
+	\centering
+	\begin{tikzpicture}
+	\path (5,10) node[draw](3) {(3) $\begin{array}{c}
+		Prey \geq 1 \\ Predator \geq 1
+		\end{array}$}
+	(8,7.5) node[draw](1) {(1) $\begin{array}{c}
+		Prey = 0 \\ Predator \geq 1
+		\end{array}$}
+	(2,7.5) node[draw](2) {(2) $\begin{array}{c}
+		Prey \geq1 \\ Predator = 0
+		\end{array}$}
+	(8,5) node[draw,double](0) {(0) $\begin{array}{c}
+		Prey = 0 \\ Predator = 0
+		\end{array}$}
+	;
+	\draw [->] (3) -> (2);
+	\draw [->] (3) -> (1);
+	\draw [->] (1) -> (0);
+	\path (3) edge[->,looseness=5] (3);
+	\path (2) edge[->,looseness=5,out=170,in=190] (2);
+	\draw (4.8,9) edge[->,looseness=1,out=200,in=90] node[below,left] {A} (4,7);
+	\draw (5.2,9) edge[->,looseness=0.8,out=-20,in=90] node[below,right] {B} (6,5);
+	\end{tikzpicture}
+	\caption{A simplification of the markov chain of the Lokta-Voltera process. Probabilities are not given but all arrows have non-null probability to be taken.\label{fig:mc-lv}}
+\end{figure}
+
+For A this is:
+\begin{verbatim}
+Predator+ : False
+Predator- : Predator /\ Prey
+Prey+ : False
+Prey- : False
+\end{verbatim}
+
+For B this is:
+\begin{verbatim}
+Predator+ : False
+Predator- : Predator /\ !Prey
+Prey+ : False
+Prey- : Predator /\ Prey
+\end{verbatim}
+
+Both those learned model are not complete, as the sampling will by design miss some of the possible positive examples because only one of A and B paths can be followed.
+
+Indeed, the only way to get the correct result is to run several time the experiment, and hope that probabilities favor us enough so that we have samples from pathways A and B.
+
+Result of such run will then be correct, as illustrated below:
+\begin{verbatim}
+Predator+ : False
+Predator- : Predator
+Prey+ : False
+Prey- : Predator /\ Prey
+\end{verbatim}
 
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
 
@@ -797,7 +852,7 @@ and to investigate the applicability to real experiments with particular biologi
 
 \bibliographystyle{splncs03}
 \bibliography{contraintes}
-
+\newpage
 \section*{Appendix}
 \begin{listfig}[H]
 \lstinputlisting{examples/lympho-bool.reac}
