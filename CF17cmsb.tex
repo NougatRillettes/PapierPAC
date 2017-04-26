@@ -5,7 +5,6 @@
 \usepackage[usenames,dvipsnames]{color}
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
-\usepackage{verbatim}
 \usepackage{listings}
 \lstset{%
    basicstyle=\ttfamily, %\scriptsize\ttfamily,
@@ -603,13 +602,11 @@ In output \texttt{!A} means $\neg A"$ or "not A".
 \subsubsection{Results}
 
 \begin{listfig}[htp]
-	\verbatiminput{examples/bool-lokta.reac}
-	\vspace{-1em}
-	\caption{An influence system describing the Lokta-Voltera prey vs.\ predator model. Numbers in parenthesis indicate the force of an influence. \label{bool-LV}}
+	\lstinputlisting{examples/bool-lokta.reac}
+	\caption{An influence system describing the Lokta-Voltera prey vs.\ predator model. Numbers in parenthesis indicate the force of an influence.\label{bool-LV}}
 \end{listfig}
 \begin{listfig}[htp]
-	\verbatiminput{examples/bool-lokta.res}
-	\vspace{-1em}
+	\lstinputlisting{examples/bool-lokta.res}
 	\caption{Results of PAC-learning on traces of the Boolean simulation of the Lokta-Voltera toy example.\label{bool-LV.res}}
 \end{listfig}
 
@@ -639,13 +636,11 @@ This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as
 \francois{preciser l'abstraction par augmentation/diminution/stable pas par seuil de valeurs} 
 
 \begin{listfig}[hp]
-	\verbatiminput{examples/test.reac}
-	\vspace{-1em}
+	\lstinputlisting{examples/test.reac}
 	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution.\label{test}}
 \end{listfig}
 \begin{listfig}[hp]
-	\verbatiminput{examples/test.result}
-	\vspace{-1em}
+	\lstinputlisting{examples/test.result}
 	\caption{Results for the test example\label{test_res}}
 \end{listfig}
 
@@ -653,13 +648,11 @@ This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as
 We ran two example reactions, given in listings~\ref{test}, and~\ref{preypred}. As indicated in listing~\ref{test_res}, the first example gave perfect results.
 
 \begin{listfig}[hp]
-	\verbatiminput{examples/lokta.reac}
-	\vspace{-1em}
+	\lstinputlisting{examples/lokta.reac}
 	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in figure~\ref{bool-LV}.\label{preypred}}
 \end{listfig}
 \begin{listfig}[hp]
-	\verbatiminput{examples/lokta.result}
-	\vspace{-1em}
+	\lstinputlisting{examples/lokta.result}
 	\caption{Results for the Prey-Predator model\label{preypred_res}}
 \end{listfig}
 
@@ -681,7 +674,7 @@ As previously, the prey-predator example (listing~\ref{preypred_res}) displays a
 \subsection{Boolean Thomas Network}
 
 In this section we evaluate the performance of the $k$-CNF PAC learning  algorithm 
-on an influence system of ??? variables that models the differentiation of the
+on an influence system of??? variables that models the differentiation of the
 T-helper lymphocytes.
    This model, presented in~\cite{RRMTC06tcsb} is actually a Boolean
    simplification of the original multi-level model
@@ -716,7 +709,7 @@ However, results of learning on the traces resulting from the Boolean simulation
 
 \francois{donner les temps d execution en precisant sur quelle machine, le nombre de traces, l horizon temporel }
 
-\francois{car les resultats en dependent ! il faut donc preciser ces conditions experimentales}
+\francois{car les resultats en dependent! il faut donc preciser ces conditions experimentales}
 
 \francois{il faut penser a decrire une recherche reproductible}
 
@@ -726,15 +719,14 @@ Machine learning with prior knowledge can save a lot of work by constraining the
 What we mean by hints can be formally defined: we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in listing~\ref{hints}. It is remarkable than when given such hints, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences (as indicated in listing\ref{hints.res}).
 
 \begin{listfig}[htb]
-	\verbatiminput{examples/lympho.hints}
-	\vspace{-1em}
+	\lstinputlisting{examples/lympho.hints}
 	\caption{Hints for the lymphocyte model. For each species, a set of possible influencers is given. The PAC algorithm will then learn a model in which only the specified influencers can either induce or inhibit the species.\label{hints}}
 \end{listfig}
 
 
 
 \begin{listfig}
-	\verbatiminput{examples/lympho-bool.res}
+	\lstinputlisting{examples/lympho-bool.res}
 	\caption{Results for lymphocyte model, with hints.\label{hints.res}}
 \end{listfig}
 
@@ -794,7 +786,7 @@ and to investigate the applicability to real experiments with particular biologi
 
 \section*{Appendix}
 \begin{listfig}[H]
-\verbatiminput{examples/lympho-bool.reac}
+\lstinputlisting{examples/lympho-bool.reac}
 \caption{Code for the lymphocyte differentiation of example~\ref{ex:lympho}.\label{bool-lympho}}
 \end{listfig}
 
