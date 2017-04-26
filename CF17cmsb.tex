@@ -7,7 +7,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{verbatim}
 \usepackage{listings}
-\lstset{
+\lstset{%
    basicstyle=\ttfamily, %\scriptsize\ttfamily,
 %   frame=single,
    breaklines=true,
@@ -120,10 +120,10 @@ We also show that Boolean influence systems with their positive Boolean semantic
 can be naturally represented by monotone DNF formulae.
 Valiant's PAC active learning algorithm for monotone DNF formulae makes it possible in theory 
 to learn a Boolean influence model from a set of positive examples and a set of calls to an oracle for the Boolean transitions.
-However, ...
+However, \dots
 
 These results are illustrated in the following with a Boolean influence model of the lymphocyte T as running example.
-They are further evaluated on... of size ...
+They are further evaluated on \dots of size \dots
 We evaluate the PAC learning protocols first without prior knowledge, and then with knowledge of the unsigned or signed influence graph without Boolean functions.
 
 \sylvain{will be completed when we know what is in the article or not}
@@ -273,9 +273,9 @@ oracle.
 
 \section{Influence Models of Molecular Cell Processes}
 
-\francois{I tried to import our definitions but the stochastic-Boolean semantics used in this paper is a bit different...}
+\francois{I tried to import our definitions but the stochastic-Boolean semantics used in this paper is a bit different\dots}
 
-\francois{ Sylvain ? Any idea to simplify that stuff and don't say more nor less than necessary ?}
+\francois{Sylvain? Any idea to simplify that stuff and don't say more nor less than necessary?}
 
 \francois{The good point with starting with influence systems instead of directly Thomas networks
 is that we can show ``realistic'' stochastic simulations and understand later Thomas's logical functions
@@ -322,7 +322,7 @@ sign $-$, {negative influences}.
 In addition, we distinguish the positive sources from the negative sources of an influence (positive or negative),
 in order to annotate the fact that in the differential semantics,
 the source increases or decreases the force of the influence,
-and in the boolean semantics with negation whether the source or the negation of the source
+and in the Boolean semantics with negation whether the source or the negation of the source
 is a condition for a change in the target.
 
 In the examples below, we use the ASCII syntax of Biocham v4 for influences.
@@ -407,7 +407,9 @@ Positive influence systems may hence be represented as $n$ activation and $n$ de
 	Given a network of $n$ genes $x_1,\ldots,x_n$, and
 	an integer $1 \leq k \leq n$ we can define ${x_k}^+$ (resp.\ ${x_k}^-$):
 	${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation)
-	Boolean function of $x_k$. In a given state $v$, ${x_k}^+(v)$ (resp.\ ${x_k}^-$(v)) is worth 1 if and only if the gene $x_k$ can be activated (resp. deactivated) from state $v$.
+	Boolean function of $x_k$. In a given state $v$, ${x_k}^+(v)$ (resp.\
+   ${x_k}^-$(v)) is worth 1 if and only if the gene $x_k$ can be activated
+   (resp.\ deactivated) from state $v$.
 \end{definition}
 
 The representation of (de)activation functions by an influence system 
@@ -555,10 +557,10 @@ produced either from real biological experiments, or, for the purpose of evaluat
 	\caption{\label{steps}Illustration of our hypothetical experimental setup with three steps of a trace. Between $a$ and $b$, the first gene has been activated, and between $b$ and $c$, the last one has been deactivated.}
 \end{figure}
 
-More specifically, and as illustrated in figure \ref{steps}, we consider that our experimental setup enables us to identify a "step" of its evolution, i.e.~that we are able to obtain a trace $(v_i)_{0 \leq t \leq T}$ of the boolean state of activation of its species where for all $t$ in $[0,T-1]$, $v_t$ and $v_{t+1}$ differ in exactly one coordinate. That is, the state of exactly one species has changed.
+More specifically, and as illustrated in figure~\ref{steps}, we consider that our experimental setup enables us to identify a "step" of its evolution, i.e.~that we are able to obtain a trace $(v_i)_{0 \leq t \leq T}$ of the Boolean state of activation of its species where for all $t$ in $[0,T-1]$, $v_t$ and $v_{t+1}$ differ in exactly one coordinate. That is, the state of exactly one species has changed.
 
 
-Even though we will finally not require it, we first also consider that our experimental setup enables us to put the system in a given state, i.e.~ that for any $v \in \mathbb{B}^n$ we can set the experiment's initial conditions so that they are correctly abstracted by $v$.
+Even though we will finally not require it, we first also consider that our experimental setup enables us to put the system in a given state, i.e.~that for any $v \in \mathbb{B}^n$ we can set the experiment's initial conditions so that they are correctly abstracted by $v$.
 
 \subsection{Application of PAC Learning on Transition Traces}
 %Now that our hypothetical experimental setup is described, we will discuss how the two key operations of PAC-learning (\textsc{Sample} and \textsc{Oracle}) can be implemented, if at all, in it.
@@ -584,7 +586,7 @@ Moreover, in its simple form presented above, %the current state of
 Valiant's framework does not allow for the oracle to be probabilistic.
 In practice however, since we cannot run this "state and observe the first atomic step" scheme an infinite number of time to be able to tell that the (de)activation can only happen with probability 0,
 we have to content ourself with an imperfect oracle.
-%A peculiarly fast-thinking reader may also have notice that different (and often infinitely many) states of the system may also be abstracted by the same boolean total vector $v$, and that the transition may also happen from only some of them.
+%A peculiarly fast-thinking reader may also have notice that different (and often infinitely many) states of the system may also be abstracted by the same Boolean total vector $v$, and that the transition may also happen from only some of them.
 %For those reasons, algorithm requiring the \textsc{Oracle} function seem not applicable as of today, and we choose to only focus on $k$-CNF and sampling from now on.
 
 
@@ -593,8 +595,8 @@ we have to content ourself with an imperfect oracle.
 
 \francois{To update since the example has already been introduced before}
 
-A first experimentation was to simulate boolean traces for a given influence network, and use them as a basis to learn. 
-A toy example is given in listing \ref{bool-LV} (influence network) and the corresponding results are presented in listing \ref{bool-LV.res}.
+A first experimentation was to simulate Boolean traces for a given influence network, and use them as a basis to learn. 
+A toy example is given in listing~\ref{bool-LV} (influence network) and the corresponding results are presented in listing~\ref{bool-LV.res}.
 
 In output \texttt{!A} means $\neg A"$ or "not A".
 
@@ -603,7 +605,7 @@ In output \texttt{!A} means $\neg A"$ or "not A".
 \begin{listfig}[htp]
 	\verbatiminput{examples/bool-lokta.reac}
 	\vspace{-1em}
-	\caption{An influence system describing the Lokta-Voltera prey vs. predator model. Numbers in parenthesis indicate the force of an influence. \label{bool-LV}}
+	\caption{An influence system describing the Lokta-Voltera prey vs.\ predator model. Numbers in parenthesis indicate the force of an influence. \label{bool-LV}}
 \end{listfig}
 \begin{listfig}[htp]
 	\verbatiminput{examples/bool-lokta.res}
@@ -621,7 +623,7 @@ Finally, for the prey to go extinct, there must be both prey in the first place 
 
 \subsubsection{On the quantification of the approximation}
 
-As it can be seen even on this very simple example, the "approximately" in "probably approximately correct" is not there for nothing. Yet, as explained in definition \ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
+As it can be seen even on this very simple example, the "approximately" in "probably approximately correct" is not there for nothing. Yet, as explained in definition~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
 
 Even though we were not able to write it down exactly, it is our conjecture that in the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
 
@@ -648,12 +650,12 @@ This stochastic semantics gave us traces in ${\mathbb{N}}^n$ that we abstract as
 \end{listfig}
 
 
-We ran two example reactions, given in listings~\ref{test}, and \ref{preypred}. As indicated in listing~\ref{test_res}, the first example gave perfect results.
+We ran two example reactions, given in listings~\ref{test}, and~\ref{preypred}. As indicated in listing~\ref{test_res}, the first example gave perfect results.
 
 \begin{listfig}[hp]
 	\verbatiminput{examples/lokta.reac}
 	\vspace{-1em}
-	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in figure \ref{bool-LV}.\label{preypred}}
+	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in figure~\ref{bool-LV}.\label{preypred}}
 \end{listfig}
 \begin{listfig}[hp]
 	\verbatiminput{examples/lokta.result}
@@ -667,7 +669,7 @@ en jouant avec quelques experiences sur les nombres initiaux respectifs de proie
 car les ``erreurs'' d'apprentissage seront differentes,
 et si on intègre ces simulations avec differentes conditions initiales on peut espérer me semble-t-il apprendre le bon modele}
 
-\francois{Arthur peux-tu refaire ces experiences ?}
+\francois{Arthur peux-tu refaire ces experiences?}
 
 As previously, the prey-predator example (listing~\ref{preypred_res}) displays a typical error: because there is more than 1 prey, in the Gillespie algorithm, eating of a prey by a predator is way more likely than the death of old age of a predator, and hence the deactivation (ie extinction) of predators happen only when they cannot eat anymore and the only possible reaction is the third: death. This lead the learning algorithm to believe that the absence of prey is needed for extinction.
 
@@ -681,7 +683,7 @@ As previously, the prey-predator example (listing~\ref{preypred_res}) displays a
 In this section we evaluate the performance of the $k$-CNF PAC learning  algorithm 
 on an influence system of ??? variables that models the differentiation of the
 T-helper lymphocytes.
-   This model, presented in~\cite{RRMTC06tcsb} is actually a boolean
+   This model, presented in~\cite{RRMTC06tcsb} is actually a Boolean
    simplification of the original multi-level model
    of~\cite{Mendoza06biosystems}. It studies the regulatory network of stimuli
    leading to differentiation between Th-1 and Th-2 lymphocytes from an
@@ -703,11 +705,11 @@ T-helper lymphocytes.
 \subsection{Ab initio PAC Learning from Boolean Traces}
 
 \francois{Ce paragraphe ne veut pas dire grand chose --
-quel est le probleme exactement ?
+quel est le probleme exactement?
 -- j'ai l'impression que le probleme est juste de ne pas avoir fait assez de runs avec des etats initiaux differents
 -- il faudrait le faire pour analyser les resultats et etre plus precis}
 
-However, results of learning on the traces resulting from the boolean simulation of this system gave very poor results. By this, we mean not that they were bad at predicting the behavior of the model (because guarantees on this come directly from Valiant's work) but that they were hardly readable and of little help to the human experimenter. 
+However, results of learning on the traces resulting from the Boolean simulation of this system gave very poor results. By this, we mean not that they were bad at predicting the behavior of the model (because guarantees on this come directly from Valiant's work) but that they were hardly readable and of little help to the human experimenter. 
 %Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
