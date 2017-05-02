@@ -57,12 +57,13 @@ Despite the spectacular progress of machine learning techniques in data analytic
 learning dynamical models from data time-series is challenging.
 In this paper we investigate the use of the Probably Approximately Correct (PAC) learning 
 framework of Leslie Valiant as a method for the automated discovery of influence models of biochemical processes from Boolean and stochastic traces. 
-We show that Thomas's Boolean influence systems can be naturally represented by k-CNF formulae
+We show that Thomas' Boolean influence systems can be naturally represented by k-CNF formulae
 and learned
 from time-series data with a quasi linear number of Boolean activation samples per species,
 and that positive Boolean influence systems can be represented by monotone DNF formulae
 and learned actively with both activation samples and oracle calls.
-We evaluate the performance of this approach on a model of T-lymphocyte differentiation with prior knowledge,
+We evaluate the performance of this approach on a model of T-lymphocyte
+differentiation, with and without prior knowledge,
 and discuss its merits as well as its limitations with respect to realistic experiments.
 \end{abstract}
 
@@ -83,7 +84,7 @@ to infer gene functions,
 metabolic pathway descriptions~\cite{AM02etai,AM02slps}
 or gene influence systems~\cite{BCRG04jtb},
 or to revise a reaction model with respect to CTL properties~\cite{CCFS06tcsb}.
-Since a few years, progress in this field can be measured on public benchmarks
+For a few years, progress in this field has been measured on public benchmarks
 of the ``Dream Challenge'' competition~\cite{Meyer14bmc}.
 Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide efficient tools such as CLASP~\cite{GKNS07lpnmr}
 to implement learning algorithms for Boolean models.
@@ -102,9 +103,9 @@ In~\cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for 
 In this paper, we consider the framework of Probably Approximately Correct (PAC) Learning 
 which was introduced by Leslie Valiant in his seminal paper on a theory of the learnable~\cite{Valiant84cacm}.
 Valiant questioned what can be learned from a computational viewpoint,
-and introduced the concept of probably approximately correct (PAC) learning,
+and introduced the concept of PAC learning,
 together with a general-purpose polynomial-time learning protocol.
-Beyond the learning algorithms that one can derive with this methodology,
+Beyond the algorithms that one can derive with this methodology,
 Valiant's theory of the learnable has profound implications
 on the nature of biological and cognitive processes,
 of collective and individual behaviors,
@@ -113,9 +114,9 @@ and on the study of their evolution~\cite{Valiant13book}.
 Here we investigate PAC learning as a method for the automated discovery of influence models of biochemical processes from time-series data. 
 To the best of our knowledge, 
 the application of PAC learning to models of biological systems has not been reported before.
-We show that Thomas's gene regulatory networks~\cite{Thomas91jtb,Thomas73jtb} can be naturally represented by 
+We show that Thomas' gene regulatory networks~\cite{Thomas91jtb,Thomas73jtb} can be naturally represented by 
 Boolean formulae in conjunctive normal forms with a bounded number of litterals (i.e.~k-CNF formulae),
-and can be learned from Boolean transition samples with a quasi linear number of Boolean transition samples, using Valiant's PAC learning algorithm for k-CNF formulae.
+and can be learned from Boolean transitions with a quasi linear number of Boolean transition samples, using Valiant's PAC learning algorithm for k-CNF formulae.
 We also show that Boolean influence systems with their positive Boolean semantics discussed in~\cite{FMRS16cmsb}
 can be naturally represented by monotone DNF formulae.
 Valiant's PAC active learning algorithm for monotone DNF formulae makes it possible in theory 
@@ -147,7 +148,7 @@ Let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
 	assigns a Boolean value to each vector.
 \end{itemize}
 
-The idea behind the PAC learning protocol is to discover a concept, or a Boolean function, which approximates a hidden concept $F$, while restricting oneself to the two following operations~:
+The idea behind the PAC learning protocol is to discover a concept, or a Boolean function, $G$ which approximates a hidden concept $F$, while restricting oneself to the two following operations~:
 \begin{itemize}
   \item
 \textsc{Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
@@ -273,13 +274,6 @@ oracle.
 
 \section{Influence Models of Molecular Cell Processes}
 
-\francois{I tried to import our definitions but the stochastic-Boolean semantics used in this paper is a bit different\dots}
-
-\francois{The good point with starting with influence systems instead of directly Thomas networks
-is that we can show ``realistic'' stochastic simulations and understand later Thomas's logical functions
-which otherwise would be quite strange to present on this simple example}
-
-
 In this section, we present four Boolean formalisms used to model regulatory networks in cell molecular biology.
 %and to which we will later whether or not PAC learning is applicable.
 We assume a finite set of molecular species $\{x_1,\dots,x_n\}$ 
@@ -346,7 +340,7 @@ k2*A/(1+C) for A/C -> A.
 \end{example}
 
 While it may seem natural in the Boolean semantics of an influence system to interpret the negative sources by negations
-for the enabling conditions for applying an influence in a given state, 
+in the enabling conditions for applying an influence in a given state, 
 the approximation and abstraction relationships that link the different semantics of a given influence system,
 lead us to consider the positive semantics of influence systems which simply ignores the negative sources~\cite{FMRS16cmsb}.
 Here, we adopt the Boolean semantics with negation and consider the particular case of \emph{positive influence systems}
@@ -376,7 +370,7 @@ The stochastic semantics with negation is as follows:
 
    Transition probabilities between discrete states are obtained through
    normalization of the propensities of all enabled transitions, and the time
-   of next reaction can also be given \emph{\`a la}
+   of next transition can also be given \emph{\`a la}
    Gillespie~\cite{Gillespie77jpc}.
 
 \end{definition}
@@ -402,15 +396,15 @@ of 5-tuples by ignoring $I$.
 	and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
 \end{definition}
 
-Positive influence systems may hence be represented as $n$ activation and $n$ deactivation functions, which are defined as follows:
+Influence systems may be represented as $n$ activation and $n$ deactivation functions, which are defined as follows:
 
 
 \begin{definition}\label{def:activation}
-	Given a network of $n$ genes $x_1,\ldots,x_n$, and
+	Given a network of $n$ species $x_0,\ldots,x_n$, and
 	an integer $1 \leq k \leq n$ we can define ${x_k}^+$ (resp.\ ${x_k}^-$):
 	${\{0,1\}}^n \rightarrow\{0,1\}$ the activation (resp.\ deactivation)
 	Boolean function of $x_k$. In a given state $v$, ${x_k}^+(v)$ (resp.\
-   ${x_k}^-(v)$) is worth 1 if and only if the gene $x_k$ can be activated
+   ${x_k}^-(v)$) equals 1 if and only if the gene $x_k$ can be activated
    (resp.\ deactivated) from state $v$.
 \end{definition}
 
@@ -421,7 +415,7 @@ Furthermore, the restriction to \textbf{positive} influence systems, leads to mo
 
 \begin{example}
 
-For Ex.~\ref{ex:LVi} we would have as monotone DNF formulae:
+For the Lotka--Volterra example Ex.~\ref{ex:LVi} we would have as monotone DNF formulae:
 \begin{eqnarray*}
    A^+&=&(A)\\
    A^-&=&(A \wedge B)\\
@@ -470,9 +464,9 @@ B^+&=&(A)\wedge (B)\\
    \text{IFNg}^-=(\neg \text{STAT4})\wedge(\neg \text{TBet})\]
 \end{example}
 
-\subsection{$k$-CNF Models of Thomas's Regulatory Networks}
+\subsection{$k$-CNF Models of Thomas' Regulatory Networks}
 
-The $k$-CNF representation also fits the Boolean semantics of Thomas's gene
+The $k$-CNF representation also fits the Boolean semantics of Thomas' gene
 regulatory networks~\cite{Thomas73jtb}.
 
 \begin{definition}
@@ -560,7 +554,7 @@ produced either from real biological experiments, or, for the purpose of evaluat
 	\caption{\label{steps}Illustration of our hypothetical experimental setup with three steps of a trace. Between $a$ and $b$, the first gene has been activated, and between $b$ and $c$, the last one has been deactivated.}
 \end{figure}
 
-More specifically, and as illustrated in figure~\ref{steps}, we consider that our experimental setup enables us to identify a ``step'' of its evolution, i.e.~that we are able to obtain a trace $(v_i)_{0 \leq t \leq T}$ of the Boolean state of activation of its species where for all $t$ in $[0,T-1]$, $v_t$ and $v_{t+1}$ differ in exactly one coordinate. That is, the state of exactly one species has changed.
+More specifically, and as illustrated in Fig.~\ref{steps}, we consider that our experimental setup enables us to identify a ``step'' of its evolution, i.e.~that we are able to obtain a trace $(v_i)_{0 \leq t \leq T}$ of the Boolean state of activation of its species where for all $t$ in $[0,T-1]$, $v_t$ and $v_{t+1}$ differ in exactly one coordinate. That is, the state of exactly one species has changed.
 
 
 Even though we will finally not require it, we first also consider that our experimental setup enables us to put the system in a given state, i.e.~that for any $v \in \mathbb{B}^n$ we can set the experiment's initial conditions so that they are correctly abstracted by $v$.
@@ -572,9 +566,9 @@ Because both influence systems and \textit{\`{a} la Thomas} networks essentially
 
 \subsubsection{Sampling}
 
-We can first remark that sampling of (de)activation function is straightforward in this setting. Referring to figure~\ref{steps}, $(a)$ is a positive example for the activation function ${x_1}^+$, and $(c)$ for ${x_4}^-$.
+We can first remark that sampling of (de)activation function is straightforward in this setting. Referring to Fig.~\ref{steps}, $(a)$ is a positive example for the activation function ${x_1}^+$, and $(c)$ for ${x_4}^-$.
 
-A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function. Issues \wip{that have not been studied yet} may arise if there is not enough samples to guarantee a good approximation. 
+A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function. Issues may arise if there are not enough samples to guarantee a good approximation. 
 %Our belief is 
 We assume here that those issues can be solved by running several traces from different initial states.
 
@@ -596,10 +590,15 @@ we have to content ourself with an imperfect oracle.
 %\section{In sillico application}
 \subsection{PAC Learning from Boolean Traces}
 
-\francois{To update since the example has already been introduced before}
+A first experimentation was to simulate Boolean traces for a given influence network, and use them as a basis to learn.
+We report results on the now familiar Lotka--Volterra example
+Ex.~\ref{ex:LVi}, but to increase readability we used long names for the
+species (populations) as shown in Listing~\ref{bool-LV}.
+The results are presented in Listing~\ref{bool-LV.res}.
 
-A first experimentation was to simulate Boolean traces for a given influence network, and use them as a basis to learn. 
-A toy example is given in listing~\ref{bool-LV} (influence network) and the corresponding results are presented in listing~\ref{bool-LV.res}.
+\sylvain{It is hard to understand why the syntax changes and why forces are
+now constant.}
+
 
 In output \texttt{!A} means $\neg A$ or ``not A''.
 
@@ -607,24 +606,26 @@ In output \texttt{!A} means $\neg A$ or ``not A''.
 
 \begin{listfig}[htp]
 	\lstinputlisting{examples/bool-lokta.reac}
-	\caption{An influence system describing the Lokta-Voltera prey vs.\ predator model. Numbers in parenthesis indicate the force of an influence.\label{bool-LV}}
+   \caption{The Lokta-Voltera prey vs.\ predator model of Ex.~\ref{ex:LVi}
+   with explicit names and forces (numbers in parenthesis).\label{bool-LV}}
 \end{listfig}
 \begin{listfig}[htp]
 	\lstinputlisting{examples/bool-lokta.res}
-	\caption{Results of PAC-learning on traces of the Boolean simulation of the Lokta-Voltera toy example.\label{bool-LV.res}}
+	\caption{Results of PAC-learning on traces of the Boolean simulation of the
+   Lokta--Voltera example.\label{bool-LV.res}}
 \end{listfig}
 
 The results can be interpreted as follow:
 
-Both the predator and the prey species cannot appear. It is important to note that the activation functions in the Lokta Voltera models means the apparition on extinction of the species as a whole and not of individuals of it.
+Both the predator and the prey species cannot appear. It is important to note that the activation functions in the Lokta--Voltera models reports the apparition on extinction of the species' population as a whole and not of individuals of it.
 
 For the predator to disappear, it is necessary that there is predator in the first place and that there is no prey. If the first part of this conjunction is obviously true, the second is false: strictly speaking, predators may disappear even if there is prey left, yet this case is very unlikely: the most likely case is that the predator will go extinct only once there are no more preys left for it to eat. This is a good example of how the learning is only approximate.
 
-Finally, for the prey to go extinct, there must be both prey in the first place and predator to eat it. This is true.
+Finally, for the prey to go extinct, there must be both prey in the first place and predator to eat it. This is correct.
 
 \subsubsection{On the quantification of the approximation}
 
-As it can be seen even on this very simple example, the "approximately" in "probably approximately correct" is not there for nothing. Yet, as explained in definition~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
+As it can be seen even on this very simple example, the ``approximately'' in PAC is not there for nothing. Yet, as explained in Def.~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
 
 Even though we were not able to write it down exactly, it is our conjecture that in the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
 
@@ -648,6 +649,8 @@ remains necessary we present here a fully abstracted method.
 
 \sylvain{Arthur, can you confirm what is written above?}
 
+\paragraph{Test model}
+
 \begin{listfig}[hp]
 	\lstinputlisting{examples/test.reac}
 	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution.\label{test}}
@@ -659,6 +662,9 @@ remains necessary we present here a fully abstracted method.
 
 
 We ran two example reactions, given in listings~\ref{test}, and~\ref{preypred}. As indicated in listing~\ref{test_res}, the first example gave perfect results.
+
+\sylvain{There are no reaction systems in this article, can we translate to
+influences?}
 
 \begin{listfig}[hp]
 	\lstinputlisting{examples/lokta.reac}
@@ -675,6 +681,8 @@ car les ``erreurs'' d'apprentissage seront differentes,
 et si on intègre ces simulations avec differentes conditions initiales on peut espérer me semble-t-il apprendre le bon modele}
 
 \francois{Arthur peux-tu refaire ces experiences?}
+
+\paragraph{Lotka--Volterra model}
 
 As previously, the prey-predator example (listing~\ref{preypred_res}) highlights how dependent to the traces the learned model is.
 To further detail this, it is necessary to dive into the Markov chain of the prey-predator stochastic process. A simplification of it is given in figure~\ref{fig:mc-lv}. One can remark that state (2) is an equilibrium state, whereas state (0) is terminal. Because most of the experiments will start in state (3), we can highlight two possible paths, A and B, leading respectively to (2) and (0). Because (de)activation (and hence sample) only comes from a changing of node in fig.~2, each of these pathways result in a different resulting model.
@@ -733,6 +741,8 @@ Predator- : Predator
 Prey+ : False
 Prey- : Predator /\ Prey
 \end{verbatim}
+
+\sylvain{We need to be more quantitative than that\dots}
 
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
 
