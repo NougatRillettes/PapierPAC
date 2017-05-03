@@ -18,6 +18,8 @@
 \newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 \newcommand{\francois}[1]{\textcolor{blue}{#1}}
 \newcommand{\sylvain}[1]{\textcolor{green}{#1}}
+\newcommand{\arthur}[1]{\textcolor{brown}{#1}}
+
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
 \newcommand{\lra}{\longrightarrow}
@@ -648,6 +650,8 @@ activiation (resp.\ deactivation)), but since the abstraction of the state
 remains necessary we present here a fully abstracted method.
 
 \sylvain{Arthur, can you confirm what is written above?}
+\arthur{Non car je ne comprends pas ce que voudrait dire "but since the abstraction of the state
+	remains necessary we present here a fully abstracted method."}
 
 \paragraph{Test model}
 
@@ -681,6 +685,8 @@ car les ``erreurs'' d'apprentissage seront differentes,
 et si on intègre ces simulations avec differentes conditions initiales on peut espérer me semble-t-il apprendre le bon modele}
 
 \francois{Arthur peux-tu refaire ces experiences?}
+
+\arthur{François la remarque ci-dessu est-elle toujours valable ?}
 
 \paragraph{Lotka--Volterra model}
 
@@ -742,7 +748,7 @@ Prey+ : False
 Prey- : Predator /\ Prey
 \end{verbatim}
 
-\sylvain{We need to be more quantitative than that\dots}
+\sylvain{We need to be more quantitative than that\dots}\arthur{Peux-tu détailler ce que tu veux dire par plus quantitatif ?}
 
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
 
@@ -775,6 +781,8 @@ Fig.~\ref{fig:lympho} shows the influence graph of the model. The
 corresponding code is given in appendix (Listing~\ref{bool-lympho}).
 
 \subsection{Ab initio PAC Learning from Boolean Traces}
+\arthur{Cette sous section n'a plus vraiment de logique, François tu avais commencé à la modifier au commit \texttt{493962043e7436e94603d5f29447e65bf47de305} mais je ne vois pas où tu veux en venir exactement.}
+
 
 \francois{Ce paragraphe ne veut pas dire grand chose --
 quel est le probleme exactement?
@@ -785,7 +793,6 @@ However, results of learning on the traces resulting from the Boolean simulation
 %Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
-
 \francois{donner les temps d execution en precisant sur quelle machine, le nombre de traces, l horizon temporel }
 
 \francois{car les resultats en dependent! il faut donc preciser ces conditions experimentales}
