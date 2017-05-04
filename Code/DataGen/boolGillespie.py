@@ -19,6 +19,7 @@ parser.add_argument('k', type=int,
                     help='Maximum size of the disjunctions')
 parser.add_argument('--rndic',action='store',type=int,default=0,\
                     help='Activate the randomisation of inital conditions, argument is the number of times the simulation is rerun')
+parser.add_argument('--stats', action='store_true',help="Outputs stats on the way teh gillespie algorithm behaved")
 
 
 class Indexer(dict):
@@ -90,6 +91,11 @@ if args.rndic:
         state[i] = random.random() > 0.5
     num_sim = args.rndic
 
+do_stats = False
+if args.stats:
+    do_stats = True
+
+stats = [0]*(2*len(indexer))
 
 h = args.h
 k = args.k
@@ -103,7 +109,7 @@ for sim_n in range(num_sim):
             #    if state[v]:
             #        print(k,end=' ',file=stderr)
             #print(file=stderr)
-            print(100*((sim_n)*loop_end + loop_n)/(num_sim*loop_end),"%",file=stderr,sep='',end=" ")
+            print("{:.1f}".format(100*((sim_n)*loop_end + loop_n)/(num_sim*loop_end)),"%",file=stderr,sep='',end=" ")
             print("Remaining time (minutes):",(time.time()-start_time)*((num_sim*loop_end)/(sim_n*loop_end + loop_n) -1)/60,file=stderr)
 
         doable = [r for r in reactions if canFire(r)]
@@ -115,8 +121,10 @@ for sim_n in range(num_sim):
             if state[r] ^ activated:
                 if activated:
                     influences[2*r] |= {tuple([2*i + (1 if x else 0) for (i,x) in enumerate(state)])}
+                    stats[2*r] += 1
                 else:
                     influences[2*r+1] |= {tuple([2*i + (1 if x else 0) for (i,x) in enumerate(state)])}
+                    stats[2*r+1] += 1
             state[r] = activated
     for i in range(len(indexer)):
         state[i] = random.random() > 0.5
@@ -125,3 +133,13 @@ for sim_n in range(num_sim):
 result = {'indexer': indexer, 'influences': [list(x) for x in influences]}
 
 print(json.dumps(result))
+
+if do_stats:
+    n = len(indexer)
+    revIndexer = [None]*n
+    for (k,v) in indexer.items():
+        revIndexer[v] = k
+    print("Stats:",file=stderr)
+    print("Function : N. of samles : N. of different samples",file=stderr)
+    for (i,v) in enumerate(stats):
+        print("{}{} : ".format(revIndexer[i//2], '-' if i%2 else '+'),v," : ",len(influences[i]),file=stderr)
