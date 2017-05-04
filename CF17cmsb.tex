@@ -16,9 +16,15 @@
 \usepackage{float}
 
 \newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
-\newcommand{\francois}[1]{\textcolor{blue}{#1}}
-\newcommand{\sylvain}[1]{\textcolor{green}{#1}}
-\newcommand{\arthur}[1]{\textcolor{brown}{#1}}
+
+\newif\ifcomments
+
+\commentstrue
+%\commentsfalse
+
+\newcommand{\francois}[1]{\ifcomments  \textcolor{blue}{#1}\fi}
+\newcommand{\sylvain}[1]{\ifcomments \textcolor{green}{#1} \fi}
+\newcommand{\arthur}[1]{\ifcomments \textcolor{brown}{#1} \fi}
 
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
