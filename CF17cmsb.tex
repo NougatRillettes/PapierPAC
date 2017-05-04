@@ -795,7 +795,14 @@ quel est le probleme exactement?
 -- j'ai l'impression que le probleme est juste de ne pas avoir fait assez de runs avec des etats initiaux differents
 -- il faudrait le faire pour analyser les resultats et etre plus precis}
 
-However, results of learning on the traces resulting from the Boolean simulation of this system gave very poor results. By this, we mean not that they were bad at predicting the behavior of the model (because guarantees on this come directly from Valiant's work) but that they were hardly readable and of little help to the human experimenter. 
+Results of learning on the traces resulting from the Boolean simulation of this system from a given starting point gave very poor results. By this, we mean not that they were bad at predicting the behavior of the model (because guarantees on this come directly from Valiant's work) but that they were hardly readable and of little help to the human experimenter.
+
+This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting point. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in listing \ref{lympho-rand.res}.
+
+\begin{listfig}[htb]
+	\lstinputlisting{examples/lympho_100_2_140.res}
+	\caption{Results of PAC learning on 140 simulation of the lymphocyte influence system, with random starting points.\label{lympho-rand.res}}
+\end{listfig}
 %Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
