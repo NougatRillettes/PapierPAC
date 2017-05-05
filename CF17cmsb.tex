@@ -579,12 +579,14 @@ We can first remark that sampling of (de)activation function is straightforward 
 
 A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function. Issues may arise if there are not enough samples to guarantee a good approximation. 
 %Our belief is 
-We assume here that those issues can be solved by running several traces from different initial states.
+We assume here that those issues can be solved by running several traces from
+different initial states. This very point is discussed in more details on an
+example in Section~\ref{sec:abinitio}
 
 \subsubsection{Oracle}
 The \textsc{Oracle} function needs to evaluate the (de)activation function on a given total vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
 
-The intuitive solution is the following : set the system in the desired state and see whether or not the gene is (de)activated. 
+The intuitive solution is the following: set the system in the desired state and see whether or not the gene is (de)activated. 
 However, different atomic steps are possible from a given state and we have no guarantee that the one we are interested in will happen
 in several runs of the experiment. 
 
@@ -605,18 +607,15 @@ Ex.~\ref{ex:LVi}, but to increase readability we used long names for the
 species (populations) as shown in Listing~\ref{bool-LV}.
 The results are presented in Listing~\ref{bool-LV.res}.
 
-\sylvain{It is hard to understand why the syntax changes and why forces are
-now constant.}
-
-
-In output \texttt{!A} means $\neg A$ or ``not A''.
+In the output \texttt{!A} means $\neg A$ or ``not A''.
 
 \subsubsection{Results}
 
 \begin{listfig}[htp]
 	\lstinputlisting{examples/bool-lokta.reac}
    \caption{The Lokta-Voltera prey vs.\ predator model of Ex.~\ref{ex:LVi}
-   with explicit names and forces (numbers in parenthesis).\label{bool-LV}}
+   with explicit names, forces (numbers in parenthesis) and initial state
+   (first line).\label{bool-LV}}
 \end{listfig}
 \begin{listfig}[htp]
 	\lstinputlisting{examples/bool-lokta.res}
@@ -628,17 +627,15 @@ The results can be interpreted as follow:
 
 Both the predator and the prey species cannot appear. It is important to note that the activation functions in the Lokta--Voltera models reports the apparition on extinction of the species' population as a whole and not of individuals of it.
 
-For the predator to disappear, it is necessary that there is predator in the first place and that there is no prey. If the first part of this conjunction is obviously true, the second is false: strictly speaking, predators may disappear even if there is prey left, yet this case is very unlikely: the most likely case is that the predator will go extinct only once there are no more preys left for it to eat. This is a good example of how the learning is only approximate.
+For the predator to disappear, it is necessary that there is a predator in the first place and that there is no prey. If the first part of this conjunction is obviously true, the second is false: strictly speaking, predators may disappear even if there are preys left, yet this case is very unlikely: the most likely case is that the predator will go extinct only once there are no more preys left for it to eat. This is a good example of how the learning is only approximate.
 
-Finally, for the prey to go extinct, there must be both prey in the first place and predator to eat it. This is correct.
+Finally, for the prey to go extinct, there must be both a prey in the first place and a predator to eat it. This is correct.
 
 \subsubsection{On the quantification of the approximation}
 
-As it can be seen even on this very simple example, the ``approximately'' in PAC is not there for nothing. Yet, as explained in Def.~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
+As can be seen even on this very simple example, the ``approximately'' in PAC has a precise meaning. Yet, as explained in Def.~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
 
-Even though we were not able to write it down exactly, it is our conjecture that in the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
-
-
+It is our conjecture that in the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
 
 
 \subsection{PAC Learning from Stochastic Traces}
@@ -654,52 +651,65 @@ Boolean traces over ${\mathbb{B}}^n$ by the usual $\{0, >0\}$ abstraction.
 
 It would also be possible to try and learn directly a Boolean model from
 stochastic traces (using $x_i\lra x_i+1$ (resp.\ $x_i-1$) as positive example for the
-activiation (resp.\ deactivation)), but since the abstraction of the state
+activation (resp.\ deactivation)), but since the abstraction of the state
 remains necessary we present here a fully abstracted method.
-
-\sylvain{Arthur, can you confirm what is written above?}
-\arthur{Non car je ne comprends pas ce que voudrait dire "but since the abstraction of the state
-	remains necessary we present here a fully abstracted method."}
 
 \paragraph{Test model}
 
-\begin{listfig}[hp]
-	\lstinputlisting{examples/test.reac}
-	\caption{A test reaction, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution.\label{test}}
+
+We ran two example reactions, one is given in Listing~\ref{test}, and the
+other using again the Lotka--Volterra model of Listing~\ref{bool-LV} but with 10
+\texttt{Predators} and 1000 \texttt{Preys} as initial state.
+As indicated in Listing~\ref{test_res}, the first example found the original
+model.
+
+\begin{listfig}[htb]
+	% \lstinputlisting{examples/test.reac}
+   \begin{lstlisting}
+{}
+-> A
+-> E
+A / E -> B
+B -> C
+A -< A
+B -< B
+C -< C
+E -< E
+   \end{lstlisting}
+	\caption{Test model, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution.\label{test}}
 \end{listfig}
-\begin{listfig}[hp]
+\begin{listfig}[htb]
 	\lstinputlisting{examples/test.result}
 	\caption{Results for the test example\label{test_res}}
 \end{listfig}
 
+\sylvain{Changed to use an influence system in both examples. Experiments
+should be redone, but I'm tired to ask again the same thing.}
 
-We ran two example reactions, given in listings~\ref{test}, and~\ref{preypred}. As indicated in listing~\ref{test_res}, the first example gave perfect results.
+\sylvain{Also updated the text and moved it below to be more in the explanation of the results
+than in a negative judgment. It would have been nice to try the Boolean
+initial state to find the extinction of the predator\dots}
 
-\sylvain{There are no reaction systems in this article, can we translate to
-influences?}
+% \begin{listfig}[htb]
+% 	\lstinputlisting{examples/lokta.reac}
+% 	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in Fig.~\ref{bool-LV}.\label{preypred}}
+% \end{listfig}
+\paragraph{Lotka--Volterra model}
 
-\begin{listfig}[hp]
-	\lstinputlisting{examples/lokta.reac}
-	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in figure~\ref{bool-LV}.\label{preypred}}
-\end{listfig}
-\begin{listfig}[hp]
+\begin{listfig}[htb]
 	\lstinputlisting{examples/lokta.result}
 	\caption{Results for the Prey-Predator model\label{preypred_res}}
 \end{listfig}
-\francois{Non je ne suis pas d'accord avec ce discours sur les erreurs typiques,
-mieux vaudrait parler de sensibilite aux conditions initiales des simulations
-en jouant avec quelques experiences sur les nombres initiaux respectifs de proies et predateurs
-car les ``erreurs'' d'apprentissage seront differentes,
-et si on intègre ces simulations avec differentes conditions initiales on peut espérer me semble-t-il apprendre le bon modele}
 
-\francois{Arthur peux-tu refaire ces experiences?}
+The Lotka--Volterra model leads to the same approximation as in the
+Boolean case, for the same reason, the very low probability of extinction of
+the predator when there are still preys alive. Note that this could be
+circumvented with a specific initial state (a single predator) and repeated
+simulations. A more detailed discussion of this topic is given in
+Section~\ref{sec:abinitio}.
 
-\arthur{François la remarque ci-dessu est-elle toujours valable ?}
-
-\paragraph{Lotka--Volterra model}
-
-As previously, the prey-predator example (listing~\ref{preypred_res}) highlights how dependent to the traces the learned model is.
-To further detail this, it is necessary to dive into the Markov chain of the prey-predator stochastic process. A simplification of it is given in figure~\ref{fig:mc-lv}. One can remark that state (2) is an equilibrium state, whereas state (0) is terminal. Because most of the experiments will start in state (3), we can highlight two possible paths, A and B, leading respectively to (2) and (0). Because (de)activation (and hence sample) only comes from a changing of node in fig.~2, each of these pathways result in a different resulting model.
+As previously, the prey-predator example (Listing~\ref{preypred_res}) highlights how dependent to the traces the learned model is.
+To further detail this, it is necessary to dive into the Markov chain of the prey-predator stochastic process. A simplification of it is given in Fig.~\ref{fig:mc-lv}. One can remark that state (2) is an equilibrium state, whereas state (0) is terminal. Because most of the experiments will start in state (3), we can highlight two possible paths, A and B, leading respectively to (2) and (0). Because (de)activation (and hence sample) only comes from a changing of node in Fig.~2, each of these pathways result in a different resulting model.
 
 \begin{figure}[htpb]
 	\centering
@@ -725,7 +735,7 @@ To further detail this, it is necessary to dive into the Markov chain of the pre
 	\draw (4.8,9) edge[->,looseness=1,out=200,in=90] node[below,left] {A} (4,7);
 	\draw (5.2,9) edge[->,looseness=0.8,out=-20,in=90] node[below,right] {B} (6,5);
 	\end{tikzpicture}
-	\caption{A simplification of the markov chain of the Lokta-Voltera process. Probabilities are not given but all arrows have non-null probability to be taken.\label{fig:mc-lv}}
+	\caption{A simplification of the Markov chain of the Lokta-Voltera process. Probabilities are not given but all arrows have non-null probability to be taken.\label{fig:mc-lv}}
 \end{figure}
 
 For A this is:
@@ -744,7 +754,7 @@ Prey+ : False
 Prey- : Predator /\ Prey
 \end{verbatim}
 
-Both those learned model are not complete, as the sampling will by design miss some of the possible positive examples because only one of A and B paths can be followed.
+Both those learned model are approximate, as the sampling will by design miss some of the possible positive examples because only one of A and B paths can be followed.
 
 Indeed, the only way to get the correct result is to run several time the experiment, and hope that probabilities favor us enough so that we have samples from pathways A and B.
 
@@ -756,11 +766,12 @@ Prey+ : False
 Prey- : Predator /\ Prey
 \end{verbatim}
 
-\sylvain{We need to be more quantitative than that\dots}\arthur{Peux-tu détailler ce que tu veux dire par plus quantitatif ?}
-
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
 
 %All the systems proposed so far were of humble size. 
+
+Note that all learning experiments in this Section were run under 3s on a
+low-end laptop.
 
 \subsection{Boolean Thomas Network}
 
@@ -789,10 +800,11 @@ Fig.~\ref{fig:lympho} shows the influence graph of the model. The
 corresponding code is given in appendix (Listing~\ref{bool-lympho}).
 
 \subsection{Ab initio PAC Learning from Boolean Traces}
+\label{sec:abinitio}
 
 Results of learning on the traces resulting from the Boolean simulation of this system from a given starting point gave very poor results. By this, we mean not that they were bad at predicting the behavior of the model (because guarantees on this come directly from Valiant's work) but that they were hardly readable and of little help to the human experimenter.
 
-Note however that, Valiant's results stand only if we actually have at least $L$ samples for each of the (de)activation functions, where $L$ is Valiant's bound. A first naive approach might be to simply let the trace run for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of samples for each function can be pretty non-uniform, as illustrated in figure\ref{nsample-tab}. Hence, we would have to find a system to track the number of samples collected so far for each function, but without running infinitely long shall one gene be never (de)activated.
+Note however that, Valiant's results stand only if we actually have at least $L$ samples for each of the (de)activation functions, where $L$ is Valiant's bound. A first naive approach might be to simply let the trace run for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of samples for each function can be pretty non-uniform, as illustrated in Fig.~\ref{nsample-tab}. Hence, we would have to find a system to track the number of samples collected so far for each function, but without running infinitely long shall one gene be never (de)activated.
 
 \begin{figure}[htbp]
 	\[
@@ -829,6 +841,13 @@ Note however that, Valiant's results stand only if we actually have at least $L$
 	\]
 	\caption{Repartition of samples in a simulation of the lymphocyte influence system for a single trace. Coefficient of variation is around 1.2.\label{nsample-tab}}
 \end{figure}
+
+\begin{listfig}[htb]
+	\lstinputlisting{examples/lympho_100_2_140.res}
+	\caption{Results of PAC learning on 140 simulation of the lymphocyte influence system, with random starting points.\label{lympho-rand.res}}
+\end{listfig}
+%Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
+
 \begin{figure}[htbp]
 	\[
 \begin{tabular}{lr}
@@ -865,7 +884,7 @@ IFNg-    &  242357 \\
 	\caption{Repartition of samples in a simulation of the lymphocyte influence system for a hundred traces with random starting points. Coefficient of variation is still around 1.2.\label{nsample-tab2}}
 \end{figure}
 
-This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting point. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in listing \ref{lympho-rand.res}. Note that randomizing does not really uniformize the repartition of the samples, as shown in figure \ref{nsample-tab2}. We can also remark that -- for the same number of steps -- there is not necessarily more different samples when randomizing periodically the state (ie, restarting with random conditions) than when not doing it, as shown figure\ref{eff-samp}. Yet, the quality of learning is better when doing periodic random reinitialization, leading us to believe that even if there is not more different samples, they are distributed in a way that cover more exhaustively the behavior of the system..
+This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting points. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in Listing~\ref{lympho-rand.res}. Note that randomizing does not really uniformize the repartition of the samples, as shown in Fig.~\ref{nsample-tab2}. We can also remark that -- for the same number of steps -- there is not necessarily more \emph{different} samples when randomizing periodically the state (ie, restarting with random conditions) than when not doing it, as shown Fig.~\ref{eff-samp}. Yet, the quality of learning is better when doing periodic random reinitialization, leading us to believe that even if there is not more different samples, they are distributed in a way that cover more exhaustively the behavior of the system..
  
 \begin{figure}[htbp]
 	\[
@@ -900,22 +919,18 @@ STAT6-   &   3.3 &   3.7 \\
 \bottomrule
 \end{tabular}
 	\]
-	\caption{Percentages of samples that have never been seen before, for each function.\label{eff-sample}}
+	\caption{Percentages of samples that have never been seen before, for each function.\label{eff-samp}}
 \end{figure}
 
-\begin{listfig}[htb]
-	\lstinputlisting{examples/lympho_100_2_140.res}
-	\caption{Results of PAC learning on 140 simulation of the lymphocyte influence system, with random starting points.\label{lympho-rand.res}}
-\end{listfig}
-%Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
-
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
-\arthur{Transition à faire ici.}
 
+Even with such improved results, the obtained model remains approximate, and
+it becomes obvious that with much bigger examples, the amount of data needed
+to get back the initial model would become huge.
 
 Machine learning with prior knowledge can save a lot of work by constraining the possible results and pruning the search.
 
-What we mean by hints can be formally defined: we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in listing~\ref{hints}. It is remarkable than when given such hints, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences (as indicated in listing\ref{hints.res}).
+Here we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in Listing~\ref{hints}. It is remarkable than when given such hints, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences (as indicated in Listing\ref{hints.res}).
 
 \begin{listfig}[htb]
 	\lstinputlisting{examples/lympho.hints}
@@ -933,8 +948,7 @@ What we mean by hints can be formally defined: we want the user to be able to sp
 \section{Active Learning of Positive Influence Systems}
 \label{sec:oracles}
 
-\sylvain{I guess this is where the oracle as experiment-design discussion will
-take place\dots}
+\sylvain{I currently haven't been able to untangle this section}
 
 \francois{On va mettre ces considerations en conclusion/perspectives probablement}
 
@@ -972,7 +986,9 @@ in a qualitative manner.
 \section{Conclusion}
 
 In conclusion, we have shown that Valiant's work on PAC learning provides an elegant trail to serve as a way to automatically discover possible regulatory networks of a biological process, given sufficiently precise traces of its run.
-When dimension increases, PAC learning algorithms can also leverage available prior knowledge on the system to deliver results.
+When dimension increases, PAC learning algorithms can also leverage available
+prior knowledge on the system to deliver precise results with a reasonable
+amount of data.
 Moreover, the use of oracles for monotone DNF formulae is of interest to create an online learning algorithm
 and is relevant to experimental design.
 
