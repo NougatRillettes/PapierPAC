@@ -62,8 +62,8 @@ Ecole Normale Sup\'erieure, Paris, France\\
 \begin{abstract}
 Automating the process of model building from experimental data 
 is a very desirable goal to palliate the lack of modellers for many applications.
-Despite the spectacular progress of machine learning techniques in data analytics, classification and clustering,
-learning dynamical models from data time-series is challenging.
+However, despite the spectacular progress of machine learning techniques in data analytics, classification, clustering and prediction making,
+learning dynamical models from data time-series is still challenging.
 In this paper we investigate the use of the Probably Approximately Correct (PAC) learning 
 framework of Leslie Valiant as a method for the automated discovery of influence models of biochemical processes from Boolean and stochastic traces. 
 We show that Thomas' Boolean influence systems can be naturally represented by k-CNF formulae
@@ -86,14 +86,17 @@ with a gain in both the quantification and the reliability of the observations, 
 
 Machine learning is revolutionising the statistical methods in biological data analytics,
 data classification and clustering, and prediction making.
-However, learning dynamical models from data time-series is more challenging.
+However, learning dynamical models from data time-series is still challenging.
+A recent survey on probabilistic programming \cite{GHNR14fose}
+highlighted the difficulties associated with modelling time,
+and concluded that existing frameworks are not sufficient in their treatment of dynamical systems.
 There has been early work on the use of machine learning techniques, such as inductive
  logic programming~\cite{Muggleton95ngc} combined with active learning in the vision of the ``robot scientist''~\cite{BMOKRK01etai},
 to infer gene functions,
 metabolic pathway descriptions~\cite{AM02etai,AM02slps}
 or gene influence systems~\cite{BCRG04jtb},
 or to revise a reaction model with respect to CTL properties~\cite{CCFS06tcsb}.
-For a few years, progress in this field has been measured on public benchmarks
+Since a few years, progress in this field is measured on public benchmarks
 of the ``Dream Challenge'' competition~\cite{Meyer14bmc}.
 Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide efficient tools such as CLASP~\cite{GKNS07lpnmr}
 to implement learning algorithms for Boolean models.
@@ -122,32 +125,25 @@ and on the study of their evolution~\cite{Valiant13book}.
 
 Here we investigate PAC learning as a method for the automated discovery of influence models of biochemical processes from time-series data. 
 To the best of our knowledge, 
-the application of PAC learning to models of biological systems has not been reported before.
+the application of PAC learning to dynamical models of biological systems has not been reported before.
 We show that Thomas' gene regulatory networks~\cite{Thomas91jtb,Thomas73jtb} can be naturally represented by 
 Boolean formulae in conjunctive normal forms with a bounded number of litterals (i.e.~k-CNF formulae),
 and can be learned from Boolean transitions with a quasi linear number of Boolean transition samples, using Valiant's PAC learning algorithm for k-CNF formulae.
 We also show that Boolean influence systems with their positive Boolean semantics discussed in~\cite{FMRS16cmsb}
-can be naturally represented by monotone DNF formulae.
-Valiant's PAC active learning algorithm for monotone DNF formulae makes it possible in theory 
-to learn a Boolean influence model from a set of positive examples and a set of calls to an oracle for the Boolean transitions.
-However, \dots
+can be naturally represented by monotone DNF formulae,
+and learned actively from a set of positive samples with calls to an oracle.
 
-These results are illustrated in the following with a Boolean influence model of the lymphocyte T as running example.
-They are further evaluated on \dots of size \dots
-We evaluate the PAC learning protocols first without prior knowledge, and then with knowledge of the unsigned or signed influence graph without Boolean functions.
-
-\sylvain{will be completed when we know what is in the article or not}
-
-We conclude on the merits of this framework, but also on its limits to scale up,
-and to be usable in the context of a wet lab context for real biological experiment design.
+In the following, these results are first illustrated with a toy example, the Lotka-Volterra prey-predator system as running example,
+and then evaluated on a Boolean influence model of 
+the differentiation of the T-helper lymphocytes from \cite{RRMTC06tcsb,Mendoza06biosystems},
+composed of 32 influences and 12 variables.
 
 
 \section{Preliminaries on PAC Learning}\label{pac}
 
 \subsection{PAC Learning Protocol}
 
-
-Let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
+Let $n$ be the dimension of the model to learn, and let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
 \begin{itemize}
 	\item A vector is an assignment of the $n$ variables to $\mathbb{B}_* = \{0,1,*\}$;
 	\item A total vector is a Boolean assignment, in $\mathbb{B} = \{0,1\}$;
@@ -169,9 +165,9 @@ The output of \textsc{Sample}$()$ is assumed to follow a given probability distr
 
 \begin{definition}[Learnable class~\cite{Valiant84cacm}]\label{def:learnclass}
    A class $\cal M$ of \emph{Boolean functions} is said to be \emph{learnable}
-   if there exists an algorithm $\cal A$ such that:
+   if there exists an algorithm $\cal A$ with some precision parameter $h\in\mathbb N$ such that:
    \begin{itemize}
-      \item $\cal A$ runs in polynomial time both in $n$ -- the dimension of the models to learn -- and $h$ the precision parameter;
+      \item $\cal A$ runs in polynomial time both in $n$ and $h$;
       \item
          for any function $F$ in $\cal M$, and any distribution $D$ on the positive examples,
          $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ such that
@@ -183,12 +179,11 @@ The output of \textsc{Sample}$()$ is assumed to follow a given probability distr
    \end{itemize}
 \end{definition}
 
-For the sake of simplicity, the same precision parameter $h$ is used above for quantifying both the probability that the result is correct,
-and the error tolerated in the correctness criterion.
-
-We could have also removed the distinction between concepts and Boolean functions here,
+For the sake of simplicity, the same precision parameter $h$ is used above for quantifying both the \emph{probability} that the result is correct,
+and the \emph{approximation} error tolerated in the correctness criterion.
+For the scope of this paper, we could have also removed the distinction between concepts and Boolean functions
 since in the sequel we will learn Boolean functions only, and obtain samples from data time series which provide total vectors.
-We keep the distinction in this section for the sake of generality.
+The distinction was kept in this section for the sake of generality.
 
 \subsection{PAC Learning Algorithms}
 
@@ -204,7 +199,7 @@ integers $S\ge 1$ and reals $h>1$, we have $L(h,S) \le 2h(S+\log_e h)$~\cite{Val
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
 For any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
-algorithm that uses $L(h,{(2 n)}^{k+1})$ positive examples and no calls to the
+algorithm that uses $L(h,{(2 n)}^{k+1})$ positive examples and no call to the
 oracle.
 \end{theorem}
 
@@ -213,7 +208,7 @@ leads to the learning of a minimal generalization of the positive examples with 
 
 \begin{algorithm}
 \begin{enumerate}
-  \item initialise $g$ to the conjunction of all possible clauses of at most $k$ literals (there are ${(2n)}^k$ such clauses),
+  \item initialise $g$ to the conjunction of all the $(2n)^k$ possible clauses of at most $k$ literals,
 \item do $L(h,(2n)^{k+1})$ times 
 \begin{enumerate}
 \item $v:=\textsc{Sample}()$
@@ -225,17 +220,17 @@ leads to the learning of a minimal generalization of the positive examples with 
 \end{algorithm}
 
 In our implementation of the PAC-learning algorithm for $k$-CNF formulae,
-we make use of the lattice structure of $k$-clauses ordered by implication.
-It is worth remarking that this data structure allows
+we shall make use of the lattice structure of $k$-clauses ordered by implication.
+Interestingly, this data structure allows for
 \begin{itemize}
-	\item $O(1)$ access to any $k$-clause
+	\item $O(1)$ access to any $k$-clause;
 	\item and for a clause $c$, $O(1)$ access to the smallest clauses implied by $c$ and to the biggest clauses that imply $c$.
 \end{itemize}
 
-Monotone DNF formulae are also learnable.
+The class of monotone DNF formulae is also learnable.
 Let the \emph{degree} of a Boolean formula be the largest number of prime
 implicants in an equivalent rewriting of the formula as a non-redundant sum of
-prime-implicants~\cite{Valiant84cacm}.
+prime-implicants.
 
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
