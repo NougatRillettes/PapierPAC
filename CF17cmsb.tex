@@ -725,9 +725,9 @@ Prey- : Predator /\ Prey
 \end{minipage}
 
 Both those learned model are approximate, as the sampling will by design miss some of the possible positive examples because only one of A and B paths can be followed.
-Indeed, the only way to get the correct result is to run several time the experiment, and hope that probabilities favor us enough so that we have samples from pathways A and B.
+Indeed, the only way to get the expected result is to run several time the experiment, and hope that probabilities favor us enough so that we have samples from pathways A and B.
 
-Result of such run will then be correct, as below:
+The result of such run is shown below:
 \begin{verbatim}
 Predator+ : False
 Predator- : Predator
@@ -776,7 +776,7 @@ Valiant's results stand only if we actually have at least $L$ samples for each o
 
 %Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
-This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting points. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in Listing~\ref{lympho-rand.res}. Note that randomizing does not really uniformize the repartition of the samples, as shown in Fig.~\ref{nsample-tab2}. We can also remark that -- for the same number of steps -- there is not necessarily more \emph{different} samples when randomizing periodically the state (ie, restarting with random conditions) than when not doing it, as shown Fig.~\ref{eff-samp}. Yet, the quality of learning is better when doing periodic random reinitialization, leading us to believe that even if there is not more different samples, they are distributed in a way that cover more exhaustively the behavior of the system..
+This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting points. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in Listing~\ref{lympho-rand.res}. Note that randomizing does not really uniformize the repartition of the samples, as shown in Fig.~\ref{nsample-tab2}. We can also remark that -- for the same number of steps -- there is not necessarily more \emph{different} samples when randomizing periodically the state (ie, restarting with random conditions) than when not doing it, as shown Fig.~\ref{eff-samp}. Yet, the quality of learning is better when doing periodic random reinitialization, leading us to believe that even if there is not more different samples, they are distributed in a way that cover more exhaustively the behavior of the system.
  
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
 
