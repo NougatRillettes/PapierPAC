@@ -1,11 +1,11 @@
-#Premier reviewer
+## Premier reviewer
 
 - [ ] if 140 runs are needed to get some decent results - how can the approach work based on wet-lab studies, where often only 3 "runs" exist? 
 - [ ] In the conclusion it is mentioned that in the future it is planned to investigate the applicability of these methods to real experiments. But is this not the point? We do not need PAC do analyse simulation traces (because in these cases we already have the model), we need methods that allow us to derive models based on real experiments. Here at least an indication under which circumstances the approach will work for real experiments should be provided (also this discussion is announced in the abstract). 
 
 - [ ] So far the performance of PAC has not been compared with other methods yet.  Here it would be interesting to discuss in more detail the possible benefit that PAC would have, given its focus on influence models, and particularly in combination with background knowledge, because also other learning approaches improve significantly when given some knowledge that can be exploited for constraining the search space of hypotheses. 
 
-#Deuxième reviewer
+## Deuxième reviewer
 
 - [ ] The title does not seem to reflect the content of the paper. The title is very generic while the content is mainly restricted to specific paradigms. 
 
@@ -28,7 +28,7 @@ Section 3 is lacking formal proofs (or references). E.g.,
 
 - [ ] Many grammatical and/or syntactical mistakes that reduce readability, e.g., we mean not that, uniformize, experimentation, were run.
 
-#Troisième Reviewer
+## Troisième Reviewer
 
 - [ ] this is a curiosity: can the model structure learned as a boolean network be lifted to a quantitative model, e.g. somehow reversing the construction from Tomas networks, but learning parameters by parameter estimation methods? Can you comment on this? 
 - [ ] I like the expression “shortage of available models”… Do you think these learning techniques can be made fully automatic and do not require a model to supervise them? 
@@ -37,7 +37,7 @@ Section 3 is lacking formal proofs (or references). E.g.,
 - [ ] Section 2.2. What is a prime implicant? 
 - [ ] Section 3.1. What is the meaning of a target vector? What do you mean with the notation x \sigma t? It in not introduced, particularly in a boolean context. Please define it (I suspect it is and or or of the vectors). 
 - [ ] Section 3.4. Is example 6, referring to a model not introduced, really needed here? It’s a bit disturbing as a forward pointer. 
-- [ ] Section 4.2, page 9. You mean (b) rather than (c)?
+- [x] Section 4.2, page 9. You mean (b) rather than (c)?
 - [ ] Section 4.2. What is the impact on the framework (from a mathematical viewpoint) of the imperfect oracle assumption?
 - [ ] Page 12. Listing 5 is in an unfortunate position. 
 - [ ] Section 4.4. It seems that the issue about pathways A and B is an an issue about rare events. If we do not observe them, your  framework will miss them. This is not surprising, yet this may be a drawback of trying to learn an exact model from a incomplete information set. Any chance of using Bayesian learning to account for this uncertainty in a principles way? Can you discuss about this? 
