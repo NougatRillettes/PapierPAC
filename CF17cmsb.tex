@@ -144,14 +144,12 @@ composed of 32 influences and 12 variables.
 \subsection{PAC Learning Protocol}
 
 Let $n$ be the dimension of the model to learn, and let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
- A vector is an assignment of the $n$ variables to $\mathbb{B}_* = \{0,1,*\}$;
- A total vector is a Boolean assignment, in $\mathbb{B} = \{0,1\}$;
+ A vector is an assignment of the $n$ variables to  $\mathbb{B} = \{0,1\}$;
  A Boolean function $G:{\mathbb{B}}^n \rightarrow \mathbb{B}$;
-	assigns a Boolean value to each total vector;
- A concept $F:{\mathbb{B}_*}^n \rightarrow \mathbb{B}$
-	assigns a Boolean value to each vector.
+	assigns a Boolean value to each vector;
 
-The idea behind the PAC learning protocol is to discover a concept, or a Boolean function, $G$ which approximates a hidden concept $F$, while restricting oneself to the two following operations~:
+
+The idea behind the PAC learning protocol is to discover a Boolean function, $G$, which approximates a hidden function $F$, while restricting oneself to the two following operations~:
 \begin{itemize}
   \item
 \textsc{Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
@@ -179,9 +177,8 @@ The output of \textsc{Sample}$()$ is assumed to follow a given probability distr
 
 For the sake of simplicity, the same precision parameter $h$ is used above for quantifying both the \emph{probability} that the result is correct,
 and the \emph{approximation} error tolerated in the correctness criterion.
-For the scope of this paper, we could have also removed the distinction between concepts and Boolean functions
-since in the sequel we will learn Boolean functions only, and obtain samples from data time series which provide total vectors.
-The distinction was kept here for the sake of generality.
+We also limited ourselves to the case where vectors had all of their entries defined, but Valiant's work actually allows for only partially defined ones.
+
 
 \subsection{PAC Learning Algorithms}
 
@@ -280,7 +277,7 @@ In this section, we present the formalism of influence systems used to model reg
 %and to which we will later whether or not PAC learning is applicable.
 We assume again a finite set of molecular species $\{x_1,\dots,x_n\}$ 
 and consider Boolean states that represent the activation or presence of each molecular species of the system, 
-i.e.~total vectors in $\mathbb{B}^n$ that specify whether or not the $i$th species is present, or the $i$th gene activated.
+i.e.~vectors in $\mathbb{B}^n$ that specify whether or not the $i$th species is present, or the $i$th gene activated.
 
 \subsection{Influence Systems with Forces}
 
@@ -343,7 +340,7 @@ For an example of influence with inhibitor, one can consider the specific inhibi
    The Boolean semantics (resp.~positive Boolean semantics) of an influence system $\{(P_i, I_i, t_i, \sigma_i,
    f_i)\}_{1\leq i\leq n}$
    over a set $S$ of $n$ variables,
-   is the Boolean transition system $\lra$ defined over Boolean state total vectors in $\mathbb{B}^n$
+   is the Boolean transition system $\lra$ defined over Boolean state vectors in $\mathbb{B}^n$
    by
    ${\vec x}\lra{\vec x'}$ if there exists an influence $(P_i, I_i, t_i, \sigma_i, f_i)$
    such that ${\vec x}\models \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n$ (resp.~${\vec x}\models \bigwedge_{p\in P_i} p$)
@@ -553,7 +550,7 @@ different initial states. This very point is discussed in more details on an
 example in Section~\ref{sec:abinitio}
 
 \subsubsection{Oracle.}
-The \textsc{Oracle} function needs to evaluate the (de)activation function on a given total vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
+The \textsc{Oracle} function needs to evaluate the (de)activation function on a given vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
 The intuitive solution is the following: set the system in the desired state and see whether or not the gene is (de)activated. 
 However, different atomic steps are possible from a given state and we have no guarantee that the one we are interested in will happen
 in several runs of the experiment. 
