@@ -42,3 +42,7 @@ Section 3 is lacking formal proofs (or references). E.g.,
 - [ ] Page 12. Listing 5 is in an unfortunate position. 
 - [ ] Section 4.4. It seems that the issue about pathways A and B is an an issue about rare events. If we do not observe them, your  framework will miss them. This is not surprising, yet this may be a drawback of trying to learn an exact model from a incomplete information set. Any chance of using Bayesian learning to account for this uncertainty in a principles way? Can you discuss about this? 
 - [ ] Page 14. Figure 4 is in the appendix, but mentioned in the text. How will you deal with this in the final version, given the page limits?
+
+## Arthur
+
+- [ ] Replacer les figures citées dans le texte dans le corps du papeir et pas en annexe.
