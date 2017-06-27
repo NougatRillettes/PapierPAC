@@ -603,11 +603,9 @@ For the predator to disappear, it is necessary that there is a predator in the f
 %
 Finally, for the prey to go extinct, there must be both a prey in the first place and a predator to eat it. This is correct.
 
-%\subsubsection{On the quantification of the approximation}
 
 As can be seen even on this very simple example, the ``approximately'' in PAC has a precise meaning. Yet, as explained in Def.~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
 %
-%It is our conjecture that i
 In the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
 
 Note that to obtain the output above, a single Boolean simulation was used.
@@ -619,147 +617,51 @@ samples will be explored in more depth in the following sections.
 
 \subsection{PAC Learning from Stochastic Traces}
 
-Let us now consider stochastic traces %not directly produced from a Boolean model, but from more realistic data time series.
-%For the sake of evaluating the learning method,
-%we generate stochastic traces
+Let us now consider stochastic traces
 produced from the hidden model, using Gillespie's
 algorithm for the simulation of the stochastic semantics given in
 Def.~\ref{def:stoch}.
 
+In general, we will assume mass-action kinetics with rate 1 for all reactions.
+The initial states are random, but with equal probability to be 0 or $>0$ in
+order to facilitate the observation of inhibited reactions.
+
 The traces obtained are in ${\mathbb{N}}^n$, they are then abstracted to
-Boolean traces over ${\mathbb{B}}^n$ by the usual $\{0, >0\}$ abstraction.
-It would also be possible to try and learn directly a Boolean model from
-stochastic traces (using $x_i\lra x_i+1$ (resp.\ $x_i-1$) as positive example for the
-activation (resp.\ deactivation)), but since the abstraction of the state
-remains necessary we present here a fully abstracted method.
+Boolean samples by the usual $\{0, >0\}$ abstraction for the states, and the
+increasing/decreasing abstraction for choosing samples for the
+activation/deactivation functions. Using the same $\{0, >0\}$ abstraction to
+detect samples would again forbid to learn autocatalytic influences like
+\texttt{Prey -> Prey} for the same reason as in the Boolean case.
 
-%\subsubsection{Test model}
-
-
-We ran two example reactions, one is given in Listing~\ref{test}, and the
-other using again the Lotka--Volterra model of Listing~\ref{bool-LV} but with 10
-\texttt{Predators} and 1000 \texttt{Preys} as initial state.
-As indicated in Listing~\ref{test_res}, the first example found the original
-model.
-
-\begin{listfig}[htb]
-	% \lstinputlisting{examples/test.reac}
+\begin{listfig}[htp]
    \begin{lstlisting}
-{}
--> A
--> E
-A / E -> B
-B -> C
-A -< A
-B -< B
-C -< C
-E -< E
+biocham: pac_learning('library/examples/lotka_volterra/LVi.bc', 50, 1).
+% Maxmimum K used: 1
+% minimum number of samples for h=1: 18
+
+% 14 samples (max h ~ 0.7777777777777778)
+Predator -< Predator
+
+% 7 samples (max h ~ 0.3888888888888889)
+Predator,Prey -> Predator
+
+% 1 samples (max h ~ 0.05555555555555555)
+Predator,Prey -< Prey
+
+% 21 samples (max h ~ 1.1666666666666667)
+Prey -> Prey
    \end{lstlisting}
-	\caption{Test model, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution. No species is present at the beginning.\label{test}}
-\end{listfig}
-\begin{listfig}[htb]
-	\lstinputlisting{examples/test.result}
-	\caption{Results of PAC-learning on traces of the stochastic simulation of the
-		test example.\label{test_res}}
+   \caption{Biocham running the PAC learning algorithm by
+   generating 50 random initial states from which a stochastic simulation of
+   length 1 is run to obtain samples.}\label{lst:stoch_lv}
 \end{listfig}
 
-%\sylvain{Changed to use an influence system in both examples. Experiments
-%should be redone, but I'm tired to ask again the same thing.}
-
-%\sylvain{Also updated the text and moved it below to be more in the explanation of the results
-%than in a negative judgment. It would have been nice to try the Boolean
-%initial state to find the extinction of the predator\dots}
-
-% \begin{listfig}[htb]
-% 	\lstinputlisting{examples/lokta.reac}
-% 	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in Fig.~\ref{bool-LV}.\label{preypred}}
-% \end{listfig}
-%\paragraph{Lotka--Volterra model}
-
-\begin{listfig}[htb]
-	\lstinputlisting{examples/lokta.result}
-	\caption{Results of PAC-learning on traces of the stochastic simulation of the
-		Lokta--Voltera example.\label{preypred_res}}
-\end{listfig}
-
-The Lotka--Volterra model leads to the same approximation as in the
-Boolean case, for the same reason, the very low probability of extinction of
-the predator when there are still preys alive. Note that this could be
-circumvented with a specific initial state (a single predator) and repeated
-simulations. A more detailed discussion of this topic is given in
-Section~\ref{sec:abinitio}.
-
-
-
-\begin{figure}[htpb]
-	\centering
-	\begin{tikzpicture}
-	\path (5,10) node[draw](3) {(3) $\begin{array}{c}
-		Prey \geq 1 \\ Predator \geq 1
-		\end{array}$}
-	(8,7.5) node[draw](1) {(1) $\begin{array}{c}
-		Prey = 0 \\ Predator \geq 1
-		\end{array}$}
-	(2,7.5) node[draw](2) {(2) $\begin{array}{c}
-		Prey \geq1 \\ Predator = 0
-		\end{array}$}
-	(8,5) node[draw,double](0) {(0) $\begin{array}{c}
-		Prey = 0 \\ Predator = 0
-		\end{array}$}
-	;
-	\draw [->] (3) -> (2);
-	\draw [->] (3) -> (1);
-	\draw [->] (1) -> (0);
-	\path (3) edge[->,looseness=5] (3);
-	\path (2) edge[->,looseness=5,out=170,in=190] (2);
-	\draw (4.8,9) edge[->,looseness=1,out=200,in=90] node[below,left] {A} (4,7);
-	\draw (5.2,9) edge[->,looseness=0.8,out=-20,in=90] node[below,right] {B} (6,5);
-	\end{tikzpicture}
-	\caption{A simplification of the Markov chain of the Lokta-Voltera process. Probabilities are not given but all arrows have non-null probability to be taken.\label{fig:mc-lv}}
-\end{figure}
-
-As previously, the prey-predator example (Listing~\ref{preypred_res}) highlights how dependent to the traces the learned model is.
-To further detail this, it is necessary to dive into the Markov chain of the prey-predator stochastic process. A simplification of it is given in Fig.~\ref{fig:mc-lv}. One can remark that state (2) is an equilibrium state, whereas state (0) is terminal. Because most of the experiments will start in state (3), we can highlight two possible paths, A and B, leading respectively to (2) and (0). Because (de)activation (and hence sample) only comes from a changing of node in Fig.~2, each of these pathways result in a different resulting model.
-
-\begin{minipage}{.45\textwidth}
-\vspace{1em}
-For A this is:
-\begin{verbatim}
-Predator+ : False
-Predator- : Predator /\ Prey
-Prey+ : False
-Prey- : False
-\end{verbatim}
-\vspace{1em}
-\end{minipage}
-\begin{minipage}{.45\textwidth}
-\vspace{1em}
-For B this is:
-\begin{verbatim}
-Predator+ : False
-Predator- : Predator /\ !Prey
-Prey+ : False
-Prey- : Predator /\ Prey
-\end{verbatim}
-\vspace{1em}
-\end{minipage}
-
-Both those learned model are approximate, as the sampling will by design miss some of the possible positive examples because only one of A and B paths can be followed.
-Indeed, the only way to get the expected result is to run several time the experiment, and hope that probabilities favor us enough so that we have samples from pathways A and B.
-
-The result of such run is shown below in listing~\ref{LV-multi}
-\begin{listfig}
-	\begin{verbatim}
-	Predator+ : False
-	Predator- : Predator
-	Prey+ : False
-	Prey- : Predator /\ Prey
-	\end{verbatim}
-	\vspace{-1em}
-	\caption{Results of PAC-learning on traces of the stochastic simulation of the
-		Lokta--Voltera example, where enough runs were performed to ensure that the two possible behaviors happen.\label{LV-multi}}
-\end{listfig}
-
+As shown by the run in Listing~\ref{lst:stoch_lv}, even with a low number of
+samples (and therefore a very low $k$), one can find the full model with 50
+simulations of length 1, all starting from random initial states. Among those
+50 initial states, 7 had both prey and predator absent, leading to no sample.
+A more detailed discussion of the role of the diversity of initial states is
+given in Section~\ref{sec:abinitio}.
 
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
 
