@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage{listings}
+\usepackage{multicol}
 \usepackage{booktabs}
 \usepackage{subfig}
 \lstset{%
@@ -37,7 +38,7 @@
 \floatname{listfig}{Listing}
 
 \floatstyle{ruled}
-\newfloat{algorithm}{htpb}{algfig}
+\newfloat{algorithm}{htbb}{algfig}
 \floatname{algorithm}{Algorithm}
 
 
@@ -574,18 +575,18 @@ species (populations) as shown in Listing~\ref{bool-LV}.
 The results are presented in Fig.~\ref{bool-LV.res}.
 
 %\subsubsection{Results}
-\begin{listfig}[htp]
+\begin{listfig}[htb]
 	\lstinputlisting{examples/LVi.bc}
    \caption{The Lokta-Voltera prey vs.\ predator model of Ex.~\ref{ex:LVi}
    with explicit names.\label{bool-LV}}
 \end{listfig}%
-\begin{figure}[htp]
+\begin{figure}[htb]
    \begin{minipage}{.5\textwidth}
-      \lstinputlisting{examples/bool-lokta.res}
+      \lstinputlisting[frame=single]{examples/bool-lokta.res}
    \end{minipage}%
-   \vrule\hspace{.04\textwidth}
+   \hspace{.04\textwidth}%
    \begin{minipage}{.45\textwidth}
-      \begin{lstlisting}
+      \begin{lstlisting}[frame=single]
 Predator / Prey -< Predator
 Predator, Prey -< Prey
       \end{lstlisting}
@@ -622,20 +623,9 @@ produced from the hidden model, using Gillespie's
 algorithm for the simulation of the stochastic semantics given in
 Def.~\ref{def:stoch}.
 
-In general, we will assume mass-action kinetics with rate 1 for all reactions.
-The initial states are random, but with equal probability to be 0 or $>0$ in
-order to facilitate the observation of inhibited reactions.
-
-The traces obtained are in ${\mathbb{N}}^n$, they are then abstracted to
-Boolean samples by the usual $\{0, >0\}$ abstraction for the states, and the
-increasing/decreasing abstraction for choosing samples for the
-activation/deactivation functions. Using the same $\{0, >0\}$ abstraction to
-detect samples would again forbid to learn autocatalytic influences like
-\texttt{Prey -> Prey} for the same reason as in the Boolean case.
-
-\begin{listfig}[htp]
-   \begin{lstlisting}
-biocham: pac_learning('library/examples/lotka_volterra/LVi.bc', 50, 1).
+\begin{listfig}[htb]
+      \begin{lstlisting}
+biocham: pac_learning('library:examples/lotka_volterra/LVi.bc', 50, 1).
 % Maxmimum K used: 1
 % minimum number of samples for h=1: 18
 
@@ -658,21 +648,34 @@ Prey -> Prey
    \label{lst:stoch_lv}
 \end{listfig}
 
+In general, we will assume mass-action kinetics with rate 1 for all reactions.
+The initial states are random, but with equal probability to be 0 or $>0$ in
+order to facilitate the observation of inhibited reactions.
+
+The traces obtained are in ${\mathbb{N}}^n$, they are then abstracted to
+Boolean samples by the usual $\{0, >0\}$ abstraction for the states, and the
+increasing/decreasing abstraction for choosing samples for the
+activation/deactivation functions. Using the same $\{0, >0\}$ abstraction to
+detect samples would again forbid to learn autocatalytic influences like
+\texttt{Prey -> Prey} for the same reason as in the Boolean case.
+
 As shown by the run in Listing~\ref{lst:stoch_lv}, even with a low number of
-samples (and therefore a very low $k$), one can find the full model with 50
+samples (and therefore a very low $h$), one can find the full model with 50
 simulations of length 1, all starting from random initial states.
 A more detailed discussion of the role of the diversity of initial states is
 given in Section~\ref{sec:abinitio}.
 
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
 
-%All the systems proposed so far were of humble size. 
-
 In this section we evaluate the performance of the $k$-CNF PAC learning
 algorithm on an influence system of 12 variables and 32 influences that models
 the differentiation of the T-helper lymphocytes.
 All learning experiments described below run on a
 low-end laptop in less than 3s.
+\sylvain{I need to update this}
+
+Note that for the worst cases (e.g. the single simulation with $10^6$ steps)
+the CNF to DNF conversion was very slow, reaching more than 4 minutes.
 
 \subsection{Boolean Thomas Network}
 
@@ -693,20 +696,56 @@ lymphocyte), Th-1 and Th-2 when IL12 is off, and two others when IL12 is on
 \end{figure}
 
 Fig.~\ref{fig:lympho} shows the influence graph of the model. The
-corresponding code is given in appendix (Listing~\ref{bool-lympho}).
+corresponding model is given in Listing~\ref{lst:lympho}.
+Note that since IL12 is an input, in all experiments the PAC learning
+algorithm only finds $false$ as Boolean function for its activation or
+deactivation. We therefore remove it from the results for readability.
+
+\begin{listfig}[htb]
+   \lstinputlisting[multicols=2,firstline=6]{examples/lympho.bc}
+   \caption{Influence system for the lymphocyte differentiation of
+   example~\ref{ex:lympho}.}\label{lst:lympho}
+\end{listfig}
 
 \subsection{\emph{Ab initio} PAC Learning from Boolean Traces}
 \label{sec:abinitio}
 
-Results of learning on the traces resulting from the Boolean simulation of this system from one single initial state gave results that were hardly readable for the human experimenter. Whether they were still good at predicting the behavior of the model is not obvious. On the one hand, guarantees on this come directly from Valiant's work with the approximation bounds, on the other hand,  
-Valiant's results stand only if we actually have at least $L$ samples for each of the (de)activation functions, where $L$ is Valiant's bound. A first naive approach might be to simply let the trace run for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of samples for each function can be pretty non-uniform, as illustrated in Fig.~\ref{nsample-tab}. Hence, we would have to find a system to track the number of samples collected so far for each function, but without running infinitely long shall one gene be never (de)activated.
+Results of learning on the traces resulting from the Boolean simulation of
+this system from one single initial state gave results that were hardly
+readable for the human experimenter. Whether they were still good at
+predicting the behavior of the model is not obvious. On the one hand,
+guarantees on this come directly from Valiant's work with the approximation
+bounds, on the other hand,  Valiant's results stand only if we actually have
+at least $L$ samples for each of the (de)activation functions, where $L$ is
+Valiant's bound. A first naive approach might be to simply let the trace run
+for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of
+samples for each function can be pretty non-uniform, as illustrated in
+Fig.~\ref{fig:statistics}. The minimal number of samples gives us the lowest
+$L(h, S)$ and thus quasi-linearly the lowest $h$.
 
-%Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
+\begin{figure}[htb]
+   \includegraphics[width=\textwidth]{statistics/statistics.png}
+   \caption{Evolution of the standard deviation and of the minimum number of
+   samples for the 24 boolean functions of the Th-lymphocyte example. The
+minimum gives a quasi-linear estimate of the confidence $h$. The total (and
+therefore the average) number of samples is kept constant by adjusting the
+time horizon of the simulations. Obviously, more diverse initial states (e.g.,
+mutants) reveals more about the model structure than longer experiments.}%
+\label{fig:statistics}
+\end{figure}
 
-This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting points. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in Listing~\ref{lympho-rand.res}. Note that randomizing does not really make the repartition of the samples more uniform, as shown in Fig.~\ref{nsample-tab2}. We can also remark that -- for the same number of steps -- there is not necessarily more \emph{different} samples when randomizing periodically the state (ie, restarting with random conditions) than when not doing it, as shown Fig.~\ref{eff-samp}. Yet, the quality of learning is better when doing periodic random reinitialization, leading us to believe that even if there is not more different samples, they are distributed in a way that cover more exhaustively the behavior of the system.
+The good news is that this same figure shows that a simple randomization of
+the initial states (while keeping the total number of samples constant)
+provides a much more homogeneous repartition of samples (as shown by the
+decreasing standard deviation), and, as expected, a much higher $h$.
 
-\sylvain{not sure if all this is not biased by the spurious added
-activations/inhibitions. See Fig.~\ref{fig:statistics}.}
+This leads us to state that when using PAC-learning to find the structure of a
+model, an approach based on mutants (knock-offs, over-expression ,etc.) is
+much more informative than an approach based on (repeated or longer) similar
+observations. Note that this is in line with integrative analyses
+like~\cite{CCCCNT04mbc} and its more than 130 mutants.
+
+\sylvain{add something about model quality}
 
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
 \label{sec:prior}
@@ -720,7 +759,7 @@ Here we want the user to be able to specify, for each gene $x$, a set of gene $V
 
 It is remarkable than when given such prior knowledge, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences, as shown in Listing~\ref{hints.res}.
 
-
+\sylvain{Prior knowledge reduces $S$ and therefore should improve $h$}
 
 
 \section{Conclusion and Perspectives}
@@ -749,127 +788,10 @@ and to investigate the applicability of these methods to real experiments taking
 \bibliography{contraintes}
 \newpage
 \section*{Appendix}
-\begin{listfig}[H]
-\lstinputlisting{examples/lympho-bool.reac}
-\caption{Code for the lymphocyte differentiation of example~\ref{ex:lympho}.\label{bool-lympho}}
-\end{listfig}
-
-
-\begin{figure}[htbp]
-	\centering
-	\subfloat[Single trace.\label{nsample-tab}]{\hspace{1ex}%
-	$$
-	\begin{tabular}{l r}
-	\toprule	     
-	Function &  Number of samples\\
-	\midrule
-	GATA3-   &    360 \\
-	GATA3+   &    361 \\
-	STAT6-   &    546 \\
-	STAT6+   &    547 \\
-	STAT4+   &    805 \\
-	STAT4-   &    805 \\
-	IL12R-   &    849 \\
-	IL12R+   &    849 \\
-	IL4R-    &    862 \\
-	IL4R+    &    863 \\
-	IL12+    &   1096 \\
-	IL12-    &   1096 \\
-	IL4-     &   2204 \\
-	IL4+     &   2205 \\
-	TBet-    &   7135 \\
-	TBet+    &   7135 \\
-	STAT1+   &   9359 \\
-	STAT1-   &   9359 \\
-	IFNgR+   &  12026 \\
-	IFNgR-   &  12026 \\
-	SOCS1+   &  12600 \\
-	SOCS1-   &  12600 \\
-	IFNg-    &  25103 \\
-	IFNg+    &  25103 \\
-	\bottomrule
-	\end{tabular}
-	$$\hspace{1ex}
-%	\caption{Repartition of samples in a simulation of the lymphocyte influence system for a single trace. Coefficient of variation is around 1.2.\label{nsample-tab}}	
-}\hspace{5ex}
-\subfloat[100 traces, random starting points.\label{nsample-tab2}]{\hspace{1ex}%
-$$
-\begin{tabular}{lr}
-\toprule
-Function &  Number of samples\\
-\midrule
-GATA3+   &    3861 \\
-GATA3-   &    3869 \\
-STAT6+   &    5614 \\
-STAT6-   &    5621 \\
-STAT4+   &    7980 \\
-STAT4-   &    8010 \\
-IL12R+   &    8420 \\
-IL12R-   &    8446 \\
-IL4R+    &    8665 \\
-IL4R-    &    8671 \\
-IL12-    &   10651 \\
-IL12+    &   10651 \\
-IL4-     &   21888 \\
-IL4+     &   21889 \\
-TBet+    &   69134 \\
-TBet-    &   69164 \\
-STAT1+   &   91070 \\
-STAT1-   &   91114 \\
-IFNgR+   &  116681 \\
-IFNgR-   &  116721 \\
-SOCS1+   &  122546 \\
-SOCS1-   &  122589 \\
-IFNg+    &  242331 \\
-IFNg-    &  242357 \\
-\bottomrule
-\end{tabular}
-	$$\hspace{1ex}
-%	\caption{Repartition of samples in a simulation of the lymphocyte influence system for a hundred traces with random starting points. Coefficient of variation is still around 1.2.\label{nsample-tab2}}
-}
-\caption{Repartition of samples in a simulation of the lymphocyte influence system with varying number of traces. The coefficient of variation is around 1.2 in both cases. Rows are sorted by number of samples.}
-\end{figure}
-
 \begin{listfig}[htb]
 	\lstinputlisting{examples/lympho_100_2_140.res}
 	\caption{Results of PAC learning on 140 simulation of the lymphocyte influence system, with random starting points.\label{lympho-rand.res}}
 \end{listfig}
-
-\begin{figure}[htbp]
-	\[
-\begin{tabular}{lrr}
-\toprule
-Function &  No random restart &      Random restart \\
-\midrule
-IL12+    &   0.7 &   0.7 \\
-IL12-    &   1.1 &   1.0 \\
-IL4+     &   0.8 &   0.9 \\
-IL4-     &   1.5 &   1.5 \\
-STAT4+   &   0.6 &   0.7 \\
-STAT4-   &   3.6 &   3.6 \\
-IFNg+    &   0.1 &   0.1 \\
-IFNg-    &   0.2 &   0.2 \\
-TBet+    &   0.2 &   0.2 \\
-TBet-    &   0.2 &   0.2 \\
-GATA3+   &   3.2 &   3.3 \\
-GATA3-   &   2.8 &   2.9 \\
-STAT1+   &   0.2 &   0.2 \\
-STAT1-   &   0.2 &   0.2 \\
-IFNgR+   &   0.1 &   0.1 \\
-IFNgR-   &   0.2 &   0.3 \\
-SOCS1+   &   0.2 &   0.3 \\
-SOCS1-   &   0.2 &   0.2 \\
-IL4R+    &   1.0 &   1.1 \\
-IL4R-    &   2.9 &   3.1 \\
-IL12R+   &   1.3 &   1.2 \\
-IL12R-   &   2.8 &   2.7 \\
-STAT6+   &   1.9 &   2.1 \\
-STAT6-   &   3.3 &   3.7 \\
-\bottomrule
-\end{tabular}
-	\]
-	\caption{Percentages of samples that have never been seen before, for each function.\label{eff-samp}}
-\end{figure}
 
 \begin{listfig}[htb]
 	\lstinputlisting{examples/lympho.hints}
@@ -882,15 +804,4 @@ STAT6-   &   3.3 &   3.7 \\
 	\lstinputlisting{examples/lympho-bool.res}
 	\caption{Results for lymphocyte model, with prior knowledge on the unlabeled influence graph.\label{hints.res}}
 \end{listfig}
-
-\begin{figure}[htb]
-   \includegraphics[width=\textwidth]{statistics/statistics.png}
-   \caption{Evolution of the standard deviation and of the minimum number of
-   samples for the 24 boolean functions of the Th-lymphocyte example. The
-minimum gives a quasi-linear estimate of the confidence $h$. The total (and
-therefore the average) number of samples is kept constant by adjusting the
-time horizon of the simulations. Obviously, more diverse initial states (e.g.,
-mutants) reveals more about the model structure than longer experiments.}%
-\label{fig:statistics}
-\end{figure}
 \end{document}
