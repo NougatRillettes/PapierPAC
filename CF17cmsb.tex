@@ -783,7 +783,10 @@ Valiant's results stand only if we actually have at least $L$ samples for each o
 %Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
 
 This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting points. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in Listing~\ref{lympho-rand.res}. Note that randomizing does not really make the repartition of the samples more uniform, as shown in Fig.~\ref{nsample-tab2}. We can also remark that -- for the same number of steps -- there is not necessarily more \emph{different} samples when randomizing periodically the state (ie, restarting with random conditions) than when not doing it, as shown Fig.~\ref{eff-samp}. Yet, the quality of learning is better when doing periodic random reinitialization, leading us to believe that even if there is not more different samples, they are distributed in a way that cover more exhaustively the behavior of the system.
- 
+
+\sylvain{not sure if all this is not biased by the spurious added
+activations/inhibitions. See Fig.~\ref{fig:statistics}.}
+
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
 
 Even with such improved results, the obtained model remains approximate, and
@@ -805,9 +808,9 @@ to attack the challenge of inferring the structure of influence models from the 
 and more precisely to automatically discover possible regulatory networks of a biochemical process, given sufficiently precise observations of its executions.
 
 The Boolean dynamics of biochemical influence systems, including Thomas regulatory networks, can be represented by $k$-CNF formulae without loss of generality,
-and $k$-CNF PAC learning algorithm can be used to infer the strucutre of the network from
+and $k$-CNF PAC learning algorithm can be used to infer the structure of the network from
 a sufficiently large and diverse set of state transition traces.
-When dimension increases, we have shown on an example of T-lymphocyte differentiation from the litterature
+When dimension increases, we have shown on an example of T-lymphocyte differentiation from the literature
 that the $k$-CNF PAC learning algorithm can also leverage available
 prior knowledge on the system to deliver precise results with a reasonable
 amount of data.
