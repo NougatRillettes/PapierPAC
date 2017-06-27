@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage{listings}
+\usepackage{multicol}
 \usepackage{booktabs}
 \usepackage{subfig}
 \lstset{%
@@ -19,14 +20,14 @@
 
 \newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 
-\newif\ifcomments
+\newif\ifcomments%
 
-\commentstrue
+\commentstrue%
 %\commentsfalse
 
-\newcommand{\francois}[1]{\ifcomments  \textcolor{blue}{#1}\fi}
-\newcommand{\sylvain}[1]{\ifcomments \textcolor{green}{#1} \fi}
-\newcommand{\arthur}[1]{\ifcomments \textcolor{brown}{#1} \fi}
+\newcommand{\francois}[1]{\ifcomments\textcolor{blue}{#1}\fi}
+\newcommand{\sylvain}[1]{\ifcomments\textcolor{green}{#1}\fi}
+\newcommand{\arthur}[1]{\ifcomments\textcolor{brown}{#1}\fi}
 
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
@@ -37,7 +38,7 @@
 \floatname{listfig}{Listing}
 
 \floatstyle{ruled}
-\newfloat{algorithm}{htpb}{algfig}
+\newfloat{algorithm}{htbb}{algfig}
 \floatname{algorithm}{Algorithm}
 
 
@@ -88,7 +89,7 @@ with a gain in both the quantification and the reliability of the observations, 
 Machine learning is revolutionising the statistical methods in biological data analytics,
 data classification and clustering, and prediction making.
 However, learning dynamical models from data time-series is still challenging.
-A recent survey on probabilistic programming \cite{GHNR14fose}
+A recent survey on probabilistic programming~\cite{GHNR14fose}
 highlighted the difficulties associated with modelling time,
 and concluded that existing frameworks are not sufficient in their treatment of dynamical systems.
 There has been early work on the use of machine learning techniques, such as inductive
@@ -136,7 +137,7 @@ and learned actively from a set of positive samples with calls to an oracle.
 
 In the following, these results\footnote{For the sake of reproducibility, the code used in this article is available at \url{http://lifeware.inria.fr/wiki/software/\#CMSB17}.} are first illustrated with a toy example, the Lotka-Volterra prey-predator system as running example,
 and then on a Boolean influence model of 
-the differentiation of the T-helper lymphocytes from \cite{RRMTC06tcsb,Mendoza06biosystems},
+the differentiation of the T-helper lymphocytes from~\cite{RRMTC06tcsb,Mendoza06biosystems},
 composed of 32 influences and 12 variables.
 
 
@@ -223,10 +224,11 @@ Interestingly, this data structure allows for
 	\item and for a clause $c$, $O(1)$ access to the smallest clauses implied by $c$ and to the biggest clauses that imply $c$.
 \end{itemize}
 
-The class of monotone DNF formulae is also learnable.
-Let the \emph{degree} of a Boolean formula be the largest number of prime
-implicants in an equivalent rewriting of the formula as a non-redundant sum of
-prime-implicants.
+The class of monotone DNF formulae is also learnable. Let the \emph{degree} of
+a Boolean formula be the largest number of prime implicants (i.e., minimal
+formulae covering one of the product-terms of the Boolean formula expressed as
+a sum of products) in an equivalent rewriting of the formula as a
+non-redundant sum of prime-implicants.
 
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
@@ -378,7 +380,7 @@ to the stochastic semantics and to the differential semantics, for which the pre
    {\vec x}<I_i$ (resp.~no condition on $I_i$) and ${\vec x'} = {\vec x}\  \sigma_i\ t_i$.
    Transition probabilities between discrete states are obtained through
    normalization of the propensities of all enabled transitions, and the time
-   of next transition is given by an exponential distribution \cite{Gillespie77jpc}.
+   of next transition is given by an exponential distribution~\cite{Gillespie77jpc}.
 \end{definition}
 
 We call a positive influence system, an influence system without inhibitors or interpreted under the positive semantics.
@@ -391,21 +393,21 @@ and positive influence systems by monotone DNF activation functions.
 \begin{example}
 The activation functions of the Lotka--Volterra influence system of Ex.~\ref{ex:LVi}
 are monotonic DNF formulae with only one conjunct since in this example there is only one signed influence per variable:
-\begin{eqnarray*}
-   A^+&=&(A)\\
-   A^-&=&(A \wedge B)\\
-   B^+&=&(A\wedge B)\\
-   B^-&=&(B)
-\end{eqnarray*}
+\begin{align*}
+   A^+&=(A)& B^+&=(A\wedge B)\\
+   A^-&=(A \wedge B)& B^-&=(B)
+\end{align*}
 
 \end{example}
 
 %Note that in Ex.~\ref{ex:lympho} no (de)activation function is monotone.
 
 \subsection{$k$-CNF Representation of General Influence Systems}
+\label{sec:kcnf}
 
-Monotone DNF formulae cannot encode the Boolean dynamics of influence systems with negation, which test the absence of inhibitors.
-This is possible using a $k$-CNF representation of the activation functions, 
+Monotone DNF formulae cannot encode the Boolean dynamics of influence systems with negation,
+which tests the absence of inhibitors, i.e. their negation.
+This is possible using a $k$-CNF representation of the activation functions,
 provided that there are at most $k$ species that can play a given ``role''. 
 For instance, in a hypothetic activation function in CNF
 $
@@ -419,16 +421,14 @@ each clause can be interpreted as a role, and each role can be played by a limit
 
 
 \begin{example}
-   The activation functions of the prey-perdator model with inhibition of Ex.~\ref{ex:LVi} cannot be
+   The activation functions of the prey-predator model with inhibition of Ex.~\ref{ex:LVi} cannot be
    represented by monotone formulae. They can however be represented by the following 1-CNF
    formulae ($k=1$ since there is only one positive and one
    negative influence for each target):
-\begin{eqnarray*}
-   A^+&=&(A)\wedge(\neg C)\\
-A^-&=&(A) \wedge (B)\\
-B^+&=&(A)\wedge (B)\\
-   B^-&=&(B)
-\end{eqnarray*}
+\begin{align*}
+   A^+&=(A)\wedge(\neg C)& A^-&=(A) \wedge (B)\\
+   B^+&=(A)\wedge (B)& B^-&=(B)
+\end{align*}
 
 \end{example}
 
@@ -454,7 +454,7 @@ is that the activation and deactivation functions are exclusive and defined by o
 %FF non on montre justement le contraire !
 %As this will be useful later on, we also remark that the Thomas' Network can
 %be computed from the (de)activation functions presented in Def.~\ref{def:activation} by:
-As shown in \cite{FMRS16cmsb}, non-terminal self-loops cannot be represented in Thomas functional influence systems.
+As shown in~\cite{FMRS16cmsb}, non-terminal self-loops cannot be represented in Thomas functional influence systems.
 Given a general influence system with activation functions ${x_i}^+$ and ${x_i}^-$, one can associate a Thomas network 
 with attractor function\footnote{Note that this function ignores the cases where $v_i = 0$ and ${x_i}^-(v) =0$, or $v_i=1$ and ${x_i}^+(v)=1$
 which may create loops in non-terminal states in general influence systems.}
@@ -479,10 +479,7 @@ and can consequently be represented by a $k$-CNF formula.
 \begin{example}
    The above translation applied to
    Ex.~\ref{ex:LVi} gives
-   \begin{eqnarray*}
-   f_A &=& A \wedge\neg B\\
-   f_B &=& 0
-   \end{eqnarray*}
+   \[f_A = A \wedge\neg B\qquad f_B = 0\]
    Note that the form of $f_B$ means that the only possible state change
    for $B$ is from $1$ to $0$. 
 %Of course $B$ can also stay at $1$ but
@@ -545,11 +542,19 @@ Even though we will finally not require it, we first also consider that our expe
 \subsubsection{Sampling.}
 
 It is worth remarking that sampling of activation and deactivation functions is easy in this setting. Referring to Fig.~\ref{steps}, $(a)$ is a positive example for the activation function ${x_1}^+$, and $(b)$ for ${x_4}^-$.
-A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function, shall it exist. Because PAC learning requires a certain number of samples for each (de)activation function, issues may arise if samples for a given one are too scarce.
-%Our belief is 
-In practical cases those issues may be solved by running several traces from
-different initial states, as discussed in more details in an
-example in Section~\ref{sec:abinitio}.
+A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function, shall it exist.
+PAC learning will associate a guarantee on the quality of each learnt Boolean
+function ($h$) depending on the number of samples used $L(h, (2n)^{k+1})$,
+where $n$ is the number of genes/molecules observed, and $k$ is a parameter of
+the learning procedure as explained in Section~\ref{sec:kcnf}.
+In practice, $k$ can be limited to 3 (2 was the max we observed) and $2n$, the
+number of different possible literals in a clause, can also be reduced through
+prior knowledge (see Section~\ref{sec:prior}).
+
+The global guarantee on the learnt model is the minimum of all observed $h$,
+it is therefore crucial to have as diverse samples as possible. This can be
+achieved by running several traces from different initial states,
+as discussed in more details in an example in Section~\ref{sec:abinitio}.
 
 \subsubsection{Oracle.}
 The \textsc{Oracle} function needs to evaluate the (de)activation function on a given vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
@@ -563,25 +568,33 @@ Since actually running this ``set the state and observe the first atomic step'' 
 %\section{In sillico application}
 \subsection{PAC Learning from Boolean Traces}
 
-A first experimentation was to simulate Boolean traces for a given influence network, and use them as a basis to learn.
+A first experiment was to simulate Boolean traces for a given influence network, and use them as a basis to learn.
 We report results on our running
 Ex.~\ref{ex:LVi}., but to increase readability we used long names for the
 species (populations) as shown in Listing~\ref{bool-LV}.
-The results are presented in Listing~\ref{bool-LV.res}.
-(in the output \texttt{!A} stands for $\neg A$).
+The results are presented in Fig.~\ref{bool-LV.res}.
 
 %\subsubsection{Results}
-\begin{listfig}[htp]
-	\lstinputlisting{examples/bool-lokta.reac}
+\begin{listfig}[htb]
+	\lstinputlisting{examples/LVi.bc}
    \caption{The Lokta-Voltera prey vs.\ predator model of Ex.~\ref{ex:LVi}
-   with explicit names, forces (numbers in parenthesis) and initial state
-   (first line).\label{bool-LV}}
+   with explicit names.\label{bool-LV}}
 \end{listfig}%
-\begin{listfig}[htp]
-	\lstinputlisting{examples/bool-lokta.res}
-	\caption{Results of PAC-learning on traces of the Boolean simulation of the
-   Lokta--Voltera example.\label{bool-LV.res}}
-\end{listfig}
+\begin{figure}[htb]
+   \begin{minipage}{.5\textwidth}
+      \lstinputlisting[frame=single]{examples/bool-lokta.res}
+   \end{minipage}%
+   \hspace{.04\textwidth}%
+   \begin{minipage}{.45\textwidth}
+      \begin{lstlisting}[frame=single]
+Predator / Prey -< Predator
+Predator, Prey -< Prey
+      \end{lstlisting}
+   \end{minipage}
+   \caption{Results of PAC-learning on a single trace of length 50 of the Boolean simulation of the
+   Lokta--Voltera example. Left pane shows the actual Boolean functions
+learnt (where \texttt{!A} stands for $\neg A$), and right pane the corresponding influence system.}\label{bool-LV.res}
+\end{figure}
 
 The inferred model can be interpreted as follows.
 %
@@ -591,167 +604,78 @@ For the predator to disappear, it is necessary that there is a predator in the f
 %
 Finally, for the prey to go extinct, there must be both a prey in the first place and a predator to eat it. This is correct.
 
-%\subsubsection{On the quantification of the approximation}
 
 As can be seen even on this very simple example, the ``approximately'' in PAC has a precise meaning. Yet, as explained in Def.~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
 %
-%It is our conjecture that i
 In the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
+
+Note that to obtain the output above, a single Boolean simulation was used.
+Replacing it with 25 simulations of length 2 allows one to find the original
+function for the inhibition of the predator (\texttt{Predator -< Predator}).
+This role of the diversity of the initial states on the repartition of the
+samples will be explored in more depth in the following sections.
 
 
 \subsection{PAC Learning from Stochastic Traces}
 
-Let us now consider stochastic traces %not directly produced from a Boolean model, but from more realistic data time series.
-%For the sake of evaluating the learning method,
-%we generate stochastic traces
+Let us now consider stochastic traces
 produced from the hidden model, using Gillespie's
 algorithm for the simulation of the stochastic semantics given in
 Def.~\ref{def:stoch}.
 
-The traces obtained are in ${\mathbb{N}}^n$, they are then abstracted to
-Boolean traces over ${\mathbb{B}}^n$ by the usual $\{0, >0\}$ abstraction.
-It would also be possible to try and learn directly a Boolean model from
-stochastic traces (using $x_i\lra x_i+1$ (resp.\ $x_i-1$) as positive example for the
-activation (resp.\ deactivation)), but since the abstraction of the state
-remains necessary we present here a fully abstracted method.
-
-%\subsubsection{Test model}
-
-
-We ran two example reactions, one is given in Listing~\ref{test}, and the
-other using again the Lotka--Volterra model of Listing~\ref{bool-LV} but with 10
-\texttt{Predators} and 1000 \texttt{Preys} as initial state.
-As indicated in Listing~\ref{test_res}, the first example found the original
-model.
-
 \begin{listfig}[htb]
-	% \lstinputlisting{examples/test.reac}
-   \begin{lstlisting}
-{}
--> A
--> E
-A / E -> B
-B -> C
-A -< A
-B -< B
-C -< C
-E -< E
+      \begin{lstlisting}
+biocham: pac_learning('library:examples/lotka_volterra/LVi.bc', 50, 1).
+% Maxmimum K used: 1
+% minimum number of samples for h=1: 18
+
+% 14 samples (max h ~ 0.7777777777777778)
+Predator -< Predator
+
+% 7 samples (max h ~ 0.3888888888888889)
+Predator,Prey -> Predator
+
+% 1 samples (max h ~ 0.05555555555555555)
+Predator,Prey -< Prey
+
+% 21 samples (max h ~ 1.1666666666666667)
+Prey -> Prey
    \end{lstlisting}
-	\caption{Test model, A and E appear naturally in the medium, and A can be turned into B in absence of E. B  can be turned into C. All of the species can disappear due to dilution. No species is present at the beginning.\label{test}}
-\end{listfig}
-\begin{listfig}[htb]
-	\lstinputlisting{examples/test.result}
-	\caption{Results of PAC-learning on traces of the stochastic simulation of the
-		test example.\label{test_res}}
-\end{listfig}
-
-%\sylvain{Changed to use an influence system in both examples. Experiments
-%should be redone, but I'm tired to ask again the same thing.}
-
-%\sylvain{Also updated the text and moved it below to be more in the explanation of the results
-%than in a negative judgment. It would have been nice to try the Boolean
-%initial state to find the extinction of the predator\dots}
-
-% \begin{listfig}[htb]
-% 	\lstinputlisting{examples/lokta.reac}
-% 	\caption{A Prey-Predator model. The first line indicates the starting quantities for each species. This corresponds to the influence model given in Fig.~\ref{bool-LV}.\label{preypred}}
-% \end{listfig}
-%\paragraph{Lotka--Volterra model}
-
-\begin{listfig}[htb]
-	\lstinputlisting{examples/lokta.result}
-	\caption{Results of PAC-learning on traces of the stochastic simulation of the
-		Lokta--Voltera example.\label{preypred_res}}
+   \caption{Biocham running the PAC learning algorithm on the Lotka--Volterra
+      model by generating 50 random initial states from which a stochastic
+      simulation of length 1 is run to obtain samples. Among those 50 initial
+     states, 7 had both prey and predator absent, leading to no sample.}%
+   \label{lst:stoch_lv}
 \end{listfig}
 
-The Lotka--Volterra model leads to the same approximation as in the
-Boolean case, for the same reason, the very low probability of extinction of
-the predator when there are still preys alive. Note that this could be
-circumvented with a specific initial state (a single predator) and repeated
-simulations. A more detailed discussion of this topic is given in
-Section~\ref{sec:abinitio}.
+In general, we will assume mass-action kinetics with rate 1 for all reactions.
+The initial states are random, but with equal probability to be 0 or $>0$ in
+order to facilitate the observation of inhibited reactions.
 
+The traces obtained are in ${\mathbb{N}}^n$, they are then abstracted to
+Boolean samples by the usual $\{0, >0\}$ abstraction for the states, and the
+increasing/decreasing abstraction for choosing samples for the
+activation/deactivation functions. Using the same $\{0, >0\}$ abstraction to
+detect samples would again forbid to learn autocatalytic influences like
+\texttt{Prey -> Prey} for the same reason as in the Boolean case.
 
-
-\begin{figure}[htpb]
-	\centering
-	\begin{tikzpicture}
-	\path (5,10) node[draw](3) {(3) $\begin{array}{c}
-		Prey \geq 1 \\ Predator \geq 1
-		\end{array}$}
-	(8,7.5) node[draw](1) {(1) $\begin{array}{c}
-		Prey = 0 \\ Predator \geq 1
-		\end{array}$}
-	(2,7.5) node[draw](2) {(2) $\begin{array}{c}
-		Prey \geq1 \\ Predator = 0
-		\end{array}$}
-	(8,5) node[draw,double](0) {(0) $\begin{array}{c}
-		Prey = 0 \\ Predator = 0
-		\end{array}$}
-	;
-	\draw [->] (3) -> (2);
-	\draw [->] (3) -> (1);
-	\draw [->] (1) -> (0);
-	\path (3) edge[->,looseness=5] (3);
-	\path (2) edge[->,looseness=5,out=170,in=190] (2);
-	\draw (4.8,9) edge[->,looseness=1,out=200,in=90] node[below,left] {A} (4,7);
-	\draw (5.2,9) edge[->,looseness=0.8,out=-20,in=90] node[below,right] {B} (6,5);
-	\end{tikzpicture}
-	\caption{A simplification of the Markov chain of the Lokta-Voltera process. Probabilities are not given but all arrows have non-null probability to be taken.\label{fig:mc-lv}}
-\end{figure}
-
-As previously, the prey-predator example (Listing~\ref{preypred_res}) highlights how dependent to the traces the learned model is.
-To further detail this, it is necessary to dive into the Markov chain of the prey-predator stochastic process. A simplification of it is given in Fig.~\ref{fig:mc-lv}. One can remark that state (2) is an equilibrium state, whereas state (0) is terminal. Because most of the experiments will start in state (3), we can highlight two possible paths, A and B, leading respectively to (2) and (0). Because (de)activation (and hence sample) only comes from a changing of node in Fig.~2, each of these pathways result in a different resulting model.
-
-\begin{minipage}{.45\textwidth}
-\vspace{1em}
-For A this is:
-\begin{verbatim}
-Predator+ : False
-Predator- : Predator /\ Prey
-Prey+ : False
-Prey- : False
-\end{verbatim}
-\vspace{1em}
-\end{minipage}
-\begin{minipage}{.45\textwidth}
-\vspace{1em}
-For B this is:
-\begin{verbatim}
-Predator+ : False
-Predator- : Predator /\ !Prey
-Prey+ : False
-Prey- : Predator /\ Prey
-\end{verbatim}
-\vspace{1em}
-\end{minipage}
-
-Both those learned model are approximate, as the sampling will by design miss some of the possible positive examples because only one of A and B paths can be followed.
-Indeed, the only way to get the expected result is to run several time the experiment, and hope that probabilities favor us enough so that we have samples from pathways A and B.
-
-The result of such run is shown below in listing \ref{LV-multi}
-\begin{listfig}
-	\begin{verbatim}
-	Predator+ : False
-	Predator- : Predator
-	Prey+ : False
-	Prey- : Predator /\ Prey
-	\end{verbatim}
-	\vspace{-1em}
-	\caption{Results of PAC-learning on traces of the stochastic simulation of the
-		Lokta--Voltera example, where enough runs were performed to ensure that the two possible behaviors happen.\label{LV-multi}}
-\end{listfig}
-
+As shown by the run in Listing~\ref{lst:stoch_lv}, even with a low number of
+samples (and therefore a very low $h$), one can find the full model with 50
+simulations of length 1, all starting from random initial states.
+A more detailed discussion of the role of the diversity of initial states is
+given in Section~\ref{sec:abinitio}.
 
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
-
-%All the systems proposed so far were of humble size. 
 
 In this section we evaluate the performance of the $k$-CNF PAC learning
 algorithm on an influence system of 12 variables and 32 influences that models
 the differentiation of the T-helper lymphocytes.
-All learning experiments described below were run on a
+All learning experiments described below run on a
 low-end laptop in less than 3s.
+\sylvain{I need to update this}
+
+Note that for the worst cases (e.g. the single simulation with $10^6$ steps)
+the CNF to DNF conversion was very slow, reaching more than 4 minutes.
 
 \subsection{Boolean Thomas Network}
 
@@ -772,19 +696,59 @@ lymphocyte), Th-1 and Th-2 when IL12 is off, and two others when IL12 is on
 \end{figure}
 
 Fig.~\ref{fig:lympho} shows the influence graph of the model. The
-corresponding code is given in appendix (Listing~\ref{bool-lympho}).
+corresponding model is given in Listing~\ref{lst:lympho}.
+Note that since IL12 is an input, in all experiments the PAC learning
+algorithm only finds $false$ as Boolean function for its activation or
+deactivation. We therefore remove it from the results for readability.
+
+\begin{listfig}[htb]
+   \lstinputlisting[multicols=2,firstline=6]{examples/lympho.bc}
+   \caption{Influence system for the lymphocyte differentiation of
+   example~\ref{ex:lympho}.}\label{lst:lympho}
+\end{listfig}
 
 \subsection{\emph{Ab initio} PAC Learning from Boolean Traces}
 \label{sec:abinitio}
 
-Results of learning on the traces resulting from the Boolean simulation of this system from one single initial state gave results that were hardly readable for the human experimenter. Whether they were still good at predicting the behavior of the model is not obvious. On the one hand, guarantees on this come directly from Valiant's work with the approximation bounds, on the other hand,  
-Valiant's results stand only if we actually have at least $L$ samples for each of the (de)activation functions, where $L$ is Valiant's bound. A first naive approach might be to simply let the trace run for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of samples for each function can be pretty non-uniform, as illustrated in Fig.~\ref{nsample-tab}. Hence, we would have to find a system to track the number of samples collected so far for each function, but without running infinitely long shall one gene be never (de)activated.
+Results of learning on the traces resulting from the Boolean simulation of
+this system from one single initial state gave results that were hardly
+readable for the human experimenter. Whether they were still good at
+predicting the behavior of the model is not obvious. On the one hand,
+guarantees on this come directly from Valiant's work with the approximation
+bounds, on the other hand,  Valiant's results stand only if we actually have
+at least $L$ samples for each of the (de)activation functions, where $L$ is
+Valiant's bound. A first naive approach might be to simply let the trace run
+for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of
+samples for each function can be pretty non-uniform, as illustrated in
+Fig.~\ref{fig:statistics}. The minimal number of samples gives us the lowest
+$L(h, S)$ and thus quasi-linearly the lowest $h$.
 
-%Thankfully, the PAC learning algorithm for $k$-CNF can be modified to be able to take hints into account.
+\begin{figure}[htb]
+   \includegraphics[width=\textwidth]{statistics/statistics.png}
+   \caption{Evolution of the standard deviation and of the minimum number of
+   samples for the 24 boolean functions of the Th-lymphocyte example. The
+minimum gives a quasi-linear estimate of the confidence $h$. The total (and
+therefore the average) number of samples is kept constant by adjusting the
+time horizon of the simulations. Obviously, more diverse initial states (e.g.,
+mutants) reveals more about the model structure than longer experiments.}%
+\label{fig:statistics}
+\end{figure}
 
-This entices us to find way to make the learning more precise. A first possibility is to aggregate samples resulting from multiple runs, done from random starting points. For example 140 runs provides a significant improvement, as the output is now more or less readable, as displayed in Listing~\ref{lympho-rand.res}. Note that randomizing does not really make the repartition of the samples more uniform, as shown in Fig.~\ref{nsample-tab2}. We can also remark that -- for the same number of steps -- there is not necessarily more \emph{different} samples when randomizing periodically the state (ie, restarting with random conditions) than when not doing it, as shown Fig.~\ref{eff-samp}. Yet, the quality of learning is better when doing periodic random reinitialization, leading us to believe that even if there is not more different samples, they are distributed in a way that cover more exhaustively the behavior of the system.
- 
+The good news is that this same figure shows that a simple randomization of
+the initial states (while keeping the total number of samples constant)
+provides a much more homogeneous repartition of samples (as shown by the
+decreasing standard deviation), and, as expected, a much higher $h$.
+
+This leads us to state that when using PAC-learning to find the structure of a
+model, an approach based on mutants (knock-offs, over-expression ,etc.) is
+much more informative than an approach based on (repeated or longer) similar
+observations. Note that this is in line with integrative analyses
+like~\cite{CCCCNT04mbc} and its more than 130 mutants.
+
+\sylvain{add something about model quality}
+
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
+\label{sec:prior}
 
 Even with such improved results, the obtained model remains approximate, and
 it becomes obvious that with much bigger examples, the amount of data needed
@@ -793,9 +757,9 @@ Machine learning with prior knowledge can save a lot of work by constraining the
 
 Here we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in Listing~\ref{hints}. 
 
-It is remarkable than when given such prior knowledge, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences, as shown in Listing \ref{hints.res}.
+It is remarkable than when given such prior knowledge, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences, as shown in Listing~\ref{hints.res}.
 
-
+\sylvain{Prior knowledge reduces $S$ and therefore should improve $h$}
 
 
 \section{Conclusion and Perspectives}
@@ -805,9 +769,9 @@ to attack the challenge of inferring the structure of influence models from the 
 and more precisely to automatically discover possible regulatory networks of a biochemical process, given sufficiently precise observations of its executions.
 
 The Boolean dynamics of biochemical influence systems, including Thomas regulatory networks, can be represented by $k$-CNF formulae without loss of generality,
-and $k$-CNF PAC learning algorithm can be used to infer the strucutre of the network from
+and $k$-CNF PAC learning algorithm can be used to infer the structure of the network from
 a sufficiently large and diverse set of state transition traces.
-When dimension increases, we have shown on an example of T-lymphocyte differentiation from the litterature
+When dimension increases, we have shown on an example of T-lymphocyte differentiation from the literature
 that the $k$-CNF PAC learning algorithm can also leverage available
 prior knowledge on the system to deliver precise results with a reasonable
 amount of data.
@@ -824,127 +788,10 @@ and to investigate the applicability of these methods to real experiments taking
 \bibliography{contraintes}
 \newpage
 \section*{Appendix}
-\begin{listfig}[H]
-\lstinputlisting{examples/lympho-bool.reac}
-\caption{Code for the lymphocyte differentiation of example~\ref{ex:lympho}.\label{bool-lympho}}
-\end{listfig}
-
-
-\begin{figure}[htbp]
-	\centering
-	\subfloat[Single trace.\label{nsample-tab}]{\hspace{1ex}%
-	$$
-	\begin{tabular}{l r}
-	\toprule	     
-	Function &  Number of samples\\
-	\midrule
-	GATA3-   &    360 \\
-	GATA3+   &    361 \\
-	STAT6-   &    546 \\
-	STAT6+   &    547 \\
-	STAT4+   &    805 \\
-	STAT4-   &    805 \\
-	IL12R-   &    849 \\
-	IL12R+   &    849 \\
-	IL4R-    &    862 \\
-	IL4R+    &    863 \\
-	IL12+    &   1096 \\
-	IL12-    &   1096 \\
-	IL4-     &   2204 \\
-	IL4+     &   2205 \\
-	TBet-    &   7135 \\
-	TBet+    &   7135 \\
-	STAT1+   &   9359 \\
-	STAT1-   &   9359 \\
-	IFNgR+   &  12026 \\
-	IFNgR-   &  12026 \\
-	SOCS1+   &  12600 \\
-	SOCS1-   &  12600 \\
-	IFNg-    &  25103 \\
-	IFNg+    &  25103 \\
-	\bottomrule
-	\end{tabular}
-	$$\hspace{1ex}
-%	\caption{Repartition of samples in a simulation of the lymphocyte influence system for a single trace. Coefficient of variation is around 1.2.\label{nsample-tab}}	
-}\hspace{5ex}
-\subfloat[100 traces, random starting points.\label{nsample-tab2}]{\hspace{1ex}%
-$$
-\begin{tabular}{lr}
-\toprule
-Function &  Number of samples\\
-\midrule
-GATA3+   &    3861 \\
-GATA3-   &    3869 \\
-STAT6+   &    5614 \\
-STAT6-   &    5621 \\
-STAT4+   &    7980 \\
-STAT4-   &    8010 \\
-IL12R+   &    8420 \\
-IL12R-   &    8446 \\
-IL4R+    &    8665 \\
-IL4R-    &    8671 \\
-IL12-    &   10651 \\
-IL12+    &   10651 \\
-IL4-     &   21888 \\
-IL4+     &   21889 \\
-TBet+    &   69134 \\
-TBet-    &   69164 \\
-STAT1+   &   91070 \\
-STAT1-   &   91114 \\
-IFNgR+   &  116681 \\
-IFNgR-   &  116721 \\
-SOCS1+   &  122546 \\
-SOCS1-   &  122589 \\
-IFNg+    &  242331 \\
-IFNg-    &  242357 \\
-\bottomrule
-\end{tabular}
-	$$\hspace{1ex}
-%	\caption{Repartition of samples in a simulation of the lymphocyte influence system for a hundred traces with random starting points. Coefficient of variation is still around 1.2.\label{nsample-tab2}}
-}
-\caption{Repartition of samples in a simulation of the lymphocyte influence system with varying number of traces. The coefficient of variation is around 1.2 in both cases. Rows are sorted by number of samples.}
-\end{figure}
-
 \begin{listfig}[htb]
 	\lstinputlisting{examples/lympho_100_2_140.res}
 	\caption{Results of PAC learning on 140 simulation of the lymphocyte influence system, with random starting points.\label{lympho-rand.res}}
 \end{listfig}
-
-\begin{figure}[htbp]
-	\[
-\begin{tabular}{lrr}
-\toprule
-Function &  No random restart &      Random restart \\
-\midrule
-IL12+    &   0.7 &   0.7 \\
-IL12-    &   1.1 &   1.0 \\
-IL4+     &   0.8 &   0.9 \\
-IL4-     &   1.5 &   1.5 \\
-STAT4+   &   0.6 &   0.7 \\
-STAT4-   &   3.6 &   3.6 \\
-IFNg+    &   0.1 &   0.1 \\
-IFNg-    &   0.2 &   0.2 \\
-TBet+    &   0.2 &   0.2 \\
-TBet-    &   0.2 &   0.2 \\
-GATA3+   &   3.2 &   3.3 \\
-GATA3-   &   2.8 &   2.9 \\
-STAT1+   &   0.2 &   0.2 \\
-STAT1-   &   0.2 &   0.2 \\
-IFNgR+   &   0.1 &   0.1 \\
-IFNgR-   &   0.2 &   0.3 \\
-SOCS1+   &   0.2 &   0.3 \\
-SOCS1-   &   0.2 &   0.2 \\
-IL4R+    &   1.0 &   1.1 \\
-IL4R-    &   2.9 &   3.1 \\
-IL12R+   &   1.3 &   1.2 \\
-IL12R-   &   2.8 &   2.7 \\
-STAT6+   &   1.9 &   2.1 \\
-STAT6-   &   3.3 &   3.7 \\
-\bottomrule
-\end{tabular}
-	\]
-	\caption{Percentages of samples that have never been seen before, for each function.\label{eff-samp}}
-\end{figure}
 
 \begin{listfig}[htb]
 	\lstinputlisting{examples/lympho.hints}
@@ -957,5 +804,4 @@ STAT6-   &   3.3 &   3.7 \\
 	\lstinputlisting{examples/lympho-bool.res}
 	\caption{Results for lymphocyte model, with prior knowledge on the unlabeled influence graph.\label{hints.res}}
 \end{listfig}
-
 \end{document}
