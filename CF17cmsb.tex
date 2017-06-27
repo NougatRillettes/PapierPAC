@@ -223,10 +223,11 @@ Interestingly, this data structure allows for
 	\item and for a clause $c$, $O(1)$ access to the smallest clauses implied by $c$ and to the biggest clauses that imply $c$.
 \end{itemize}
 
-The class of monotone DNF formulae is also learnable.
-Let the \emph{degree} of a Boolean formula be the largest number of prime
-implicants in an equivalent rewriting of the formula as a non-redundant sum of
-prime-implicants.
+The class of monotone DNF formulae is also learnable. Let the \emph{degree} of
+a Boolean formula be the largest number of prime implicants (i.e., minimal
+formulae covering one of the product-terms of the Boolean formula expressed as
+a sum of products) in an equivalent rewriting of the formula as a
+non-redundant sum of prime-implicants.
 
 
 \begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
@@ -391,21 +392,21 @@ and positive influence systems by monotone DNF activation functions.
 \begin{example}
 The activation functions of the Lotka--Volterra influence system of Ex.~\ref{ex:LVi}
 are monotonic DNF formulae with only one conjunct since in this example there is only one signed influence per variable:
-\begin{eqnarray*}
-   A^+&=&(A)\\
-   A^-&=&(A \wedge B)\\
-   B^+&=&(A\wedge B)\\
-   B^-&=&(B)
-\end{eqnarray*}
+\begin{align*}
+   A^+&=(A)& B^+&=(A\wedge B)\\
+   A^-&=(A \wedge B)& B^-&=(B)
+\end{align*}
 
 \end{example}
 
 %Note that in Ex.~\ref{ex:lympho} no (de)activation function is monotone.
 
 \subsection{$k$-CNF Representation of General Influence Systems}
+\label{sec:kcnf}
 
-Monotone DNF formulae cannot encode the Boolean dynamics of influence systems with negation, which test the absence of inhibitors.
-This is possible using a $k$-CNF representation of the activation functions, 
+Monotone DNF formulae cannot encode the Boolean dynamics of influence systems with negation,
+which tests the absence of inhibitors, i.e. their negation.
+This is possible using a $k$-CNF representation of the activation functions,
 provided that there are at most $k$ species that can play a given ``role''. 
 For instance, in a hypothetic activation function in CNF
 $
@@ -419,16 +420,14 @@ each clause can be interpreted as a role, and each role can be played by a limit
 
 
 \begin{example}
-   The activation functions of the prey-perdator model with inhibition of Ex.~\ref{ex:LVi} cannot be
+   The activation functions of the prey-predator model with inhibition of Ex.~\ref{ex:LVi} cannot be
    represented by monotone formulae. They can however be represented by the following 1-CNF
    formulae ($k=1$ since there is only one positive and one
    negative influence for each target):
-\begin{eqnarray*}
-   A^+&=&(A)\wedge(\neg C)\\
-A^-&=&(A) \wedge (B)\\
-B^+&=&(A)\wedge (B)\\
-   B^-&=&(B)
-\end{eqnarray*}
+\begin{align*}
+   A^+&=(A)\wedge(\neg C)& A^-&=(A) \wedge (B)\\
+   B^+&=(A)\wedge (B)& B^-&=(B)
+\end{align*}
 
 \end{example}
 
@@ -479,10 +478,7 @@ and can consequently be represented by a $k$-CNF formula.
 \begin{example}
    The above translation applied to
    Ex.~\ref{ex:LVi} gives
-   \begin{eqnarray*}
-   f_A &=& A \wedge\neg B\\
-   f_B &=& 0
-   \end{eqnarray*}
+   \[f_A = A \wedge\neg B\qquad f_B = 0\]
    Note that the form of $f_B$ means that the only possible state change
    for $B$ is from $1$ to $0$. 
 %Of course $B$ can also stay at $1$ but
@@ -545,11 +541,19 @@ Even though we will finally not require it, we first also consider that our expe
 \subsubsection{Sampling.}
 
 It is worth remarking that sampling of activation and deactivation functions is easy in this setting. Referring to Fig.~\ref{steps}, $(a)$ is a positive example for the activation function ${x_1}^+$, and $(b)$ for ${x_4}^-$.
-A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function, shall it exist. Because PAC learning requires a certain number of samples for each (de)activation function, issues may arise if samples for a given one are too scarce.
-%Our belief is 
-In practical cases those issues may be solved by running several traces from
-different initial states, as discussed in more details in an
-example in Section~\ref{sec:abinitio}.
+A call to \textsc{Sample} can then simply be a search in the trace for the next positive example for the current function, shall it exist.
+PAC learning will associate a guarantee on the quality of each learnt Boolean
+function ($h$) depending on the number of samples used $L(h, (2n)^{k+1})$,
+where $n$ is the number of genes/molecules observed, and $k$ is a parameter of
+the learning procedure as explained in Section~\ref{sec:kcnf}.
+In practice, $k$ can be limited to 3 (2 was the max we observed) and $2n$, the
+number of different possible literals in a clause, can also be reduced through
+prior knowledge (see Section~\ref{sec:prior}).
+
+The global guarantee on the learnt model is the minimum of all observed $h$,
+it is therefore crucial to have as diverse samples as possible. This can be
+achieved by running several traces from different initial states,
+as discussed in more details in an example in Section~\ref{sec:abinitio}.
 
 \subsubsection{Oracle.}
 The \textsc{Oracle} function needs to evaluate the (de)activation function on a given vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
@@ -563,25 +567,33 @@ Since actually running this ``set the state and observe the first atomic step'' 
 %\section{In sillico application}
 \subsection{PAC Learning from Boolean Traces}
 
-A first experimentation was to simulate Boolean traces for a given influence network, and use them as a basis to learn.
+A first experiment was to simulate Boolean traces for a given influence network, and use them as a basis to learn.
 We report results on our running
 Ex.~\ref{ex:LVi}., but to increase readability we used long names for the
 species (populations) as shown in Listing~\ref{bool-LV}.
-The results are presented in Listing~\ref{bool-LV.res}.
-(in the output \texttt{!A} stands for $\neg A$).
+The results are presented in Fig.~\ref{bool-LV.res}.
 
 %\subsubsection{Results}
 \begin{listfig}[htp]
-	\lstinputlisting{examples/bool-lokta.reac}
+	\lstinputlisting{examples/LVi.bc}
    \caption{The Lokta-Voltera prey vs.\ predator model of Ex.~\ref{ex:LVi}
-   with explicit names, forces (numbers in parenthesis) and initial state
-   (first line).\label{bool-LV}}
+   with explicit names.\label{bool-LV}}
 \end{listfig}%
-\begin{listfig}[htp]
-	\lstinputlisting{examples/bool-lokta.res}
-	\caption{Results of PAC-learning on traces of the Boolean simulation of the
-   Lokta--Voltera example.\label{bool-LV.res}}
-\end{listfig}
+\begin{figure}[htp]
+   \begin{minipage}{.5\textwidth}
+      \lstinputlisting{examples/bool-lokta.res}
+   \end{minipage}%
+   \vrule\hspace{.04\textwidth}
+   \begin{minipage}{.45\textwidth}
+      \begin{lstlisting}
+Predator / Prey -< Predator
+Predator, Prey -< Prey
+      \end{lstlisting}
+   \end{minipage}
+   \caption{Results of PAC-learning on a single trace of length 50 of the Boolean simulation of the
+   Lokta--Voltera example. Left pane shows the actual Boolean functions
+learnt (where \texttt{!A} stands for $\neg A$), and right pane the corresponding influence system.}\label{bool-LV.res}
+\end{figure}
 
 The inferred model can be interpreted as follows.
 %
@@ -597,6 +609,12 @@ As can be seen even on this very simple example, the ``approximately'' in PAC ha
 %
 %It is our conjecture that i
 In the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
+
+Note that to obtain the output above, a single Boolean simulation was used.
+Replacing it with 25 simulations of length 2 allows one to find the original
+function for the inhibition of the predator (\texttt{Predator -< Predator}).
+This role of the diversity of the initial states on the repartition of the
+samples will be explored in more depth in the following sections.
 
 
 \subsection{PAC Learning from Stochastic Traces}
@@ -750,7 +768,7 @@ The result of such run is shown below in listing~\ref{LV-multi}
 In this section we evaluate the performance of the $k$-CNF PAC learning
 algorithm on an influence system of 12 variables and 32 influences that models
 the differentiation of the T-helper lymphocytes.
-All learning experiments described below were run on a
+All learning experiments described below run on a
 low-end laptop in less than 3s.
 
 \subsection{Boolean Thomas Network}
@@ -788,6 +806,7 @@ This entices us to find way to make the learning more precise. A first possibili
 activations/inhibitions. See Fig.~\ref{fig:statistics}.}
 
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
+\label{sec:prior}
 
 Even with such improved results, the obtained model remains approximate, and
 it becomes obvious that with much bigger examples, the amount of data needed
