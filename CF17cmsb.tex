@@ -19,14 +19,14 @@
 
 \newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
 
-\newif\ifcomments
+\newif\ifcomments%
 
-\commentstrue
+\commentstrue%
 %\commentsfalse
 
-\newcommand{\francois}[1]{\ifcomments  \textcolor{blue}{#1}\fi}
-\newcommand{\sylvain}[1]{\ifcomments \textcolor{green}{#1} \fi}
-\newcommand{\arthur}[1]{\ifcomments \textcolor{brown}{#1} \fi}
+\newcommand{\francois}[1]{\ifcomments\textcolor{blue}{#1}\fi}
+\newcommand{\sylvain}[1]{\ifcomments\textcolor{green}{#1}\fi}
+\newcommand{\arthur}[1]{\ifcomments\textcolor{brown}{#1}\fi}
 
 
 \newcommand{\defleq}{\sqsubseteq_{\text{def}}}
@@ -88,7 +88,7 @@ with a gain in both the quantification and the reliability of the observations, 
 Machine learning is revolutionising the statistical methods in biological data analytics,
 data classification and clustering, and prediction making.
 However, learning dynamical models from data time-series is still challenging.
-A recent survey on probabilistic programming \cite{GHNR14fose}
+A recent survey on probabilistic programming~\cite{GHNR14fose}
 highlighted the difficulties associated with modelling time,
 and concluded that existing frameworks are not sufficient in their treatment of dynamical systems.
 There has been early work on the use of machine learning techniques, such as inductive
@@ -136,7 +136,7 @@ and learned actively from a set of positive samples with calls to an oracle.
 
 In the following, these results\footnote{For the sake of reproducibility, the code used in this article is available at \url{http://lifeware.inria.fr/wiki/software/\#CMSB17}.} are first illustrated with a toy example, the Lotka-Volterra prey-predator system as running example,
 and then on a Boolean influence model of 
-the differentiation of the T-helper lymphocytes from \cite{RRMTC06tcsb,Mendoza06biosystems},
+the differentiation of the T-helper lymphocytes from~\cite{RRMTC06tcsb,Mendoza06biosystems},
 composed of 32 influences and 12 variables.
 
 
@@ -378,7 +378,7 @@ to the stochastic semantics and to the differential semantics, for which the pre
    {\vec x}<I_i$ (resp.~no condition on $I_i$) and ${\vec x'} = {\vec x}\  \sigma_i\ t_i$.
    Transition probabilities between discrete states are obtained through
    normalization of the propensities of all enabled transitions, and the time
-   of next transition is given by an exponential distribution \cite{Gillespie77jpc}.
+   of next transition is given by an exponential distribution~\cite{Gillespie77jpc}.
 \end{definition}
 
 We call a positive influence system, an influence system without inhibitors or interpreted under the positive semantics.
@@ -454,7 +454,7 @@ is that the activation and deactivation functions are exclusive and defined by o
 %FF non on montre justement le contraire !
 %As this will be useful later on, we also remark that the Thomas' Network can
 %be computed from the (de)activation functions presented in Def.~\ref{def:activation} by:
-As shown in \cite{FMRS16cmsb}, non-terminal self-loops cannot be represented in Thomas functional influence systems.
+As shown in~\cite{FMRS16cmsb}, non-terminal self-loops cannot be represented in Thomas functional influence systems.
 Given a general influence system with activation functions ${x_i}^+$ and ${x_i}^-$, one can associate a Thomas network 
 with attractor function\footnote{Note that this function ignores the cases where $v_i = 0$ and ${x_i}^-(v) =0$, or $v_i=1$ and ${x_i}^+(v)=1$
 which may create loops in non-terminal states in general influence systems.}
@@ -729,7 +729,7 @@ Prey- : Predator /\ Prey
 Both those learned model are approximate, as the sampling will by design miss some of the possible positive examples because only one of A and B paths can be followed.
 Indeed, the only way to get the expected result is to run several time the experiment, and hope that probabilities favor us enough so that we have samples from pathways A and B.
 
-The result of such run is shown below in listing \ref{LV-multi}
+The result of such run is shown below in listing~\ref{LV-multi}
 \begin{listfig}
 	\begin{verbatim}
 	Predator+ : False
@@ -793,7 +793,7 @@ Machine learning with prior knowledge can save a lot of work by constraining the
 
 Here we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in Listing~\ref{hints}. 
 
-It is remarkable than when given such prior knowledge, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences, as shown in Listing \ref{hints.res}.
+It is remarkable than when given such prior knowledge, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences, as shown in Listing~\ref{hints.res}.
 
 
 
@@ -958,4 +958,12 @@ STAT6-   &   3.3 &   3.7 \\
 	\caption{Results for lymphocyte model, with prior knowledge on the unlabeled influence graph.\label{hints.res}}
 \end{listfig}
 
+\begin{figure}[htb]
+   \includegraphics[width=\textwidth]{statistics/statistics.png}
+   \caption{Evolution of the standard deviation and of the minimum number of
+   samples for the 24 boolean functions of the Th-lymphocyte example. The
+minimum gives a quasi-linear estimate of the confidence $h$. The total (and
+therefore the average) number of samples is kept constant by adjusting the
+time horizon of the simulations.}\label{fig:statistics}
+\end{figure}
 \end{document}
