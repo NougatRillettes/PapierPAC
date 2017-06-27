@@ -1,0 +1,95 @@
+% Maxmimum K used: 3
+% minimum number of samples for h=1: 663552
+
+% 22888 samples (max h ~ 0.03449315200617284)
+GATA3,TBet -< GATA3
+GATA3 / STAT6 -< GATA3
+
+% 81386 samples (max h ~ 0.12265203028549383)
+STAT6 / TBet -> GATA3
+
+% 15876 samples (max h ~ 0.02392578125)
+IFNg / STAT4 -< IFNg
+IFNg / TBet -< IFNg
+
+% 70422 samples (max h ~ 0.10612883391203703)
+STAT4,TBet -> IFNg
+
+% 25590 samples (max h ~ 0.03856517650462963)
+IFNgR,SOCS1 -< IFNgR
+IFNgR / IFNg -< IFNgR
+
+% 498 samples (max h ~ 0.0007505063657407407)
+IFNg / SOCS1 -> IFNgR
+
+% 0 samples (max h ~ 0)
+% _ -< IL12
+
+% 0 samples (max h ~ 0)
+% _ -> IL12
+
+% 19328 samples (max h ~ 0.029128086419753087)
+IL12R,STAT6 -< IL12R
+IL12R / IL12 -< IL12R
+
+% 32267 samples (max h ~ 0.04862768856095679)
+IL12 / STAT6 -> IL12R
+
+% 23062 samples (max h ~ 0.03475537712191358)
+IL4,STAT1 -< IL4
+IL4 / GATA3 -< IL4
+
+% 70557 samples (max h ~ 0.10633228443287036)
+GATA3 / STAT1 -> IL4
+
+% 23760 samples (max h ~ 0.035807291666666664)
+IL4R,SOCS1 -< IL4R
+IL4R / IL4 -< IL4R
+
+% 24486 samples (max h ~ 0.03690140335648148)
+IL4 / SOCS1 -> IL4R
+
+% 28409 samples (max h ~ 0.04281352478780864)
+IL12,SOCS1 / TBet,STAT1,IFNg -< SOCS1
+SOCS1 / TBet,STAT1,IL12R,IFNg -< SOCS1
+IL12,SOCS1 / TBet,STAT1,IFNgR -< SOCS1
+IFNg,SOCS1 / TBet,STAT1,IFNgR -< SOCS1
+SOCS1 / TBet,STAT1,IL12R,IFNgR -< SOCS1
+IL12,SOCS1 / TBet,STAT4,STAT1 -< SOCS1
+IFNg,SOCS1 / TBet,STAT4,STAT1 -< SOCS1
+SOCS1 / TBet,STAT4,STAT1,IL12R -< SOCS1
+
+% 224562 samples (max h ~ 0.33842411747685186)
+TBet -> SOCS1
+STAT1 -> SOCS1
+
+% 27723 samples (max h ~ 0.041779694733796294)
+STAT1 / IFNgR -< STAT1
+
+% 19793 samples (max h ~ 0.02982886043595679)
+IFNgR -> STAT1
+
+% 16212 samples (max h ~ 0.02443214699074074)
+GATA3,STAT4 -< STAT4
+STAT4 / IL12R -< STAT4
+
+% 35322 samples (max h ~ 0.05323169849537037)
+IL12R / GATA3 -> STAT4
+
+% 25066 samples (max h ~ 0.03777548707561729)
+STAT6 / IL4R -< STAT6
+
+% 43443 samples (max h ~ 0.06547037760416667)
+IL4R -> STAT6
+
+% 6074 samples (max h ~ 0.009153766396604939)
+GATA3,SOCS1,TBet -< TBet
+GATA3,IL4,TBet -< TBet
+GATA3,IFNgR,TBet / STAT4 -< TBet
+
+% 149301 samples (max h ~ 0.2250027126736111)
+TBet / GATA3 -> TBet
+STAT1 / GATA3 -> TBet
+true.
+
+

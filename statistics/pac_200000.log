@@ -1,0 +1,86 @@
+% Maxmimum K used: 2
+% minimum number of samples for h=1: 27648
+
+% 50172 samples (max h ~ 1.8146701388888888)
+GATA3,TBet -< GATA3
+GATA3 / STAT6 -< GATA3
+
+% 35118 samples (max h ~ 1.2701822916666667)
+STAT6 / TBet -> GATA3
+
+% 62274 samples (max h ~ 2.2523871527777777)
+IFNg / STAT4 -< IFNg
+IFNg / TBet -< IFNg
+
+% 22338 samples (max h ~ 0.8079427083333334)
+STAT4,TBet -> IFNg
+
+% 53242 samples (max h ~ 1.925708912037037)
+IFNgR,SOCS1 -< IFNgR
+IFNgR / IFNg -< IFNgR
+
+% 25823 samples (max h ~ 0.9339916087962963)
+IFNg / SOCS1 -> IFNgR
+
+% 0 samples (max h ~ 0)
+% _ -< IL12
+
+% 0 samples (max h ~ 0)
+% _ -> IL12
+
+% 55442 samples (max h ~ 2.0052806712962963)
+IL12R,STAT6 -< IL12R
+IL12R / IL12 -< IL12R
+
+% 34732 samples (max h ~ 1.2562210648148149)
+IL12 / STAT6 -> IL12R
+
+% 52495 samples (max h ~ 1.8986906828703705)
+IL4,STAT1 -< IL4
+IL4 / GATA3 -< IL4
+
+% 31274 samples (max h ~ 1.1311487268518519)
+GATA3 / STAT1 -> IL4
+
+% 52553 samples (max h ~ 1.9007884837962963)
+IL4R,SOCS1 -< IL4R
+IL4R / IL4 -< IL4R
+
+% 28009 samples (max h ~ 1.0130570023148149)
+IL4 / SOCS1 -> IL4R
+
+% 18935 samples (max h ~ 0.6848596643518519)
+SOCS1 / TBet,STAT1 -< SOCS1
+
+% 120474 samples (max h ~ 4.357421875)
+TBet -> SOCS1
+STAT1 -> SOCS1
+
+% 29665 samples (max h ~ 1.0729528356481481)
+STAT1 / IFNgR -< STAT1
+
+% 61756 samples (max h ~ 2.2336516203703702)
+IFNgR -> STAT1
+
+% 57854 samples (max h ~ 2.0925202546296298)
+GATA3,STAT4 -< STAT4
+STAT4 / IL12R -< STAT4
+
+% 31440 samples (max h ~ 1.1371527777777777)
+IL12R / GATA3 -> STAT4
+
+% 34786 samples (max h ~ 1.2581741898148149)
+STAT6 / IL4R -< STAT6
+
+% 62776 samples (max h ~ 2.2705439814814814)
+IL4R -> STAT6
+
+% 20238 samples (max h ~ 0.7319878472222222)
+GATA3,TBet -< TBet
+
+% 58263 samples (max h ~ 2.1073133680555554)
+TBet / GATA3 -> TBet
+STAT1 / GATA3 -> TBet
+true.
+
+

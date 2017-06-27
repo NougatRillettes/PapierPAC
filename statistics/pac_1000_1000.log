@@ -1,0 +1,112 @@
+1 ?-  debug(pac_learning), set_prolog_stack(global, limit(10**9)), command('pac_learning(library:examples/Th_lymphocytes/lympho.bc, 1000, 1000)').
+% Data generation time: 661052 ms
+% Maxmimum K used: 2
+% minimum number of samples for h=1: 27648
+
+% 26925 samples (max h ~ 0.9738498263888888)
+% CNF: [[1],[-11,12]]
+GATA3,TBet -< GATA3
+GATA3 / STAT6 -< GATA3
+
+% 77729 samples (max h ~ 2.811378761574074)
+% CNF: [[-12],[11]]
+STAT6 / TBet -> GATA3
+
+% 26962 samples (max h ~ 0.9751880787037037)
+% CNF: [[2],[-12,-10]]
+IFNg / STAT4 -< IFNg
+IFNg / TBet -< IFNg
+
+% 49330 samples (max h ~ 1.7842158564814814)
+% CNF: [[10],[12]]
+STAT4,TBet -> IFNg
+
+% 42164 samples (max h ~ 1.5250289351851851)
+% CNF: [[3],[-2,8]]
+IFNgR,SOCS1 -< IFNgR
+IFNgR / IFNg -< IFNgR
+
+% 1657 samples (max h ~ 0.05993200231481482)
+% CNF: [[-8],[2]]
+IFNg / SOCS1 -> IFNgR
+
+% 0 samples (max h ~ 0)
+% CNF: [[]]
+% _ -< IL12
+
+% 0 samples (max h ~ 0)
+% CNF: [[]]
+% _ -> IL12
+
+% 32480 samples (max h ~ 1.1747685185185186)
+% CNF: [[5],[-4,11]]
+IL12R,STAT6 -< IL12R
+IL12R / IL12 -< IL12R
+
+% 30960 samples (max h ~ 1.1197916666666667)
+% CNF: [[-11],[4]]
+IL12 / STAT6 -> IL12R
+
+% 34928 samples (max h ~ 1.2633101851851851)
+% CNF: [[6],[-1,9]]
+IL4,STAT1 -< IL4
+IL4 / GATA3 -< IL4
+
+% 47192 samples (max h ~ 1.7068865740740742)
+% CNF: [[-9],[1]]
+GATA3 / STAT1 -> IL4
+
+% 36862 samples (max h ~ 1.3332609953703705)
+% CNF: [[7],[-6,8]]
+IL4R,SOCS1 -< IL4R
+IL4R / IL4 -< IL4R
+
+% 13821 samples (max h ~ 0.4998914930555556)
+% CNF: [[-8],[6]]
+IL4 / SOCS1 -> IL4R
+
+% 16693 samples (max h ~ 0.6037688078703703)
+% CNF: [[-12],[-9],[8]]
+SOCS1 / TBet,STAT1 -< SOCS1
+
+% 224361 samples (max h ~ 8.114908854166666)
+% CNF: [[9,12]]
+TBet -> SOCS1
+STAT1 -> SOCS1
+
+% 31504 samples (max h ~ 1.1394675925925926)
+% CNF: [[-3],[9]]
+STAT1 / IFNgR -< STAT1
+
+% 38561 samples (max h ~ 1.3947120949074074)
+% CNF: [[3]]
+IFNgR -> STAT1
+
+% 29556 samples (max h ~ 1.0690104166666667)
+% CNF: [[10],[-5,1]]
+GATA3,STAT4 -< STAT4
+STAT4 / IL12R -< STAT4
+
+% 28108 samples (max h ~ 1.0166377314814814)
+% CNF: [[-1],[5]]
+IL12R / GATA3 -> STAT4
+
+% 25572 samples (max h ~ 0.9249131944444444)
+% CNF: [[-7],[11]]
+STAT6 / IL4R -< STAT6
+
+% 52520 samples (max h ~ 1.8995949074074074)
+% CNF: [[7]]
+IL4R -> STAT6
+
+% 9560 samples (max h ~ 0.34577546296296297)
+% CNF: [[1],[12]]
+GATA3,TBet -< TBet
+
+% 117137 samples (max h ~ 4.236725983796297)
+% CNF: [[-1],[9,12]]
+TBet / GATA3 -> TBet
+STAT1 / GATA3 -> TBet
+% Clause learning time: 144774 ms
+true.
+
