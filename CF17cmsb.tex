@@ -409,7 +409,7 @@ are monotonic DNF formulae with only one conjunct since in this example there is
 \label{sec:kcnf}
 
 Monotone DNF formulae cannot encode the Boolean dynamics of influence systems with negation,
-which tests the absence of inhibitors, i.e. their negation.
+which tests the absence of inhibitors, i.e., their negation.
 This is possible using a $k$-CNF representation of the activation functions,
 provided that there are at most $k$ species that can play a given ``role''. 
 For instance, in a hypothetic activation function in CNF
@@ -766,17 +766,24 @@ like~\cite{CCCCNT04mbc} and its more than 130 mutants.
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
 \label{sec:prior}
 
-Even with such improved results, the obtained model remains approximate, and
-it becomes obvious that with much bigger examples, the amount of data needed
-to get back the initial model would become huge.
-Machine learning with prior knowledge can save a lot of work by constraining the possible results and pruning the search.
+To improve the guarantee $h$ and the corresponding accuracy of the learnt
+models, especially for bigger models, it is necessary to look again at what
+constrains $h$. We have \(samples = 2h(S + \log h)\), where $S$ is the number
+of possible k-CNF clauses, bounded by $(2n)^{k+1}$.
+
+The previous section explored the diversity of the samples, another option is
+to reduce $S$ for a given $n$. This can be done by formalizing possible/known
+interactions as prior knowledge, as is common in Machine Learning, effectively
+restricting the possible clauses for each activation/deactivation function.
 
 Here we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in Listing~\ref{hints}. 
 
-It is remarkable than when given such prior knowledge, the model becomes fully readable for the experimenter, and provides them with information on the exact structure of the influences, as shown in Listing~\ref{hints.res}.
-
-\sylvain{Prior knowledge reduces $S$ and therefore should improve $h$}
-
+In the above example, the number of possible clauses becomes bounded by $3^3$
+(maximum 3 effectors that are either a positive literal, a negative literal or
+not in the clause at all) instead of $26^4$ (Valiant's bound). Since for a
+given number of samples $h$ varies quasi-linearly in $S$, the improvement is
+drastic. The accuracy of the model is, as expected with such guarantee, also
+improving a lot, as shown in Listing~\ref{hints.res}.
 
 \section{Conclusion and Perspectives}
 
