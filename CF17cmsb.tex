@@ -73,6 +73,9 @@ and learned
 from time-series data with a quasi linear number of Boolean activation samples per species,
 and that positive Boolean influence systems can be represented by monotone DNF formulae
 and learned actively with both activation samples and oracle calls.
+\francois{We consider Boolean abstractions of stochastic simulation traces 
+and study the tradeoff there is between the diversity of initial states and the length of the time horizon in terms of the distribution law on transitions
+and its impact on the error bounds of PAC learning algorithms.}
 We evaluate the performance of this approach on a model of T-lymphocyte
 differentiation, with and without prior knowledge,
 and discuss its merits as well as its limitations with respect to realistic experiments.
@@ -495,6 +498,20 @@ and can consequently be represented by a $k$-CNF formula.
 \section{PAC Learning from Traces} %Experimental Setup}
 
 %To further discuss the applicability of PAC learning to actual experiments, we hereby introduce what we believe is a plausible experimental setup, and discuss its implications on the learning of different classes of functions.
+
+\francois{Les anciennes sections 4.1 et 4.2 (4.3-4.4) sont a reecrire completement dans les nouvelles section 4.1 et 4.2. Le discours doit etre scientifique sur les traces de simulation que nous considerons sans tirer de conclusions prematurees sur les traces ``reelles'' ``en pratique'' que nous ne considerons pas.}
+
+
+\subsection{Boolean abstraction of stochastic traces}
+
+\francois{On doit etre clair sur la nature des traces considerees (seuils/activation boolleenne/stochastique). Je focaliserais sur trace stochastique et semantique booleenne d'activation.}
+
+
+\subsection{Diverse Initial States versus Long Time Horizon}
+
+discours sur lois de distribution des transitions observees dans les deux cas, avec deja figure du lymphocyte
+
+discours sur mesure de correction probabiliste des algos de PAC learning dans les deux cas
 
 \subsection{Steps and Traces}
 
