@@ -73,9 +73,9 @@ and learned
 from time-series data with a quasi linear number of Boolean activation samples per species,
 and that positive Boolean influence systems can be represented by monotone DNF formulae
 and learned actively with both activation samples and oracle calls.
-\francois{We consider Boolean abstractions of stochastic simulation traces 
-and study the tradeoff there is between the diversity of initial states and the length of the time horizon in terms of the distribution law on transitions
-and its impact on the error bounds of PAC learning algorithms.}
+We consider Boolean traces and Boolean abstractions of stochastic simulation traces,
+and study the tradeoff there is between the diversity of initial states and the length of the time horizon, 
+and its impact on the error bounds provided by PAC learning algorithms.
 We evaluate the performance of this approach on a model of T-lymphocyte
 differentiation, with and without prior knowledge,
 and discuss its merits as well as its limitations with respect to realistic experiments.
@@ -151,10 +151,8 @@ composed of 32 influences and 12 variables.
 Let $n$ be the dimension of the model to learn, and let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
  A vector is an assignment of the $n$ variables to  $\mathbb{B} = \{0,1\}$;
  A Boolean function $G:{\mathbb{B}}^n \rightarrow \mathbb{B}$;
-	assigns a Boolean value to each vector;
-
-
-The idea behind the PAC learning protocol is to discover a Boolean function, $G$, which approximates a hidden function $F$, while restricting oneself to the two following operations~:
+	assigns a Boolean value to each vector.
+The idea behind the PAC learning protocol is to discover a Boolean function\footnote{More generally, the PAC learning protocol can discover concepts with undetermined values, but we restrict here to Boolean total vectors.} , $G$, which approximates a hidden function $F$, while restricting oneself to the two following operations~:
 \begin{itemize}
   \item
 \textsc{Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
@@ -499,9 +497,18 @@ and can consequently be represented by a $k$-CNF formula.
 
 \francois{Les anciennes sections 4.1 et 4.2 (4.3-4.4) sont a reecrire completement dans les nouvelles section 4.1 et 4.2. Le discours doit etre scientifique sur les traces de simulation que nous considerons sans tirer de conclusions prematurees sur les traces ``reelles'' ``en pratique'' que nous ne considerons pas.}
 
+\subsection{Diverse Initial States versus Long Time Horizon}
+
 In practice, one cannot assume to have full access to the hidden Boolean function as required by
 \textsc{Sample} and \textsc{Oracle}, but rather to data time-series, or traces,
 produced from biological experiments. 
+For the scope of this paper, we consider simulation traces obtained from a hidden model
+which we wish to discover.
+Two types of traces are considered: Boolean and stochastic simulation traces.
+In both cases, the mapping to the concepts of PAC-learning is easy: a \textsc{Sample}
+for the activation function $x^+$ (resp. deactivaction function $x^-$) is a
+state $s_i$ such that $x_i<x_{i+1}$ (resp. $x_i>x_{i+1}$).
+See Fig.~\ref{steps} for an example.
 
 \begin{figure}[htbp]
    {\large 
@@ -531,41 +538,36 @@ produced from biological experiments.
    one has been deactivated.}\label{steps}
 \end{figure}
 
-On these traces, expressed as a succession of states, the definition of
-\textsc{Sample} can be re-defined. For \textsc{Oracle} the corresponding
-operation would rather be some kind of request for new experiments. This topic
-is discussed in more detail \sylvain{somewhere?}.
 
-Two types of traces are considered, Boolean and stochastic ones. In the
-Boolean case, the mapping to the concepts of PAC-learning is easy: a sample
-for the activation function $x^+$ (resp. deactivaction function $x^-$) is a
-Boolean state $s_i$ such that $x_i=0$ (resp. $x_i=1$) and in $x_{i+1}=1$
-(resp. $x_{i+1}=0$). See Fig.~\ref{steps} for an example.
 
-PAC learning will associate a guarantee on the quality of each learnt Boolean
-function ($h$) depending on the number of samples used $L(h, (2n)^{k+1})$,
+One striking feature of PAC learning is to associate a guarantee on the quality of each learnt Boolean
+function ($h$) depending on the number of samples used, namely $L(h, (2n)^{k+1})$,
 where $n$ is the number of genes/molecules observed, and $k$ is a parameter of
 the learning procedure as explained in Section~\ref{sec:kcnf}.
-In practice, $k$ can be limited to 3 (2 was the max we observed) and $2n$, the
+In practice, $k$ can be limited to 3 (2 was the max we observed), and $2n$, the
 number of different possible literals in a clause, can also be reduced through
 prior knowledge (see Section~\ref{sec:prior}).
 
-The global guarantee on the learnt model is the minimum of all observed $h$,
-it is therefore crucial to have as diverse samples as possible. This can be
-achieved by running several traces from different initial states,
-as discussed in more details in an example in Section~\ref{sec:abinitio}.
+It is worth noticing that the global guarantee on the learnt model is the minimum of all observed $h$.
+It is therefore crucial to have as diverse samples as possible. 
+For this reason, one should expect to get better performance 
+with large sets of short traces obtained from a uniformly distributed set of initial states,
+rather than with small sets of long traces which introduce a bias in the distribution of the samples.
+The point is that PAC learning algorithms do provide bounds on the error according to this trade-off.
+This will be evaluated in Section~\ref{sec:abinitio}.
 
-\sylvain{left this here, no idea what to do with it}
-
-\subsubsection{Oracle.}
-The \textsc{Oracle} function needs to evaluate the (de)activation function on a given vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
-The intuitive solution is the following: set the system in the desired state and see whether or not the gene is (de)activated. 
+On the other hand, a call to the \textsc{Oracle}  needs to evaluate the (de)activation function on a given vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
+This cannot be achieved without approximation.
+The intuitive solution is to set the system in the desired state and see whether or not the gene is (de)activated. 
 However, different atomic steps are possible from a given state and we have no guarantee that the one we are interested in will happen if we run this scheme once. The only way to have such a guarantee would be to perform this an infinite number of time.
-Since actually running this ``set the state and observe the first atomic step'' scheme an infinite number of time is impossible, extending the historical PAC-learning framework with ways to use an oracle that is only probabilistic arise as one of the first improvements that should be worked on.
+%Since actually running this ``set the state and observe the first atomic step'' scheme an infinite number of time is impossible, e
+This suggests to extend the PAC-learning framework with ways to use an oracle that is only probabilistic arise as one of the first improvements that should be worked on.
 %A peculiarly fast-thinking reader may also have notice that different (and often infinitely many) states of the system may also be abstracted by the same Boolean total vector $v$, and that the transition may also happen from only some of them.
 %For those reasons, algorithm requiring the \textsc{Oracle} function seem not applicable as of today, and we choose to only focus on $k$-CNF and sampling from now on.
 
-\subsection{Boolean trace example}
+
+
+\subsection{PAC Learning from Boolean Traces}
 
 A first experiment was to simulate Boolean traces for a given influence network, and use them as a basis to learn.
 We report results on our running
@@ -614,7 +616,7 @@ function for the inhibition of the predator (\texttt{Predator -< Predator}).
 This role of the diversity of the initial states on the repartition of the
 samples will be explored in more depth in the following sections.
 
-\subsection{Boolean abstraction of stochastic traces}
+\subsection{PAC Learning from  Stochastic Traces}
 
 
 \francois{On doit etre clair sur la nature des traces considerees (seuils/activation boolleenne/stochastique). Je focaliserais sur trace stochastique et semantique booleenne d'activation.}
@@ -666,18 +668,6 @@ samples (and therefore a very low $h$), one can find the full model with 50
 simulations of length 1, all starting from random initial states.
 A more detailed discussion of the role of the diversity of initial states is
 given in Section~\ref{sec:abinitio}.
-
-\subsection{Diverse Initial States versus Long Time Horizon}
-
-discours sur lois de distribution des transitions observees dans les deux cas, avec deja figure du lymphocyte
-
-discours sur mesure de correction probabiliste des algos de PAC learning dans les deux cas
-
-\sylvain{all the discourse before the examples, seems bad}
-
-
-
-
 
 
 
