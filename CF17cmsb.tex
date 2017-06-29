@@ -22,8 +22,8 @@
 
 \newif\ifcomments%
 
-\commentstrue%
-%\commentsfalse
+% \commentstrue%
+\commentsfalse%
 
 \newcommand{\francois}[1]{\ifcomments\textcolor{blue}{#1}\fi}
 \newcommand{\sylvain}[1]{\ifcomments\textcolor{green}{#1}\fi}
@@ -152,7 +152,10 @@ Let $n$ be the dimension of the model to learn, and let us consider a finite set
  A vector is an assignment of the $n$ variables to  $\mathbb{B} = \{0,1\}$;
  A Boolean function $G:{\mathbb{B}}^n \rightarrow \mathbb{B}$;
 	assigns a Boolean value to each vector.
-The idea behind the PAC learning protocol is to discover a Boolean function\footnote{More generally, the PAC learning protocol can discover concepts with undetermined values, but we restrict here to Boolean total vectors.} , $G$, which approximates a hidden function $F$, while restricting oneself to the two following operations~:
+The idea behind the PAC learning protocol is to discover a Boolean
+function\footnote{More generally, the PAC learning protocol can discover
+partial vectors, but for the applications discussed in the
+current article it is enough to only consider total vectors.}, $G$, which approximates a hidden function $F$, while restricting oneself to the two following operations:
 \begin{itemize}
   \item
 \textsc{Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
@@ -350,7 +353,8 @@ For an example of influence with inhibitor, one can consider the specific inhibi
    such that ${\vec x}\models \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n$ (resp.~${\vec x}\models \bigwedge_{p\in P_i} p$)
    and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
 \end{definition}
-
+where adding (resp.\ subtracting) $t$ amounts to making the corresponding
+coordinate true (resp.\ false).
 
 Equivalently, the Boolean semantics of an influence system over $n$ species, $x_1,\ldots,x_n$,
 can be represented by $n$ activation and $n$ deactivation Boolean functions, 
@@ -364,7 +368,7 @@ $${x_k}^-=\bigvee_{(P,I,x_k,-,f)\in\cal M} \bigwedge_{p\in P_i} p\bigwedge_{n\in
 The \emph{positive activation functions} are defined without negation by ignoring the inhibitors.
 \end{definition}
 
-Conversely any Boolean activation functions can be represented by an influence system
+Conversely any system of Boolean activation functions can be represented by an influence system
 by putting the activation functions in DNF, and associating an influence to each conjunct.
 
 Note that the positive Boolean semantics simply ignores the negative sources of an influence.
@@ -389,7 +393,7 @@ We call a positive influence system, an influence system without inhibitors or i
 \subsection{Monotone DNF Representation of Positive Influence Systems}
 
 Def.~\ref{def:activation} shows how to represent an influence system by $2*n$ activation functions in DNF, 
-and positive influence systems by monotone DNF activation functions.
+and \emph{positive} influence systems by \emph{monotone} DNF activation functions.
 
 \begin{example}
 The activation functions of the Lotka--Volterra influence system of Ex.~\ref{ex:LVi}
@@ -407,7 +411,7 @@ are monotonic DNF formulae with only one conjunct since in this example there is
 \label{sec:kcnf}
 
 Monotone DNF formulae cannot encode the Boolean dynamics of influence systems with negation,
-which tests the absence of inhibitors, i.e., their negation.
+which tests the absence of inhibitors, i.e., negative literals.
 This is possible using a $k$-CNF representation of the activation functions,
 provided that there are at most $k$ species that can play a given ``role''. 
 For instance, in a hypothetic activation function in CNF
@@ -506,7 +510,7 @@ For the scope of this paper, we consider simulation traces obtained from a hidde
 which we wish to discover.
 Two types of traces are considered: Boolean and stochastic simulation traces.
 In both cases, the mapping to the concepts of PAC-learning is easy: a \textsc{Sample}
-for the activation function $x^+$ (resp. deactivaction function $x^-$) is a
+for the activation function $x^+$ (resp.\ deactivaction function $x^-$) is a
 state $s_i$ such that $x_i<x_{i+1}$ (resp. $x_i>x_{i+1}$).
 See Fig.~\ref{steps} for an example.
 
@@ -561,7 +565,7 @@ This cannot be achieved without approximation.
 The intuitive solution is to set the system in the desired state and see whether or not the gene is (de)activated. 
 However, different atomic steps are possible from a given state and we have no guarantee that the one we are interested in will happen if we run this scheme once. The only way to have such a guarantee would be to perform this an infinite number of time.
 %Since actually running this ``set the state and observe the first atomic step'' scheme an infinite number of time is impossible, e
-This suggests to extend the PAC-learning framework with ways to use an oracle that is only probabilistic arise as one of the first improvements that should be worked on.
+This suggestion to extend the PAC-learning framework with ways to use an oracle that is only probabilistic arises as one of the first improvements that should be worked on.
 %A peculiarly fast-thinking reader may also have notice that different (and often infinitely many) states of the system may also be abstracted by the same Boolean total vector $v$, and that the transition may also happen from only some of them.
 %For those reasons, algorithm requiring the \textsc{Oracle} function seem not applicable as of today, and we choose to only focus on $k$-CNF and sampling from now on.
 
@@ -570,7 +574,7 @@ This suggests to extend the PAC-learning framework with ways to use an oracle th
 \subsection{PAC Learning from Boolean Traces}
 
 A first experiment was to simulate Boolean traces for a given influence network, and use them as a basis to learn.
-We report results on our running
+We report results using
 Ex.~\ref{ex:LVi}., but to increase readability we used long names for the
 species (populations) as shown in Listing~\ref{bool-LV}.
 The results are presented in Fig.~\ref{bool-LV.res}.
@@ -579,7 +583,7 @@ The results are presented in Fig.~\ref{bool-LV.res}.
 \begin{listfig}[htb]
 	\lstinputlisting{examples/LVi.bc}
    \caption{The Lokta-Voltera prey vs.\ predator model of Ex.~\ref{ex:LVi}
-   with explicit names.\label{bool-LV}}
+   with long names.\label{bool-LV}}
 \end{listfig}%
 \begin{figure}[htb]
    \begin{minipage}{.5\textwidth}
@@ -652,8 +656,7 @@ Prey -> Prey
    \caption{Biocham running the PAC learning algorithm on the Lotka--Volterra
       model by generating 50 random initial states from which a stochastic
       simulation of length 1 is run to obtain samples. Among those 50 initial
-     states, 7 had both prey and predator absent, leading to no sample.}%
-   \label{lst:stoch_lv}
+     states, 7 had both prey and predator absent, leading to no sample.}\label{lst:stoch_lv}
 \end{listfig}
 
 The traces obtained are in ${\mathbb{N}}^n$, they are then abstracted to
@@ -680,7 +683,7 @@ All learning experiments described below run on a
 low-end laptop in less than 3s.
 \sylvain{I need to update this}
 
-Note that for the worst cases (e.g. the single simulation with $10^6$ steps)
+Note that for the worst cases (e.g., the single simulation with $10^6$ steps)
 the CNF to DNF conversion was very slow, reaching more than 4 minutes.
 
 \subsection{Boolean Thomas Network}
@@ -713,10 +716,10 @@ deactivation. We therefore remove it from the results for readability.
    example~\ref{ex:lympho}.}\label{lst:lympho}
 \end{listfig}
 
-\subsection{\emph{Ab initio} PAC Learning from Boolean Traces}
+\subsection{\emph{Ab initio} PAC Learning from Stochastic Traces}
 \label{sec:abinitio}
 
-Results of learning on the traces resulting from the Boolean simulation of
+Results of learning on the traces resulting from the stochastic simulation of
 this system from one single initial state gave results that were hardly
 readable for the human experimenter. Whether they were still good at
 predicting the behavior of the model is not obvious. On the one hand,
@@ -746,12 +749,13 @@ provides a much more homogeneous repartition of samples (as shown by the
 decreasing standard deviation), and, as expected, a much higher $h$.
 
 This leads us to state that when using PAC-learning to find the structure of a
-model, an approach based on mutants (knock-offs, over-expression ,etc.) is
+model, an approach based on mutants (knock-offs, over-expression, etc.) is
 much more informative than an approach based on (repeated or longer) similar
 observations. Note that this is in line with integrative analyses
 like~\cite{CCCCNT04mbc} and its more than 130 mutants.
 
-\sylvain{add something about model quality}
+% In our experiments about 1000 different initial states were needed to find a
+% model very close to the original one.
 
 \subsection{PAC Learning with Prior Knowledge on the Influence Graph}
 \label{sec:prior}
@@ -766,14 +770,20 @@ to reduce $S$ for a given $n$. This can be done by formalizing possible/known
 interactions as prior knowledge, as is common in Machine Learning, effectively
 restricting the possible clauses for each activation/deactivation function.
 
-Here we want the user to be able to specify, for each gene $x$, a set of gene $V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one views the influences as a graph, this is akin to specifying a set of possible (undirected) edges outside of which the algorithm cannot build its influence system. Example of such hints for the lymphocyte model are given in Listing~\ref{hints}. 
+Here we want the user to be able to specify, for each gene $x$, a set of gene
+$V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one
+views the influences as a graph, this is akin to specifying a set of possible
+(undirected) edges outside of which the algorithm cannot build its influence
+system. An example of such hints for the lymphocyte model are given at
+\url{http://lifeware.inria.fr/wiki/software/\#CMSB17}.
 
-In the above example, the number of possible clauses becomes bounded by $3^3$
-(maximum 3 effectors that are either a positive literal, a negative literal or
-not in the clause at all) instead of $26^4$ (Valiant's bound). Since for a
-given number of samples $h$ varies quasi-linearly in $S$, the improvement is
-drastic. The accuracy of the model is, as expected with such guarantee, also
-improving a lot, as shown in Listing~\ref{hints.res}.
+In such an example, the number of possible clauses might become bounded by
+$3^3$ (maximum 3 effectors that are either a positive literal, a negative
+literal or not in the clause at all) instead of $26^4$ (Valiant's bound).
+Since for a given number of samples $h$ varies quasi-linearly in $S$, the
+improvement is drastic (50000 times less samples for the same $h$). The
+accuracy of the model is, as expected with such guarantee, also improving a
+lot.
 
 \section{Conclusion and Perspectives}
 
@@ -799,22 +809,4 @@ and to investigate the applicability of these methods to real experiments taking
 
 \bibliographystyle{splncs03}
 \bibliography{contraintes}
-\newpage
-\section*{Appendix}
-\begin{listfig}[htb]
-	\lstinputlisting{examples/lympho_100_2_140.res}
-	\caption{Results of PAC learning on 140 simulation of the lymphocyte influence system, with random starting points.\label{lympho-rand.res}}
-\end{listfig}
-
-\begin{listfig}[htb]
-	\lstinputlisting{examples/lympho.hints}
-	\caption{Prior knowledge for the lymphocyte model. For each species, a set of possible influencers is given. The PAC algorithm will then learn a model in which only the specified influencers can either induce or inhibit the species.\label{hints}}
-\end{listfig}
-
-
-
-\begin{listfig}
-	\lstinputlisting{examples/lympho-bool.res}
-	\caption{Results for lymphocyte model, with prior knowledge on the unlabeled influence graph.\label{hints.res}}
-\end{listfig}
 \end{document}
