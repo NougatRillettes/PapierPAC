@@ -363,8 +363,9 @@ can be represented by $n$ activation and $n$ deactivation Boolean functions,
 \begin{definition}[Boolean Activation Functions]\label{def:activation}
 The \emph{Boolean activation functions} ${x_k}^+,\ {x_k}^-:{\{0,1\}}^n \rightarrow\{0,1\}$, $1 \leq k \leq n$,
 of an influence system $\cal M$ are
-$${x_k}^+=\bigvee_{(P,I,x_k,+,f)\in\cal M} \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n$$
-$${x_k}^-=\bigvee_{(P,I,x_k,-,f)\in\cal M} \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n$$
+$${x_k}^+=\bigvee_{(P,I,x_k,+,f)\in\cal M} \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n
+\qquad\qquad
+{x_k}^-=\bigvee_{(P,I,x_k,-,f)\in\cal M} \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n$$
 The \emph{positive activation functions} are defined without negation by ignoring the inhibitors.
 \end{definition}
 
@@ -483,8 +484,7 @@ and can consequently be represented by a $k$-CNF formula.
 
 \begin{example}
    The above translation applied to
-   Ex.~\ref{ex:LVi} gives
-   \[f_A = A \wedge\neg B\qquad f_B = 0\]
+   Ex.~\ref{ex:LVi} gives \(f_A = A \wedge\neg B, f_B = 0\).
    Note that the form of $f_B$ means that the only possible state change
    for $B$ is from $1$ to $0$. 
 %Of course $B$ can also stay at $1$ but
@@ -493,8 +493,7 @@ and can consequently be represented by a $k$-CNF formula.
 
 \begin{example}
    The T-lymphocyte model studied in Sec.~\ref{ex:lympho} is originally a Thomas' network, where we have, for
-   instance:
-   \[f_\text{IFNg}=(\text{STAT4}\vee \text{TBet})\]
+   instance: \(f_\text{IFNg}=(\text{STAT4}\vee \text{TBet})\)
 \end{example}
 
 \section{PAC Learning from Traces} %Experimental Setup}
