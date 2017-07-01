@@ -719,11 +719,11 @@ deactivation. We therefore remove it from the results for readability.
 \label{sec:abinitio}
 
 Results of learning on the traces resulting from the stochastic simulation of
-this system from one single initial state gave results that were hardly
-readable for the human experimenter. Whether they were still good at
-predicting the behavior of the model is not obvious. On the one hand,
-guarantees on this come directly from Valiant's work with the approximation
-bounds, on the other hand,  Valiant's results stand only if we actually have
+this system from one single initial state gave results that are not
+readable for the human experimenter, because of the many alternatives in the
+learnt formulae. A guarantee on the accuracy of this model comes directly
+from Valiant's work with the approximation bounds. Note however that
+Valiant's results stand only if we actually have
 at least $L$ samples for each of the (de)activation functions, where $L$ is
 Valiant's bound. A first naive approach might be to simply let the trace run
 for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of
@@ -742,7 +742,7 @@ mutants) reveals more about the model structure than longer experiments.}%
 \label{fig:statistics}
 \end{figure}
 
-The good news is that this same figure shows that a simple randomization of
+This same figure shows that a simple randomization of
 the initial states (while keeping the total number of samples constant)
 provides a much more homogeneous repartition of samples (as shown by the
 decreasing standard deviation), and, as expected, a much higher $h$.
