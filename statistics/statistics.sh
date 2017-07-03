@@ -25,14 +25,13 @@ set termoption linewidth 2
 set style data lines
 set xlabel "Number of initial states"
 set ylabel "standard deviation of the numbers of samples"
-# set y2label "minimum number of samples"
-# set ytics nomirror
-# set y2tics
+set y2label "minimum number of samples"
+set ytics nomirror
+set y2tics
 set log x
-# plot "$tmpfile" using 1:2 axes x1y2 title "min" smooth unique, \
-#    "$tmpfile" using 1:3 axes x1y1 title "stdev" smooth unique
-set ylabel "edit distance w.r.t reference model"
-plot "$tmpfile" using 1:4 title "distance" smooth unique
+plot "$tmpfile" using 1:2 axes x1y2 title "min" smooth unique, \
+   "$tmpfile" using 1:3 axes x1y1 title "stdev" smooth unique, \
+   "$tmpfile" using 1:(10*\$4) axes x1y2 title "distance" smooth unique
 EOF
 cat "$tmpfile"
 rm "$tmpfile"
