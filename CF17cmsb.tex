@@ -737,20 +737,22 @@ from Valiant's work with the approximation bounds. Note however that
 Valiant's results stand only if we actually have
 at least $L$ samples for each of the (de)activation functions, where $L$ is
 Valiant's bound. A first naive approach might be to simply let the trace run
-for $2nL$ steps, or a constant factor of it. Unfortunately, the repartition of
+for $2nL$ steps, or a constant factor of it. Nevertheless, the repartition of
 samples for each function can be pretty non-uniform, as illustrated in
-Fig.~\ref{fig:statistics}. The minimal number of samples gives us the lowest
-$L(h, S)$ and thus quasi-linearly the lowest $h$.
+Fig.~\ref{fig:statistics}. Interestingly, the minimal number of samples gives us the lowest
+$L(h, S)$ and thus quasi-linearly the lowest guarantee $h$.
 
 \begin{figure}[htb]
    \includegraphics[width=\textwidth]{statistics/statistics.png}
-   \caption{Standard deviation and minimum number of
-   samples obtained in the simulations for the 24 boolean functions of the Th-lymphocyte example, as a function of the number of initial states. The
-minimum gives a quasi-linear estimate of the confidence $h$. The total 
+   \caption{Standard deviation, minimum number of
+   samples, and error obtained in the simulations for the 24 boolean functions of the Th-lymphocyte example, as a function of the number of initial states. The
+minimum gives a quasi-linear estimate of the model confidence $h$. The total 
 %(and therefore the average) 
 number of samples is kept constant by adjusting the
 time horizon of the simulations. Obviously, more diverse initial states %, (e.g., mutants) 
-reveal more about the model structure than longer experiments.}%
+reveal more about the model structure than longer experiments.
+On the other hand, the error measured as the number of false positive and false negative influences (right scale divided by 10), reveals a non monotonic behavior,
+due to the complexity of the models learnt with traces from only 10 to 100 initial states. }%
 \label{fig:statistics}
 \end{figure}
 
