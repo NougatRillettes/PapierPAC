@@ -685,6 +685,14 @@ given below in Sec.~\ref{sec:abinitio}.
 
 \section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
 
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.8\textwidth]{th_net_clean.png}
+   \caption{Fig.~4 of~\cite{RRMTC06tcsb} displaying the Th-lymphocyte
+   differentiation model.\label{fig:lympho}}
+\end{figure}
+
 In this section we evaluate the performance of the $k$-CNF PAC learning
 algorithm on an influence system of 12 variables and 32 influences that models
 the differentiation of the T-helper lymphocytes.
@@ -705,12 +713,6 @@ The model has three different stable states corresponding to Th-0 (naive
 lymphocyte), Th-1 and Th-2 when IL12 is off, and two others when IL12 is on
 (the Th-0 one is lost).
 
-\begin{figure}[htbp]
-   \centering
-   \includegraphics[width=0.8\textwidth]{th_net_clean.png}
-   \caption{Fig.~4 of~\cite{RRMTC06tcsb} displaying the Th-lymphocyte
-   differentiation model.\label{fig:lympho}}
-\end{figure}
 
 Fig.~\ref{fig:lympho} shows the influence graph of the model. The
 corresponding model is given in Listing~\ref{lst:lympho}.
@@ -742,12 +744,13 @@ $L(h, S)$ and thus quasi-linearly the lowest $h$.
 
 \begin{figure}[htb]
    \includegraphics[width=\textwidth]{statistics/statistics.png}
-   \caption{Evolution of the standard deviation and of the minimum number of
-   samples for the 24 boolean functions of the Th-lymphocyte example. The
-minimum gives a quasi-linear estimate of the confidence $h$. The total (and
-therefore the average) number of samples is kept constant by adjusting the
-time horizon of the simulations. Obviously, more diverse initial states (e.g.,
-mutants) reveals more about the model structure than longer experiments.}%
+   \caption{Standard deviation and minimum number of
+   samples obtained in the simulations for the 24 boolean functions of the Th-lymphocyte example, as a function of the number of initial states. The
+minimum gives a quasi-linear estimate of the confidence $h$. The total 
+%(and therefore the average) 
+number of samples is kept constant by adjusting the
+time horizon of the simulations. Obviously, more diverse initial states %, (e.g., mutants) 
+reveal more about the model structure than longer experiments.}%
 \label{fig:statistics}
 \end{figure}
 
@@ -801,7 +804,7 @@ and more precisely to automatically discover possible regulatory networks of a b
 
 The Boolean dynamics of biochemical influence systems, including Thomas regulatory networks, can be represented by $k$-CNF formulae without loss of generality,
 and $k$-CNF PAC learning algorithm can be used to infer the structure of the network,
-and bound the errors made according to the distribution of the state transition traces.
+and bound the errors made according to the distribution of the state transition samples.
 When dimension increases, we have shown on an example of T-lymphocyte differentiation from the literature
 that the $k$-CNF PAC learning algorithm can also leverage available
 prior knowledge on the system to deliver precise results with a reasonable
@@ -810,7 +813,6 @@ amount of data.
 The Boolean dynamics of positive influence systems can also be straightforwardly represented by monotone DNF activation and deactivation functions,
 and monotone DNF PAC learning algorithm applied with an interesting recourse to oracles 
 which are particularly relevant in the perspective of online active learning and experimental design.
-
 More work is needed however to make comparisons on common benchmarks
 with  other approaches already investigated in this context, such as Answer Set Programming (ASP) and budgeted learning,
 and to investigate the applicability of these methods to real experiments taking into account the noise in the observations.
