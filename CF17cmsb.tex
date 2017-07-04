@@ -195,8 +195,8 @@ Valiant showed the learnability of some important classes of functions in this f
 in particular for Boolean formulae in conjunctive normal forms with at most $k$ literals per conjunct (k-CNF),
 and for monotone (i.e.~negation free, positive literals only) Boolean formulae in disjunctive normal form (DNF).
 
-The computational complexity of the PAC learning algorithms for these classes of functions is expressed in terms of the function
-$L(h,S)$ defined as the smallest integer $i$ such that
+The computational complexity of the PAC learning algorithms for these classes of functions is expressed in terms of a function
+$L(h,S)$, defined as the smallest integer $i$ such that
 in $i$ independent Bernoulli trials, each with probability at least $h^{-1}$ of success, the probability of having fewer than $S$ successes is less than $h^{-1}$.
 Interestingly, this function is \emph{quasi-linear in $h$ and $S$}, more precisely for all
 integers $S\ge 1$ and reals $h>1$, we have $L(h,S) \le 2h(S+\log_e h)$~\cite{Valiant84cacm}.
@@ -583,7 +583,7 @@ on Ex.~\ref{ex:LVi}, where to increase readability we used long names for the
 species.
 It is worth noticing that in this particular model, the positive infuences cannot be learned from (de)activation traces,
 since they contain their target as positive source and thus do not correspond to an activation function.
-Indeed, the activation functions in the Lokta--Voltera models report the apparition on extinction of the species' population as a whole and not of individuals of it.
+Indeed, the activation functions in the Lokta--Volterra models report the apparition on extinction of the species' population as a whole and not of individuals of it.
 The results in this tradeoff are perfect in the sense that the negative influences are correctly inferred.
 
 \begin{figure}[htb]
@@ -597,7 +597,7 @@ Predator -< Predator
 Predator, Prey -< Prey
       \end{lstlisting}
    \end{minipage}
-   \caption{The Lokta-Voltera prey vs.\ predator influence model of Ex.~\ref{ex:LVi}
+   \caption{The Lokta-Volterra prey vs.\ predator influence model of Ex.~\ref{ex:LVi}
    with long names (left panel) and the (most likely) influence model PAC-learned on 25 simulations of length 2 (right panel) from random initial states.\label{bool-LV}}
 \end{figure}
 
@@ -723,7 +723,7 @@ deactivation. We thus removed it from the results below for readability.
 
 \begin{figure}[htb]
    \includegraphics[width=\textwidth]{statistics/statistics.png}
-   \caption{Minimum numbers of (de)activation samples with standard deviations, and model errors (i.e.~false positive and negative infleunces) obtained for the 24 boolean functions of the Th-lymphocyte example, as a function of the number of initial states 
+   \caption{Minimum numbers of (de)activation samples with standard deviations, and model errors (i.e.~false positive and negative influences) obtained for the 24 boolean functions of the Th-lymphocyte example, as a function of the number of initial states 
 (with total number of samples kept constant by adjusting the time horizon).}
 \label{fig:statistics}
 \end{figure}
@@ -747,8 +747,7 @@ Valiant's results stand only if we actually have
 at least $L$ samples for each of the (de)activation functions, where $L$ is
 Valiant's bound. A first naive approach might be to simply let the trace run
 for $2nL$ steps, or a constant factor of it. Nevertheless, the repartition of
-samples for each function can be pretty non-uniform, as illustrated in
-Fig.. Interestingly, the minimal number of samples gives us the lowest
+samples for each function can be pretty non-uniform. Interestingly, the minimal number of samples gives us the lowest
 $L(h, S)$ and thus quasi-linearly the lowest guarantee $h$.
 
 
