@@ -20,8 +20,8 @@
 %\usepackage{amsmath,amssymb,amsfonts,stmaryrd}
 \usepackage{graphicx}
 %\usepackage[usenames,dvipsnames]{color}
-%\usepackage{tikz}
-%\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage{multicol}
 \usepackage{booktabs}
@@ -58,7 +58,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-\begin{frame}
+\begin{frame}[fragile]
   \begin{columns}
     % ---------------------------------------------------------%
     % Set up a column 
@@ -76,9 +76,9 @@ is a very desirable goal to palliate the lack of modellers for many applications
 \item Despite the spectacular progress of machine learning techniques in data analytics, classification, clustering and prediction making,
 learning dynamical models from data time-series is still challenging.
 \item In this paper \cite{CFS17cmsb} we investigate the use of the Probably Approximately Correct (PAC) learning 
-framework of Leslie Valiant as a method for the automated discovery of influence models of biochemical processes from Boolean and stochastic traces. 
+framework of Leslie Valiant \cite{Valiant84cacm} as a method for the automated discovery of influence models of biochemical processes from Boolean and stochastic traces. 
 \item We evaluate the performance of this approach on a model of T-lymphocyte
-differentiation, with and without prior knowledge,
+differentiation \cite{RRMTC06tcsb,Mendoza06biosystems}, with and without prior knowledge,
 and discuss its merits as well as its limitations with respect to realistic experiments.
               \end{itemize}              
             \end{block}
@@ -93,8 +93,10 @@ The output of \textsc{Sample}$()$ is assumed to follow a given probability distr
   \item
 \textsc{Oracle}$(v)$: returns the value of $F(v)$ for any input vector $v$.
 \end{itemize}
-
-\begin{definition}[\cite{Valiant84cacm}]\label{def:learnclass}
+            \end{block}
+            \vfill
+            \begin{block}{Learnable Boolean Functions}
+%\begin{definition}[\cite{Valiant84cacm}]\label{def:learnclass}
    A class $\cal M$ of \emph{Boolean functions} is said to be \emph{learnable}
    if there exists an algorithm $\cal A$ with some precision parameter $h\in\mathbb N$ such that:
    \begin{itemize}
@@ -108,17 +110,16 @@ The output of \textsc{Sample}$()$ is assumed to follow a given probability distr
                $\displaystyle\sum_{v\ s.t.\ F(v)=1\wedge G(v)=0} D(v) < h^{-1}$ (low probability of false negatives)
          \end{itemize}
    \end{itemize}
-\end{definition}
+%\end{definition}
             \end{block}
             \vfill
-            \begin{block}{PAC Learning Algorithms}
-\begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
+            \begin{block}{PAC Learning Algorithms \cite{Valiant84cacm}}
+%\begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
 For any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
 algorithm that uses $L(h,{(2 n)}^{k+1})$ positive examples and no call to the
 oracle.
-\end{theorem}
-
-\begin{algorithm}
+%\end{theorem}
+%\begin{algorithm}
 \begin{enumerate}
   \item initialise $g$ to the conjunction of all the $(2n)^k$ possible clauses of at most $k$ literals,
 \item do $L(h,(2n)^{k+1})$ times 
@@ -128,45 +129,18 @@ oracle.
 \end{enumerate}
 \item output: $g$
 \end{enumerate}
-\caption{PAC-learning of $k$-CNF formulae.\label{algCNF}}
-\end{algorithm}
-
-
-\begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
+%\caption{PAC-learning of $k$-CNF formulae.\label{algCNF}}
+%\end{algorithm}
+%\begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
     The class of monotone DNF formulae on $n$ variables is also learnable with an
     algorithm that uses $L(h,d)$ examples and $d n$ calls to the oracle,
     where $d$ is the \emph{degree} of the function to learn.
-\end{theorem}
-
-\begin{algorithm}
-\begin{enumerate}
-\item initialise $g$ with false (constant zero),
-\item
-do $L(h,d)$ times 
-\begin{enumerate}
-\item $v:=\textsc{Sample}()$
-	\item 
-	if $v\Rightarrow g$ exit
-\item for $i:=\ 1\ to \ n$
-\begin{enumerate}
-\item if $x_i$ is determined in $v$
-\begin{enumerate}
-\item $v^*:=v[x_i\leftarrow *]$
-\item if $\textsc{Oracle}(v^*)$ then 
-\begin{itemize}
-\item $v:=v^*$
-\item $m:=\bigwedge_{v\Rightarrow x_j} x_j\wedge\bigwedge_{v\Rightarrow\neg x_k}\neg x_k$ 
-\item $g:=g\vee m$
-\end{itemize}
-\end{enumerate}
-\end{enumerate}
-\end{enumerate}
-\item output: $g$
-\end{enumerate}
-\caption{PAC-learning of monotone DNF formulae.\label{algDNF}}
-\end{algorithm}
-
+%\end{theorem}
             \end{block}
+            \vfill
+            \begin{block}{T-helper Lymphocyte Differentiation Inlfuence Graph \cite{RRMTC06tcsb}}
+   \includegraphics[width=0.8\textwidth]{th_net_clean.png}
+	    \end{block}
             \vfill
           }
         \end{minipage}
@@ -184,59 +158,51 @@ do $L(h,d)$ times
             % Since all columns are the same length, it is all nice and tidy.  You have to get the height empirically
             % ---------------------------------------------------------%
             % fill each column with content
-            \begin{block}{T-helper Lymphocytes Differentiation Model}
-
-\begin{figure}[htbp]
-   \centering
-   \includegraphics[width=0.8\textwidth]{th_net_clean.png}
-   \caption{Fig.~4 of~\cite{RRMTC06tcsb} displaying the influence graph of the Th-lymphocyte
-   differentiation model.\label{fig:lympho}}
-\end{figure}
-
-\begin{listfig}[htb]
+            \begin{block}{Influence System in BIOCHAM v4 syntax}
+%\begin{listfig}[htb]
+\small
    \lstinputlisting[multicols=2,firstline=6]{examples/lympho.bc}
-   \caption{Biocham influence system for the lymphocyte differentiation of
-   example~\ref{ex:lympho}.}\label{lst:lympho}
-\end{listfig}
-
+%\end{listfig}
 	    \end{block}
             \vfill
-            \begin{block}{\emph{Ab initio} PAC Learning from Stochastic Traces}
+            \begin{block}{PAC Learning from Stochastic Traces}
+Space-time tradeoff (number initial states versus long time horizon)
 
-\begin{figure}[htb]
+%\begin{figure}[htb]
    \includegraphics[width=\textwidth]{statistics/statistics.png}
-   \caption{Minimum numbers of (de)activation samples with standard deviations, and model errors (i.e.~false positive and negative influences) obtained for the 24 boolean functions of the Th-lymphocyte example, as a function of the number of initial states 
-(with total number of samples kept constant by adjusting the time horizon).}
-\label{fig:statistics}
-\end{figure}
+   %\caption{
 
-            \end{block}
-            \vfill
-	    \begin{block}{PAC Learning with Prior Knowledge on the Influence Graph}
-              \begin{itemize}
-              \item 
-              \end{itemize}
-              
-            \end{block}
+Minimum number of (de)activation samples with standard deviations
+obtained for the 24 boolean functions of the Th-lymphocyte example, 
+and {\bf model error} (number of false positives and false negatives) 
+as a function of the number of initial states 
+(with total number of samples kept constant by adjusting the time horizon). %}
+%\label{fig:statistics}
+%\end{figure}
+\emph{Learn correct model from 500 traces}.
+
+Influence graph as prior knowledge: reduce the number of possible clauses $S<(2n)^{k+1}$ in \(samples = 2h(S + \log h)\).
+Learn correct model from ???? traces.
+	    \end{block}
             \vfill
   	    \begin{block}{Conclusions}
               \begin{itemize}
-              \item Valiant's work on PAC learning provides an elegant trail, with error bounds,
+              \item Valiant's work on PAC learning provides an elegant trail, with {\bf error bounds},
 to attack the challenge of inferring the structure of influence models from the observation of data time series,
 and more precisely to automatically discover possible regulatory networks of a biochemical process, given sufficiently precise observations of its executions.
 \item The Boolean dynamics of biochemical influence systems, including Thomas regulatory networks, can be represented by $k$-CNF formulae without loss of generality,
 and $k$-CNF PAC learning algorithm can be used to infer the structure of the network,
-and bound the errors made according to the distribution of the state transition samples and the space-time tradeoff in the traces.
-\item The $k$-CNF PAC learning algorithm can also leverage available
-prior knowledge on the system to deliver precise results with a reasonable
-amount of data.
-
+and bound the errors made according to the distribution of the state transition samples. 
+\item {\bf space-time tradeoff} in line with the pratice of integrative analyses
+such as~\cite{CCCCNT04mbc} and its more than 130 mutants.
               \end{itemize}
 \footnotesize
 
 
 \bibliographystyle{splncs03}
 \bibliography{contraintes}
+
+\vfill
             \end{block}
             \vfill
           }
