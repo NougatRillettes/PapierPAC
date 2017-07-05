@@ -1,0 +1,4 @@
+Prey, Predator -< Prey.
+Prey, Predator -> Predator.
+Prey -> Prey.
+Predator -< Predator.

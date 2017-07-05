@@ -1,0 +1,14 @@
+{
+"IFNg": ["STAT4","TBet"],
+"IL4": ["GATA3","STAT1"],
+"IL12" : [],
+"IFNgR": ["IFNg", "SOCS1"],
+"IL4R": ["IL4","SOCS1"],
+"IL12R": ["IL12", "STAT6"],
+"STAT1":  ["IFNgR"],
+"STAT6": ["IL4R"],
+"STAT4": ["IL12R","GATA3"],
+"SOCS1":  ["STAT1","TBet"],
+"TBet": ["STAT1","TBet","GATA3"],
+"GATA3": ["STAT6","TBet"]
+}

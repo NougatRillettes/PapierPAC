@@ -1,0 +1,818 @@
+\documentclass{llncs}
+\pagestyle{plain}
+\usepackage{amsmath,amssymb,amsfonts,stmaryrd}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{subfig}
+\lstset{%
+   basicstyle=\ttfamily, %\scriptsize\ttfamily,
+%   frame=single,
+   breaklines=true,
+}
+%\usepackage{algorithm}
+\usepackage{float}
+
+\newcommand{\wip}[1]{\textcolor{Purple}{WIPWIPWIPWIP #1 WIPWIPWIPWIP}}
+
+\newif\ifcomments%
+
+% \commentstrue%
+\commentsfalse%
+
+\newcommand{\francois}[1]{\ifcomments\textcolor{blue}{#1}\fi}
+\newcommand{\sylvain}[1]{\ifcomments\textcolor{green}{#1}\fi}
+\newcommand{\arthur}[1]{\ifcomments\textcolor{brown}{#1}\fi}
+
+
+\newcommand{\defleq}{\sqsubseteq_{\text{def}}}
+\newcommand{\lra}{\longrightarrow}
+
+\floatstyle{boxed}
+\newfloat{listfig}{htb}{lstfig}
+\floatname{listfig}{Listing}
+
+\floatstyle{ruled}
+\newfloat{algorithm}{htbb}{algfig}
+\floatname{algorithm}{Algorithm}
+
+
+
+
+\begin{document}
+
+\title{Probably Approximately Correct Learning of Regulatory Networks from Time-Series Data}
+
+\author{Arthur Carcano\inst{1} \and Fran\c{c}ois Fages\inst{2} \and Sylvain
+Soliman\inst{2}}
+
+\institute{%
+Ecole Normale Sup\'erieure, Paris, France\\
+  \email{arthur.carcano@ens.fr}
+\and Inria, University Paris-Saclay, Lifeware group, France\\
+   \email{Francois.Fages@inria.fr},
+   \email{Sylvain.Soliman@inria.fr}
+}
+
+\maketitle
+
+\begin{abstract}
+Automating the process of model building from experimental data 
+is a very desirable goal to palliate the lack of modellers for many applications.
+However, despite the spectacular progress of machine learning techniques in data analytics, classification, clustering and prediction making,
+learning dynamical models from data time-series is still challenging.
+In this paper we investigate the use of the Probably Approximately Correct (PAC) learning 
+framework of Leslie Valiant as a method for the automated discovery of influence models of biochemical processes from Boolean and stochastic traces. 
+We show that Thomas' Boolean influence systems can be naturally represented by k-CNF formulae,
+and learned
+from time-series data with a number of Boolean activation samples per species quasi-linear in the precision of the learned model,
+and that positive Boolean influence systems can be represented by monotone DNF formulae
+and learned actively with both activation samples and oracle calls.
+We consider Boolean traces and Boolean abstractions of stochastic simulation traces,
+and study the space-time tradeoff there is between the diversity of initial states and the length of the time horizon, 
+and its impact on the error bounds provided by the PAC learning algorithms.
+We evaluate the performance of this approach on a model of T-lymphocyte
+differentiation, with and without prior knowledge,
+and discuss its merits as well as its limitations with respect to realistic experiments.
+\end{abstract}
+
+\section{Introduction}
+
+Modelling biological systems is still an art which is currently limited in its applications by the number of available modellers.
+Automating the process of model building is thus a very desirable goal
+to attack new applications, develop patient-tailored therapeutics,
+and also design experiments that can now be largely automated
+with a gain in both the quantification and the reliability of the observations, at both the single cell and population levels.
+
+Machine learning is revolutionising the statistical methods in biological data analytics,
+data classification and clustering, and prediction making.
+However, learning dynamical models from data time-series is still challenging.
+A recent survey on probabilistic programming~\cite{GHNR14fose}
+highlighted the difficulties associated with modelling time,
+and concluded that existing frameworks are not sufficient in their treatment of dynamical systems.
+There has been early work on the use of machine learning techniques, such as inductive
+ logic programming~\cite{Muggleton95ngc} combined with active learning in the vision of the ``robot scientist''~\cite{BMOKRK01etai},
+to infer gene functions,
+metabolic pathway descriptions~\cite{AM02etai,AM02slps}
+or gene influence systems~\cite{BCRG04jtb},
+or to revise a reaction model with respect to CTL properties~\cite{CCFS06tcsb}.
+Since a few years, progress in this field is measured on public benchmarks
+of the ``Dream Challenge'' competition~\cite{Hill16nm,Meyer14bmc}.
+Logic Programming, and especially \emph{Answer Set Programming} (ASP), provide efficient tools such as CLASP~\cite{GKNS07lpnmr}
+to implement learning algorithms for Boolean models.
+They have been applied in~\cite{GSTUV08iclp} to the detection of  inconsistencies in large biological networks,
+and have been subsequentially applied to the inference of gene networks from gene expression data and to the design of discriminant experiments~\cite{VKASSSG15frontiers}.
+Furthermore, ASP has been combined with CTL model-checking in~\cite{OPSSG16biosystems} to learn mammalian signalling networks from time series data,
+and identify erroneous time-points in the data.
+
+Active learning extends machine learning with the possibility to call oracles, e.g.~make experiments,
+and budgeted learning adds costs to the calls to the oracle.
+The original motivation for the budgeted learning protocol came from medical applications in which the outcome of a treatment,
+drug trial, or control group is known, and the results of running medical tests are each available for a price~\cite{DZBSM13ml}.
+In this context, multi-armed bandit methods~\cite{DBSSZ07icdm} currently provide the best strategies.
+In~\cite{LMALS14ecml}, a bandit-based active learning algorithm is proposed for experiment design in dynamical system identification.
+
+In this paper, we consider the framework of Probably Approximately Correct (PAC) Learning 
+which was introduced by Leslie Valiant in his seminal paper on a theory of the learnable~\cite{Valiant84cacm}.
+Valiant questioned what can be learned from a computational viewpoint,
+and introduced the concept of PAC learning,
+together with a general-purpose polynomial-time learning protocol.
+Beyond the algorithms that one can derive with this methodology,
+Valiant's theory of the learnable has profound implications
+on the nature of biological and cognitive processes,
+of collective and individual behaviors,
+and on the study of their evolution~\cite{Valiant13book}.
+
+Here we present PAC learning as a possible basis to develop a method for the automated discovery of influence models of biochemical processes from time-series data. 
+To the best of our knowledge, 
+the application of PAC learning to dynamical models of biochemical systems has not been reported before.
+We show that Thomas' gene regulatory networks~\cite{Thomas91jtb,Thomas73jtb} can be naturally represented by 
+Boolean formulae in conjunctive normal forms with a bounded number of litterals (i.e.~k-CNF formulae),
+and can be learned from Boolean traces with a number of Boolean transition samples per species quasi-linear in the precision of the learned model, using Valiant's PAC learning algorithm for k-CNF formulae.
+We also show that Boolean influence systems with their positive Boolean semantics discussed in~\cite{FMRS16cmsb}
+can be naturally represented by monotone DNF formulae,
+and learned actively from a set of positive samples with calls to an oracle.
+
+For the sake of evaluation, we consider Boolean traces and Boolean abstractions of stochastic simulation traces,
+and study the space-time tradeoff there is between the diversity of initial states and the length of the time horizon, 
+and its impact on the error bounds provided by PAC learning algorithms.
+In the following, we first illustrate our results\footnote{For the sake of reproducibility, the code used in this article is available at \url{http://lifeware.inria.fr/wiki/software/\#CMSB17}.} with a toy example, the Lotka-Volterra prey-predator system as running example,
+and then on a Thomas regulatory network of 
+the differentiation of the T-helper lymphocytes from~\cite{RRMTC06tcsb,Mendoza06biosystems},
+composed of 32 influences and 12 variables.
+We evaluate the performance of PAC learning on this model, with and without prior knowledge,
+and discuss its merits as well as its limitations with respect to realistic experiments.
+
+
+\section{Preliminaries on PAC Learning}\label{pac}
+
+\subsection{PAC Learning Protocol}
+
+Let $n$ be the dimension of the model to learn, and let us consider a finite set of Boolean variables $x_1,\ldots,x_n$,
+ A vector is an assignment of the $n$ variables to  $\mathbb{B} = \{0,1\}$;
+ A Boolean function $G:{\mathbb{B}}^n \rightarrow \mathbb{B}$;
+	assigns a Boolean value to each vector.
+The idea behind the PAC learning protocol is to discover a Boolean
+function\footnote{More generally, the PAC learning protocol can discover
+partial vectors, but for the applications discussed in the
+current article it is enough to only consider total vectors.}, $G$, which approximates a hidden function $F$, while restricting oneself to the two following operations:
+\begin{itemize}
+  \item
+\textsc{Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
+The output of \textsc{Sample}$()$ is assumed to follow a given probability distribution $D(v)$, which is used to measure the approximation of the result.
+  \item
+\textsc{Oracle}$(v)$: returns the value of $F(v)$ for any input vector $v$.
+\end{itemize}
+
+
+\begin{definition}[\cite{Valiant84cacm}]\label{def:learnclass}
+   A class $\cal M$ of \emph{Boolean functions} is said to be \emph{learnable}
+   if there exists an algorithm $\cal A$ with some precision parameter $h\in\mathbb N$ such that:
+   \begin{itemize}
+      \item $\cal A$ runs in polynomial time both in $n$ and $h$;
+      \item
+         for any function $F$ in $\cal M$, and any distribution $D$ on the positive examples,
+         $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ such that
+         \begin{itemize}
+            \item $G(v)=1$ implies $F(v)=1$ (no false positive)
+            \item
+               $\displaystyle\sum_{v\ s.t.\ F(v)=1\wedge G(v)=0} D(v) < h^{-1}$ (low probability of false negatives)
+         \end{itemize}
+   \end{itemize}
+\end{definition}
+
+Note that it is possible to use two different parameters $h_1$ an $h_2$ for the \emph{probability of false negatives} and the \emph{quality of the approximation}, but here, we used $h_1 = h_2 = h$ for the sake of simplicity.
+
+
+\subsection{PAC Learning Algorithms}
+
+Valiant showed the learnability of some important classes of functions in this framework,
+in particular for Boolean formulae in conjunctive normal forms with at most $k$ literals per conjunct (k-CNF),
+and for monotone (i.e.~negation free, positive literals only) Boolean formulae in disjunctive normal form (DNF).
+
+The computational complexity of the PAC learning algorithms for these classes of functions is expressed in terms of a function
+$L(h,S)$, defined as the smallest integer $i$ such that
+in $i$ independent Bernoulli trials, each with probability at least $h^{-1}$ of success, the probability of having fewer than $S$ successes is less than $h^{-1}$.
+Interestingly, this function is \emph{quasi-linear in $h$ and $S$}, more precisely for all
+integers $S\ge 1$ and reals $h>1$, we have $L(h,S) \le 2h(S+\log_e h)$~\cite{Valiant84cacm}.
+
+\begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
+For any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
+algorithm that uses $L(h,{(2 n)}^{k+1})$ positive examples and no call to the
+oracle.
+\end{theorem}
+
+The proof is constructive and relies on Alg.~\ref{algCNF} below. In this algorithm, the initialization of the learned function $g$ to the false constraint expressed as the conjunction of all possible \emph{clauses} (i.e.~disjunctions of litterals)
+leads to the learning of a minimal generalization of the positive examples with no false positive and low probability of false negatives.
+
+\begin{algorithm}
+\begin{enumerate}
+  \item initialise $g$ to the conjunction of all the $(2n)^k$ possible clauses of at most $k$ literals,
+\item do $L(h,(2n)^{k+1})$ times 
+\begin{enumerate}
+\item $v:=\textsc{Sample}()$
+\item delete all the clauses in $g$ that do not contain a literal true in $v$
+\end{enumerate}
+\item output: $g$
+\end{enumerate}
+\caption{PAC-learning of $k$-CNF formulae.\label{algCNF}}
+\end{algorithm}
+
+In our implementation of the PAC-learning algorithm for $k$-CNF formulae,
+we shall make use of the lattice structure of $k$-clauses ordered by implication.
+Interestingly, this data structure allows for
+\begin{itemize}
+	\item $O(1)$ access to any $k$-clause;
+	\item and for a clause $c$, $O(1)$ access to the smallest clauses implied by $c$ and to the biggest clauses that imply $c$.
+\end{itemize}
+
+The class of monotone DNF formulae is also learnable. Let the \emph{degree} of
+a Boolean formula be the largest number of prime implicants (i.e., minimal
+formulae covering one of the product-terms of the Boolean formula expressed as
+a sum of products) in an equivalent rewriting of the formula as a
+non-redundant sum of prime-implicants.
+
+
+\begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
+    The class of monotone DNF formulae on $n$ variables is also learnable with an
+    algorithm that uses $L(h,d)$ examples and $d n$ calls to the oracle,
+    where $d$ is the \emph{degree} of the function to learn.
+\end{theorem}
+
+The proof relies on Alg.~\ref{algDNF}. As previously, the algorithm guarantees that a minimal generalization is learned from both the samples and the oracle.
+The polynomial computational complexity follows from the fact that each monomial $m$ is a prime implicant
+of $f$ by construction, and that it is constructed by at most $n$ calls to the
+oracle.
+
+\begin{algorithm}
+\begin{enumerate}
+\item initialise $g$ with false (constant zero),
+\item
+do $L(h,d)$ times 
+\begin{enumerate}
+\item $v:=\textsc{Sample}()$
+	\item 
+	if $v\Rightarrow g$ exit
+\item for $i:=\ 1\ to \ n$
+\begin{enumerate}
+\item if $x_i$ is determined in $v$
+\begin{enumerate}
+\item $v^*:=v[x_i\leftarrow *]$
+\item if $\textsc{Oracle}(v^*)$ then 
+\begin{itemize}
+\item $v:=v^*$
+\item $m:=\bigwedge_{v\Rightarrow x_j} x_j\wedge\bigwedge_{v\Rightarrow\neg x_k}\neg x_k$ 
+\item $g:=g\vee m$
+\end{itemize}
+\end{enumerate}
+\end{enumerate}
+\end{enumerate}
+\item output: $g$
+\end{enumerate}
+\caption{PAC-learning of monotone DNF formulae.\label{algDNF}}
+\end{algorithm}
+
+
+
+
+
+\section{Influence Models of Molecular Cell Processes}
+
+In this section, we present the formalism of influence systems used to model regulatory networks in cell molecular biology.
+%and to which we will later whether or not PAC learning is applicable.
+We assume again a finite set of molecular species $\{x_1,\dots,x_n\}$ 
+and consider Boolean states that represent the activation or presence of each molecular species of the system, 
+i.e.~vectors in $\mathbb{B}^n$ that specify whether or not the $i$th species is present, or the $i$th gene activated.
+
+\subsection{Influence Systems with Forces}
+
+
+Influence systems with forces have been introduced in~\cite{FMRS16cmsb}
+to generalize the widely used logical models of regulatory networks \emph{\`a la} Thomas~\cite{Thomas73jtb},
+in order to provide them with a hierarchy of semantics
+including quantitative differential and stochastic semantics, similarly to reaction systems~\cite{FS08tcs}.
+
+\begin{definition}[\cite{FMRS16cmsb}]
+An \emph{influence system}
+   $I$ is a set of quintuples $(P, I, t, \sigma, f)$ called \emph{influences}, noted in the examples below in Biocham v4\footnote{\url{http://lifeware.inria.fr/biocham4}} syntax,\\ \verb|f for P/I -> t| if $\sigma=+$, and \verb|f for P/I -< t| if $\sigma=-$,
+   where 
+\begin{itemize}
+\item $P$ is a multiset on $S$, called \emph{positive sources} of the influence, 
+\item $I$ a multiset of \emph{negative sources}, 
+\item $t\in S$ is the \emph{target},
+\item $\sigma\in\{+,-\}$ is the \emph{sign} of the influence, accordingly called either \emph{positive or negative influence},
+\item and $f:\mathbb{R_+}^n\to\mathbb{R_+}$ is a function\footnote{More precisely, in a well-formed influence system, $f$ is assumed to be partially differentiable;
+$x_i\in P$ if and only if $\sigma = +$ (resp.\ $-$) and
+   ${\partial {f}}/ {\partial x_i}(\vec x)>0$ (resp.\ $<0$) for some value
+   $\vec x\in\mathbb{R}_+^n$;
+ and $x_i\in I$ if and only if $\sigma = +$ (resp.\ $-$) and
+   ${\partial {f}}/ {\partial x_i}(\vec x)<0$ (resp.\ $>0$) for some value
+  $\vec x\in\mathbb{R}_+^n$.}
+called the \emph{force} of the influence.
+\end{itemize}
+\end{definition}
+
+%In the examples below, the ASCII syntax of Biocham v4 is used for influences.
+%Positive (resp.~negative) influences are written with an arrow \lstinline|->| (resp.~\lstinline+-<+)
+%which separates the sources from the target.
+%the positive and negative sources are separated
+%by a \lstinline|/|, which can be omitted if there is no negative source.
+The positive sources are distinguished from the negative sources of an influence (positive or negative),
+in order to annotate the fact that in the differential semantics,
+the source increases or decreases the force of the influence,
+and in the Boolean semantics with negation whether the source, or the negation of the source,
+is a condition for a change in the target.
+
+
+\begin{example}\label{ex:LVi}
+   The classical birth-death model of Lotka--Volterra can be represented by the following
+influence system between a proliferating prey $A$ and a predator $B$:
+  \lstinputlisting[firstline=6,lastline=9]{examples/LVif.bc}
+
+\vspace{-2cm}\hfill\includegraphics[width=0.45\textwidth]{LVstoch.png}
+
+The influence forces can be used for differential or stochastic simulation as above.
+This example contains both positive and negative influences but no influence inhibitor, i.e.~no negative source in the influences:
+$(\{A, B\}, \emptyset, A, -, k1*A*B)$, $(\{A, B\}, \emptyset, B, +, k1*A*B)$, $(\{A\}, \emptyset, A, +, k2*A)$ and $(\{B\}, \emptyset, B, -, k3*B)$.
+For an example of influence with inhibitor, one can consider the specific inhibition of the proliferation rate of $A$ by some variable $C$
+(which is distinguished from a general negative influence of $C$ on $A$) by writing $C$ as an inhibitor of the positive influence of $A$ on $A$:
+\verb|k2*A/(1+C) for A/C -> A.|
+\end{example}
+
+
+
+\begin{definition}[Boolean Semantics]
+   The Boolean semantics (resp.~positive Boolean semantics) of an influence system $\{(P_i, I_i, t_i, \sigma_i,
+   f_i)\}_{1\leq i\leq n}$
+   over a set $S$ of $n$ variables,
+   is the Boolean transition system $\lra$ defined over Boolean state vectors in $\mathbb{B}^n$
+   by
+   ${\vec x}\lra{\vec x'}$ if there exists an influence $(P_i, I_i, t_i, \sigma_i, f_i)$
+   such that ${\vec x}\models \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n$ (resp.~${\vec x}\models \bigwedge_{p\in P_i} p$)
+   and ${\vec x'} = {\vec x}\ \sigma_i\ t_i$.
+\end{definition}
+where adding (resp.\ subtracting) $t$ amounts to making the corresponding
+coordinate true (resp.\ false).
+
+Equivalently, the Boolean semantics of an influence system over $n$ species, $x_1,\ldots,x_n$,
+can be represented by $n$ activation and $n$ deactivation Boolean functions, 
+ which determine the possible transitions from each Boolean state:
+
+\begin{definition}[Boolean Activation Functions]\label{def:activation}
+The \emph{Boolean activation functions} ${x_k}^+,\ {x_k}^-:{\{0,1\}}^n \rightarrow\{0,1\}$, $1 \leq k \leq n$,
+of an influence system $\cal M$ are
+$${x_k}^+=\bigvee_{(P,I,x_k,+,f)\in\cal M} \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n
+\qquad\qquad
+{x_k}^-=\bigvee_{(P,I,x_k,-,f)\in\cal M} \bigwedge_{p\in P_i} p\bigwedge_{n\in I_i} \neg n$$
+The \emph{positive activation functions} are defined without negation by ignoring the inhibitors.
+\end{definition}
+
+Conversely any system of Boolean activation functions can be represented by an influence system
+by putting the activation functions in DNF, and associating an influence to each conjunct.
+
+Note that the positive Boolean semantics simply ignores the negative sources of an influence.
+This is motivated by the abstraction and approximation relationships that link the Boolean semantics
+to the stochastic semantics and to the differential semantics, for which the presence of an inhibitor decreases the force of an influence but does not prevent it to apply~\cite{FMRS16cmsb}.
+
+
+\begin{definition}[Stochastic Semantics]\label{def:stoch}
+   The stochastic semantics (resp.~positive stochastic semantics) of an influence system $\{(P_i, I_i, t_i,
+   \sigma_i, f_i)\}_{1\leq i\leq n}$ over a set $S$ of $n$ variables, relies
+   on the transition system $\lra$ defined over discrete states, i.e.\
+   vectors in $\mathbb{N}^n$, by $\forall (P_i, I_i, t_i, \sigma_i, f_i), {\vec
+   x}\lra{\vec x'} \text{ with propensity }f_i\text{ if }{\vec x}\geq P_i,
+   {\vec x}<I_i$ (resp.~no condition on $I_i$) and ${\vec x'} = {\vec x}\  \sigma_i\ t_i$.
+   Transition probabilities between discrete states are obtained through
+   normalization of the propensities of all enabled transitions, and the time
+   of next transition is given by an exponential distribution~\cite{Gillespie77jpc}.
+\end{definition}
+
+We call a positive influence system, an influence system without inhibitors or interpreted under the positive semantics.
+
+\subsection{Monotone DNF Representation of Positive Influence Systems}
+
+Def.~\ref{def:activation} shows how to represent an influence system by $2*n$ activation functions in DNF, 
+and \emph{positive} influence systems by \emph{monotone} DNF activation functions.
+
+\begin{example}
+The activation functions of the Lotka--Volterra influence system of Ex.~\ref{ex:LVi}
+are monotonic DNF formulae with only one conjunct since in this example there is only one signed influence per variable:
+\begin{align*}
+   A^+&=(A)& B^+&=(A\wedge B)\\
+   A^-&=(A \wedge B)& B^-&=(B)
+\end{align*}
+
+\end{example}
+
+%Note that in Ex.~\ref{ex:lympho} no (de)activation function is monotone.
+
+\subsection{$k$-CNF Representation of General Influence Systems}
+\label{sec:kcnf}
+
+Monotone DNF formulae cannot encode the Boolean dynamics of influence systems with negation,
+which tests the absence of inhibitors, i.e., negative literals.
+This is possible using a $k$-CNF representation of the activation functions,
+provided that there are at most $k$ species that can play a given ``role''. 
+For instance, in a hypothetic activation function in CNF
+$
+\left(a \vee b \vee c\right) \bigwedge
+\left(d \vee e\right) \bigwedge 
+\neg f
+$,
+each clause can be interpreted as a role, and each role can be played by a limited number of species, at most $k$.
+%for the activation of our hypothetic gene, we need at least one species that plays this role. For example, the enzyme can be $a$, $b$, or $c$ whereas 
+%the reactant is $d$ or $e$, and we need that $f$ be inactive.
+
+
+\begin{example}
+   The activation functions of the prey-predator model with inhibition of Ex.~\ref{ex:LVi} cannot be
+   represented by monotone formulae. They can however be represented by the following 1-CNF
+   formulae ($k=1$ since there is only one positive and one
+   negative influence for each target):
+\begin{align*}
+   A^+&=(A)\wedge(\neg C)& A^-&=(A) \wedge (B)\\
+   B^+&=(A)\wedge (B)& B^-&=(B)
+\end{align*}
+
+\end{example}
+
+\begin{example}
+   In Sec.~\ref{ex:lympho}, we shall study a model of T lymphocyte differentiation which contains 2-CNF activation functions, for instance
+   \[\text{IFNg}^+=(\text{STAT4}\vee \text{TBet})\qquad
+   \text{IFNg}^-=(\neg \text{STAT4})\wedge(\neg \text{TBet})\]
+\end{example}
+
+\subsection{$k$-CNF Models of Thomas Functional Influence Systems}
+
+
+\begin{definition}[\cite{Thomas73jtb}]
+   A \emph{Thomas} network on a finite set of genes $\{x_1,\dots,x_n\}$
+   is defined by  $n$ Boolean functions $\{f_1,\dots,f_n\}$ which give for each gene its
+   possible next state, given the current state.
+\end{definition}
+
+The difference with the previous general influence systems
+is that the activation and deactivation functions are exclusive and defined by one single function.
+%As proven in~\cite{FMRS16cmsb}, in the Boolean setting any influence system is
+%also a Thomas' network.
+%FF non on montre justement le contraire !
+%As this will be useful later on, we also remark that the Thomas' Network can
+%be computed from the (de)activation functions presented in Def.~\ref{def:activation} by:
+As shown in~\cite{FMRS16cmsb}, non-terminal self-loops cannot be represented in Thomas functional influence systems.
+Given a general influence system with activation functions ${x_i}^+$ and ${x_i}^-$, one can associate a Thomas network 
+with attractor function\footnote{Note that this function ignores the cases where $v_i = 0$ and ${x_i}^-(v) =0$, or $v_i=1$ and ${x_i}^+(v)=1$
+which may create loops in non-terminal states in general influence systems.}
+\[
+f_i(v) = \left\{\begin{array}{l}
+1 \text{ if } \left\{\begin{array}{l}
+v_i = 0 \text{ and } {x_i}^+(v) = 1\\
+v_i = 1 \text{ and } {x_i}^-(v) = 0 \\
+\end{array}\right.\\[1em]
+0 \text{ if } \left\{\begin{array}{l}
+v_i = 0 \text{ and } {x_i}^+(v) = 0\\
+v_i = 1 \text{ and } {x_i}^-(v) = 1\\
+\end{array}\right.
+\end{array}\right.
+\]
+
+$k$-CNF formulae can again be used to represent Thomas gene regulatory network functions with some reasonable restrictions on their connectivity.
+In particular, it is worth noticing that in Thomas networks of degree bounded by $k$,
+each gene has at most $k$ regulators, each gene activation function $f_i$ thus depends of at most $k$ variables
+and can consequently be represented by a $k$-CNF formula.
+
+\begin{example}
+   The above translation applied to
+   Ex.~\ref{ex:LVi} gives \(f_A = A \wedge\neg B, f_B = 0\).
+   Note that the form of $f_B$ means that the only possible state change
+   for $B$ is from $1$ to $0$. 
+%Of course $B$ can also stay at $1$ but
+%non-terminal self-loops are not representable in Thomas logical models \cite{FMRS16cmsb}.
+\end{example}
+
+\begin{example}
+   The T-lymphocyte model studied in Sec.~\ref{ex:lympho} is originally a Thomas' network, where we have, for
+   instance: \(f_\text{IFNg}=(\text{STAT4}\vee \text{TBet})\)
+\end{example}
+
+\section{PAC Learning from Traces} %Experimental Setup}
+
+\francois{Les anciennes sections 4.1 et 4.2 (4.3-4.4) sont a reecrire completement dans les nouvelles section 4.1 et 4.2. Le discours doit etre scientifique sur les traces de simulation que nous considerons sans tirer de conclusions prematurees sur les traces ``reelles'' ``en pratique'' que nous ne considerons pas.}
+
+\subsection{Diverse Initial States versus Long Time Horizon}
+
+In practice, one cannot assume to have full access to the hidden Boolean function as required by
+\textsc{Sample} and \textsc{Oracle}, but rather to data time-series, or traces,
+produced from biological experiments. 
+For the scope of this paper, we consider simulation traces obtained from a hidden model
+which we wish to discover.
+Two types of traces are considered: Boolean and stochastic simulation traces.
+In both cases, the mapping to the concepts of PAC-learning is easy: a \textsc{Sample}
+for the activation function $x^+$ (resp.\ deactivaction function $x^-$) is a
+state $s_i$ such that $x_i<x_{i+1}$ (resp. $x_i>x_{i+1}$).
+See Fig.~\ref{steps} for an example.
+
+\begin{figure}[htbp]
+   {\large 
+      \[
+         \cdots
+         \rightarrow
+         \underset{\vspace{1em}(a)}{
+            \left(\begin{array}{c}
+                  0\\ 1\\ 0\\ 1
+         \end{array}\right)}
+         \rightarrow
+         \underset{\vspace{1em}(b)}{
+            \left(\begin{array}{c}
+                  \textbf{\textit{1}}\\ 1\\ 0\\ 1
+         \end{array}\right)}
+         \rightarrow
+         \underset{\vspace{1em}(c)}{
+            \left(\begin{array}{c}
+                  1\\ 1\\ 0\\ \textbf{\textit 0}
+         \end{array}\right)}
+         \rightarrow
+         \cdots
+      \]
+   }
+   \caption{Illustration of a Boolean trace with three steps. Between $a$ and
+   $b$, the first gene has been activated, and between $b$ and $c$, the last
+   one has been deactivated.}\label{steps}
+\end{figure}
+
+
+
+One striking feature of PAC learning is to associate a guarantee on the quality $h$ of each learnt Boolean
+function depending on the number of samples used, namely $L(h, (2n)^{k+1})$,
+where $n$ is the number of genes/molecules observed, and $k$ is the maximum number of literals per conjunct.
+In practice, $k$ seems to be limited to 3 or 2, and the
+number $2n$ of different possible literals in a clause, can also be reduced through
+prior knowledge (e.g.~in Sec.~\ref{sec:prior}).
+
+It is worth noticing that the global guarantee on the learnt model is the minimum of all precision bounds $h$.
+In order to perfectly recover a hidden model, it is thus necessary to have sufficiently diverse samples. 
+For this reason, one should expect to get better performance 
+with large sets of short traces obtained from a uniformly distributed set of initial states,
+rather than with a small set of long traces which introduce a bias in the distribution of the transition samples
+(e.g.~when looping in an attrator).
+The important point is that PAC learning algorithms do provide bounds on the error according to this space-time trade-off.
+%This will be evaluated in Sec.~\ref{sec:abinitio}.
+
+On the other hand, the \textsc{Oracle} procedure needs to evaluate the (de)activation function on a given vector $v$, that is, it needs to be able to set the system in a state abstracted by $v$ and say whether or not a given gene can be (de)activated from this state.
+In practice, this cannot be achieved without approximation.
+The intuitive solution would be to set the system in the desired state and see whether or not the gene is (de)activated. 
+However, different atomic steps are possible from a given state and we have no guarantee that the one we are interested in will happen in a given finite number of runs.
+%The only way to have such a guarantee would be to perform this an infinite number of time.
+%Since actually running this ``set the state and observe the first atomic step'' scheme an infinite number of time is impossible, e
+These considerations militate for studying an extension of the PAC-learning framework with an oracle that would be only probabilistic.
+% arises as one of the first improvements that should be worked on.
+%A peculiarly fast-thinking reader may also have notice that different (and often infinitely many) states of the system may also be abstracted by the same Boolean total vector $v$, and that the transition may also happen from only some of them.
+%For those reasons, algorithm requiring the \textsc{Oracle} function seem not applicable as of today, and we choose to only focus on $k$-CNF and sampling from now on.
+
+
+
+\subsection{PAC Learning from Boolean Traces}
+
+A first experiment was to produce Boolean (de)activation traces by simulation of a given influence model, and use them to learn the hidden model.
+Fig.~\ref{bool-LV} reports our results obtained with  25 Boolean traces of short length equal to 2 (i.e.~when trading time for space)
+on Ex.~\ref{ex:LVi}, where to increase readability we used long names for the
+species.
+It is worth noticing that in this particular model, the positive infuences cannot be learned from (de)activation traces,
+since they contain their target as positive source and thus do not correspond to an activation function.
+Indeed, the activation functions in the Lokta--Volterra models report the apparition on extinction of the species' population as a whole and not of individuals of it.
+The results in this tradeoff are perfect in the sense that the negative influences are correctly inferred.
+
+\begin{figure}[htb]
+   \begin{minipage}{.5\textwidth}
+	\lstinputlisting{examples/LVi.bc}
+   \end{minipage}%
+   \hspace{.04\textwidth}%
+   \begin{minipage}{.45\textwidth}
+      \begin{lstlisting}[frame=single]
+Predator -< Predator
+Predator, Prey -< Prey
+      \end{lstlisting}
+   \end{minipage}
+   \caption{The Lokta-Volterra prey vs.\ predator influence model of Ex.~\ref{ex:LVi}
+   with long names (left panel) and the (most likely) influence model PAC-learned on 25 simulations of length 2 (right panel) from random initial states.\label{bool-LV}}
+\end{figure}
+
+
+\begin{figure}[htb]
+   \begin{minipage}{.5\textwidth}
+      \lstinputlisting[frame=single]{examples/bool-lokta.res}
+   \end{minipage}%
+   \hspace{.04\textwidth}%
+   \begin{minipage}{.45\textwidth}
+      \begin{lstlisting}[frame=single]
+Predator / Prey -< Predator
+Predator, Prey -< Prey
+      \end{lstlisting}
+   \end{minipage}
+   \caption{Most likely PAC-learned activation functions (left pane, where \texttt{!A} stands for $\neg A$), and corresponding influence model (rigth panel obtained by CNF-DNF conversion), on a \emph{single random Boolean trace of length 50} from the standard initial state with prey and predator present.}\label{bool-LV.res}
+\end{figure}
+
+
+On the other hand, PAC learning from a single Boolean trace obtained from the standard initial state where both the prey and the predator are present (i.e.~trading space for time),
+most likely leads to the influence model shown in Fig.~\ref{bool-LV.res}.
+%In the infered model, both the predator and the prey species cannot appear. 
+For the prey to go extinct, there must be both a prey in the first place and a predator to eat it. This is correct.
+For the predator to disappear, it is necessary that there is a predator in the first place and that there is no prey. 
+The first part of this conjunction is true, but the second is false: predators may disappear even if there are preys left.
+However, this case is unlikely, the most likely case is that the predator will go extinct only once there are no more preys left for it to eat. 
+As can be seen even on this very simple example, the ``approximately'' in PAC has a precise meaning. Yet, as explained in Def.~\ref{def:learnclass}, the quantification of this approximation relies on the knowledge of the distributions of the samples.
+%
+In the present case, the probability of a positive example $v$ of (de)activation function $x\pm$ to be sampled is strongly and intuitively correlated to both the probability that the system reaches state $v$ and the probability of the actual (de)activation of gene $x$ from state $v$. 
+
+
+\subsection{PAC Learning from  Stochastic Traces}
+
+
+\begin{listfig}[htb]
+      \begin{lstlisting}
+biocham: pac_learning('library:examples/lotka_volterra/LVi.bc', 50, 1).
+% Maxmimum K used: 1
+% minimum number of samples for h=1: 18
+
+% 14 samples (max h ~ 0.7777777777777778)
+Predator -< Predator
+
+% 7 samples (max h ~ 0.3888888888888889)
+Predator,Prey -> Predator
+
+% 1 samples (max h ~ 0.05555555555555555)
+Predator,Prey -< Prey
+
+% 21 samples (max h ~ 1.1666666666666667)
+Prey -> Prey
+   \end{lstlisting}
+   \caption{Biocham running the $k$-CNF PAC learning algorithm on the Lotka--Volterra
+      influence model from stochastic simulation traces of length 1, obtained from 50 random initial states.
+Among those 50 initial
+     states, 7 had both prey and predator absent, leading to no sample.}\label{lst:stoch_lv}
+\end{listfig}
+
+
+Let us now consider sets of stochastic traces. They can be produced from an influence system with forces, using Gillespie's
+algorithm (Def.~\ref{def:stoch}), assuming here mass-action kinetics with rate 1 for all influences.
+The initial states are random, but with equal probability to be 0 or $>0$ in
+order to facilitate the observation of the inhibitions in the influences.
+The states in ${\mathbb{N}}^n$ can be abstracted to
+Boolean samples by the usual $\{0, >0\}$ abstraction for the states, and the
+increasing/decreasing abstraction for choosing samples for the
+activation/deactivation functions. Using the same $\{0, >0\}$ abstraction to
+detect samples would again forbid to learn autocatalytic influences like
+\texttt{Prey -> Prey} for the same reason as in the Boolean case.
+
+Interestingly, Listing~\ref{lst:stoch_lv} shows that here again, even with a low number of
+samples, and therefore a very low precision bound $h$, one can find the full model with less than 50
+simulations of length 1, all starting from random initial states.
+%A more detailed discussion of the role of the diversity of initial states is
+%given below in Sec.~\ref{sec:abinitio}.
+
+
+
+\section{Evaluation on a Model of T-helper Lymphocytes Differentiation}\label{ex:lympho}
+
+\subsection{Boolean Thomas Network}
+
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.8\textwidth]{th_net_clean.png}
+   \caption{Fig.~4 of~\cite{RRMTC06tcsb} displaying the Th-lymphocyte
+   differentiation model.\label{fig:lympho}}
+\end{figure}
+
+\begin{listfig}[htb]
+   \lstinputlisting[multicols=2,firstline=6]{examples/lympho.bc}
+   \caption{Influence system for the lymphocyte differentiation of
+   example~\ref{ex:lympho}.}\label{lst:lympho}
+\end{listfig}
+
+In this section we evaluate the performance of the $k$-CNF PAC learning
+algorithm on an influence system of 12 variables and 32 influences that models
+the differentiation of the T-helper lymphocytes.
+This model, presented in~\cite{RRMTC06tcsb} is actually a Boolean
+simplification of the original multi-level model
+of~\cite{Mendoza06biosystems}. It studies the regulatory network of stimuli
+leading to differentiation between Th-1 and Th-2 lymphocytes from an original
+CD4+ T helper (Th-0).
+The model has three different stable states corresponding to Th-0 (naive
+lymphocyte), Th-1 and Th-2 when IL12 is off, and two others when IL12 is on
+(the Th-0 one is lost).
+Fig.~\ref{fig:lympho} shows the influence graph of the model. The
+influence model is given in Listing~\ref{lst:lympho}.
+
+
+All learning experiments described below run on a
+3GHz Linux desktop in less than 3s.
+However, the CNF (activation functions) to DNF (influence model) conversions could be very slow, reaching more than 4 minutes
+in the worst cases (e.g.~with a single simulation of $10^6$ steps).
+Note also that since IL12 is an input, in all experiments the PAC learning
+algorithm only finds $false$ as Boolean function for its activation or
+deactivation. We thus removed it from the results below for readability.
+
+
+\subsection{\emph{Ab initio} PAC Learning from Stochastic Traces}
+\label{sec:abinitio}
+
+\begin{figure}[htb]
+   \includegraphics[width=\textwidth]{statistics/statistics.png}
+   \caption{Minimum numbers of (de)activation samples with standard deviations, and model errors (i.e.~false positive and negative influences) obtained for the 24 boolean functions of the Th-lymphocyte example, as a function of the number of initial states 
+(with total number of samples kept constant by adjusting the time horizon).}
+\label{fig:statistics}
+\end{figure}
+
+When using stochastic simulations in this example, Fig.~\ref{fig:statistics} shows that a simple randomization of
+the initial states (while keeping the total number of samples constant)
+provides a much more homogeneous repartition of activation and deactivation samples (as shown by the
+decreasing standard deviation), and, as expected, a much higher confidence $h$ in the learnt model.
+The minimum number of samples gives in fact a quasi-linear estimate of the model confidence $h$.
+Obviously, more diverse initial states reveal more about the model structure than longer experiments.
+
+On the other hand, the error measured as the number of false positive and false negative influences (right scale divided by 10), reveals a non monotonic behavior:
+in this example, there is a zone with sets of 10 to 100 traces, where PAC learning produces
+models with very complex (de)activation formulae that are not readable by humans and that produce many errors.
+Above 500 traces from random initial states the learnt model is perfect.
+
+
+The guarantee on the accuracy of the learnt model comes directly
+from Valiant's work with the approximation bounds. Note however that
+Valiant's results stand only if we actually have
+at least $L$ samples for each of the (de)activation functions, where $L$ is
+Valiant's bound. A first naive approach might be to simply let the trace run
+for $2nL$ steps, or a constant factor of it. Nevertheless, the repartition of
+samples for each function can be pretty non-uniform. Interestingly, the minimal number of samples gives us the lowest
+$L(h, S)$ and thus quasi-linearly the lowest guarantee $h$.
+
+
+Our simulation results show that when using PAC-learning to find the structure of a
+regulatory model, an approach based on mutants (knock-offs, over-expression, etc.) is
+much more informative than an approach based on (repeated or longer) similar
+observations. Note that this is in line with the pratice of integrative analyses
+such as~\cite{CCCCNT04mbc} and its more than 130 mutants.
+
+% In our experiments about 1000 different initial states were needed to find a
+% model very close to the original one.
+
+\subsection{PAC Learning with Prior Knowledge on the Influence Graph}
+\label{sec:prior}
+
+Furhtermore, to improve the guarantee $h$ and the corresponding accuracy of the learnt
+models, especially for bigger models, it is necessary to look again at what
+constrains $h$. We have \(samples = 2h(S + \log h)\), where $S$ is the number
+of possible k-CNF clauses, bounded by $(2n)^{k+1}$.
+
+The previous section explored the diversity of the samples, another option is
+to reduce $S$ for a given $n$. This can be done by formalizing possible/known
+interactions as prior knowledge, as is common in Machine Learning, effectively
+restricting the possible clauses for each activation/deactivation function.
+
+Here we want the user to be able to specify, for each gene $x$, a set of gene
+$V_x$ which are the only ones on which $x^+$ and $x^-$ may depend. If one
+views the influences as a graph, this is akin to specifying a set of possible
+(undirected) edges outside of which the algorithm cannot build its influence
+system. An example of such hints for the lymphocyte model are given at
+\url{http://lifeware.inria.fr/wiki/software/\#CMSB17}.
+
+In such an example, the number of possible clauses becomes bounded by
+$3^3$ (maximum 3 effectors that are either a positive literal, a negative
+literal or not in the clause at all) instead of $26^4$ (Valiant's bound).
+Since for a given number of samples $h$ varies quasi-linearly in $S$, the
+improvement is drastic (50000 times less samples for the same $h$). The
+accuracy of the model is, as expected with such guarantee, improving a
+lot.
+
+\section{Conclusion and Perspectives}
+
+We have shown that Valiant's work on PAC learning provides an elegant trail, with error bounds,
+to attack the challenge of inferring the structure of influence models from the observation of data time series,
+and more precisely to automatically discover possible regulatory networks of a biochemical process, given sufficiently precise observations of its executions.
+
+The Boolean dynamics of biochemical influence systems, including Thomas regulatory networks, can be represented by $k$-CNF formulae without loss of generality,
+and $k$-CNF PAC learning algorithm can be used to infer the structure of the network,
+and bound the errors made according to the distribution of the state transition samples and the space-time tradeoff in the traces.
+When dimension increases, we have shown on an example of T-lymphocyte differentiation from the literature
+that the $k$-CNF PAC learning algorithm can also leverage available
+prior knowledge on the system to deliver precise results with a reasonable
+amount of data.
+
+The Boolean dynamics of positive influence systems can also be straightforwardly represented by monotone DNF activation and deactivation functions,
+and monotone DNF PAC learning algorithm applied with an interesting recourse to oracles 
+which are particularly relevant in the perspective of online active learning and experimental design.
+More work is needed however to make comparisons on common benchmarks
+with  other approaches already investigated in this context, such as Answer Set Programming (ASP) and budgeted learning,
+and to investigate the applicability of these methods to real experiments taking into account the noise in the observations.
+
+\subsection*{Acknowledgements}
+
+This work is partly supported by the ANR project Hyclock.
+
+\bibliographystyle{splncs03}
+\bibliography{contraintes}
+\end{document}
