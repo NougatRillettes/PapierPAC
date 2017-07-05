@@ -3,9 +3,9 @@
 \mode<presentation>{\usetheme{Inria2}}
 \usepackage[english]{babel}
 %\usepackage[latin1]{inputenc}
-\usepackage{amsmath,amsthm, amssymb, latexsym}
+%\usepackage{amsmath,amsthm, amssymb, latexsym}
 \usepackage{tikz}
-\boldmath
+%\boldmath
 \usepackage[orientation=portrait,size=a0,scale=1.4,debug]{beamerposter}
 % change list indention level
 % \setdefaultleftmargin{3em}{}{}{}{}{}
@@ -46,7 +46,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \graphicspath{{figures/}}
-\title{Probably Approximately Correct Learning of\\ Thomas' Regulatory Networks from Time-Series Data}
+\title{Probably Approximately Correct Learning of\\ Thomas Regulatory Networks from Time-Series Data}
 %\begin{minipage}[T]{.49\textwidth}
 \author{Arthur Carcano, Fran\c{c}ois Fages, Sylvain Soliman}
 \institute[Inria, Universit\'e Paris Saclay]{EP Lifeware, Inria, Universit\'e Paris Saclay, France}
@@ -88,36 +88,38 @@ The idea behind the PAC learning protocol is to discover a Boolean
 function, $G$, which approximates a hidden function $F$, while restricting oneself to the two following operations:
 \begin{itemize}
   \item
-\textsc{Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
-The output of \textsc{Sample}$()$ is assumed to follow a given probability distribution $D(v)$, which is used to measure the approximation of the result.
+{\bf Sample}$()$: returns a positive example, i.e.~a vector $v$ such that $F(v)=1$.
+The output of {\bf Sample}$()$ is assumed to follow a given probability distribution $D(v)$, which is used to measure the approximation of the result.
   \item
-\textsc{Oracle}$(v)$: returns the value of $F(v)$ for any input vector $v$.
+{\bf Oracle}$(v)$: returns the value of $F(v)$ for any input vector $v$.
 \end{itemize}
             \end{block}
             \vfill
-            \begin{block}{Learnable Boolean Functions}
+            \begin{block}{Learnable Boolean Functions \cite{Valiant84cacm}}
 %\begin{definition}[\cite{Valiant84cacm}]\label{def:learnclass}
-   A class $\cal M$ of \emph{Boolean functions} is said to be \emph{learnable}
-   if there exists an algorithm $\cal A$ with some precision parameter $h\in\mathbb N$ such that:
+   A class $\cal M$ of \emph{Boolean functions} is said to be {\bf learnable}
+   if there exists an algorithm $\cal A$ with some {\bf precision parameter $h\in\mathbb N$} such that:
    \begin{itemize}
       \item $\cal A$ runs in polynomial time both in $n$ and $h$;
       \item
          for any function $F$ in $\cal M$, and any distribution $D$ on the positive examples,
-         $\cal A$ deduces with probability higher than $1-h^{-1}$ an approximation $G$ of $F$ such that
+         $\cal A$ deduces with {\bf probability higher than $1-h^{-1}$} an approximation $G$ of $F$ such that
          \begin{itemize}
-            \item $G(v)=1$ implies $F(v)=1$ (no false positive)
+            \item $G(v)=1$ implies $F(v)=1$ ({\bf no false positive})
             \item
-               $\displaystyle\sum_{v\ s.t.\ F(v)=1\wedge G(v)=0} D(v) < h^{-1}$ (low probability of false negatives)
+               $\displaystyle\sum_{v\ s.t.\ F(v)=1\wedge G(v)=0} D(v) < h^{-1}$ ({\bf few false negatives})
          \end{itemize}
    \end{itemize}
 %\end{definition}
             \end{block}
             \vfill
             \begin{block}{PAC Learning Algorithms \cite{Valiant84cacm}}
+\begin{itemize}
+\item
 %\begin{theorem}[\cite{Valiant84cacm}]\label{thm:kcnf}
-For any $k$, the class of $k$-CNF formulae on $n$ variables is learnable with an
-algorithm that uses $L(h,{(2 n)}^{k+1})$ positive examples and no call to the
-oracle.
+For any $k$, the class of {\bf $k$-CNF formulae} on $n$ variables is learnable with an
+algorithm that uses $L(h,S)\small\le 2h(S+\log_e h)$ positive examples and no call to the
+oracle, where $S=2n^{k+1}$.
 %\end{theorem}
 %\begin{algorithm}
 \begin{enumerate}
@@ -132,10 +134,12 @@ oracle.
 %\caption{PAC-learning of $k$-CNF formulae.\label{algCNF}}
 %\end{algorithm}
 %\begin{theorem}[\cite{Valiant84cacm}]\label{thm:mdnf}
-    The class of monotone DNF formulae on $n$ variables is also learnable with an
+\item
+    The class of {\bf monotone DNF formulae} on $n$ variables is also learnable with an
     algorithm that uses $L(h,d)$ examples and $d n$ calls to the oracle,
-    where $d$ is the \emph{degree} of the function to learn.
+    where $d$ is the largest number of prime implicants of the function to learn.
 %\end{theorem}
+\end{itemize}
             \end{block}
             \vfill
             \begin{block}{T-helper Lymphocyte Differentiation Inlfuence Graph \cite{RRMTC06tcsb}}
@@ -158,42 +162,51 @@ oracle.
             % Since all columns are the same length, it is all nice and tidy.  You have to get the height empirically
             % ---------------------------------------------------------%
             % fill each column with content
-            \begin{block}{Influence System in BIOCHAM v4 syntax}
+            \begin{block}{Influence System in BIOCHAM v4 syntax (DNF form)}
 %\begin{listfig}[htb]
-\small
+\footnotesize
    \lstinputlisting[multicols=2,firstline=6]{examples/lympho.bc}
 %\end{listfig}
 	    \end{block}
             \vfill
-            \begin{block}{PAC Learning from Stochastic Traces}
-Space-time tradeoff (number initial states versus long time horizon)
+            \begin{block}{Results of PAC Learning from Stochastic Traces}
+\begin{itemize}
+\item
+{\bf Space-time tradeoff}: many short traces better than few long traces
 
 %\begin{figure}[htb]
-   \includegraphics[width=\textwidth]{statistics/statistics.png}
+  \includegraphics[width=0.9\textwidth]{statistics/statistics.png}
    %\caption{
-
-Minimum number of (de)activation samples with standard deviations
+\begin{itemize}
+\item
+Minimum number of (de)activation samples,
+\item Standard deviation
+\item {\bf Model error} (number of false positives and false negatives) 
+\end{itemize}
 obtained for the 24 boolean functions of the Th-lymphocyte example, 
-and {\bf model error} (number of false positives and false negatives) 
+
 as a function of the number of initial states 
+
 (with total number of samples kept constant by adjusting the time horizon). %}
 %\label{fig:statistics}
 %\end{figure}
-\emph{Learn correct model from 500 traces}.
-
-Influence graph as prior knowledge: reduce the number of possible clauses $S<(2n)^{k+1}$ in \(samples = 2h(S + \log h)\).
-Learn correct model from ???? traces.
+\item
+{\bf Correct model learned from 500 traces}: below, some rare transitions are not observed resulting in the building of complex models.
+\item
+Giving the influence graph as prior knowledge reduces the number of possible clauses $S<<(2n)^{k+1}$ in \(samples = 2h(S + \log h)\).
+%Learn correct model from ???? traces.
+\end{itemize}
 	    \end{block}
             \vfill
   	    \begin{block}{Conclusions}
               \begin{itemize}
               \item Valiant's work on PAC learning provides an elegant trail, with {\bf error bounds},
 to attack the challenge of inferring the structure of influence models from the observation of data time series,
-and more precisely to automatically discover possible regulatory networks of a biochemical process, given sufficiently precise observations of its executions.
+%and more precisely to automatically discover possible regulatory networks of a biochemical process, given sufficiently precise observations of its executions.
 \item The Boolean dynamics of biochemical influence systems, including Thomas regulatory networks, can be represented by $k$-CNF formulae without loss of generality,
 and $k$-CNF PAC learning algorithm can be used to infer the structure of the network,
-and bound the errors made according to the distribution of the state transition samples. 
-\item {\bf space-time tradeoff} in line with the pratice of integrative analyses
+and bound the errors made according to the {\bf distribution of the state transition samples}. 
+\item {\bf Many short traces better than few long traces} in line with the pratice of integrative analyses
 such as~\cite{CCCCNT04mbc} and its more than 130 mutants.
               \end{itemize}
 \footnotesize
